@@ -862,9 +862,6 @@ class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
 #endif
   }
 
- protected:
-  bool in_process_network_service_ = false;
-
 #if BUILDFLAG(IS_WIN)
  private:
   base::test::ScopedFeatureList win_network_sandbox_feature_;
