@@ -53,14 +53,6 @@ class ProfileHelper
   // knowledge in one place.
   static ProfileHelper* Get();
 
-  // Loads and returns Profile instance that corresponds to |user_id_hash| for
-  // test. It should not be used in production code because it could load a
-  // not-yet-loaded user profile and skip the user profile initialization code
-  // in UserSessionManager.
-  // See http://crbug.com/728683 and http://crbug.com/718734.
-  static Profile* GetProfileByUserIdHashForTest(
-      const std::string& user_id_hash);
-
   // Returns profile path that corresponds to a given |user_id_hash|.
   static base::FilePath GetProfilePathByUserIdHash(
       const std::string& user_id_hash);
@@ -101,9 +93,6 @@ class ProfileHelper
 
   // Returns the path that corresponds to the lockscreen profile.
   static base::FilePath GetLockScreenProfileDir();
-
-  // Returns lockscreen profile.
-  static Profile* GetLockScreenIncognitoProfile();
 
   // Returns true if |profile| is the lockscreen profile.
   static bool IsLockScreenProfile(const Profile* profile);

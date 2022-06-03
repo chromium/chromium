@@ -20,12 +20,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1216,8 +1219,9 @@ class MultiProfileDownloadNotificationTest
   }
 
   Profile* GetProfileByIndex(int index) {
-    return ash::ProfileHelper::GetProfileByUserIdHashForTest(
-        kTestAccounts[index].hash);
+    return g_browser_process->profile_manager()->GetProfileByPath(
+        ash::ProfileHelper::GetProfilePathByUserIdHash(
+            kTestAccounts[index].hash));
   }
 
   // Adds a new user for testing to the current session.
@@ -1230,8 +1234,9 @@ class MultiProfileDownloadNotificationTest
     user_manager::UserManager::Get()->SaveUserDisplayName(
         AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
         base::UTF8ToUTF16(info.display_name));
-    Profile* profile =
-        ash::ProfileHelper::GetProfileByUserIdHashForTest(info.hash);
+    Profile* profile = profiles::testing::CreateProfileSync(
+        g_browser_process->profile_manager(),
+        ash::ProfileHelper::GetProfilePathByUserIdHash(info.hash));
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);

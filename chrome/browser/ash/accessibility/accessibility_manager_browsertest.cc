@@ -22,6 +22,7 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -1300,10 +1301,12 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   }
 
   void StartUserSession(const AccountId& account_id) {
-    ProfileHelper::GetProfileByUserIdHashForTest(
-        user_manager::UserManager::Get()
-            ->FindUser(account_id)
-            ->username_hash());
+    profiles::testing::CreateProfileSync(
+        g_browser_process->profile_manager(),
+        ProfileHelper::GetProfilePathByUserIdHash(
+            user_manager::UserManager::Get()
+                ->FindUser(account_id)
+                ->username_hash()));
 
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->NotifyUserProfileLoaded(account_id);

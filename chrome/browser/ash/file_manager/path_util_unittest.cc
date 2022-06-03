@@ -618,20 +618,22 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(std::move(fake_user_manager)));
 
-    Profile* primary_profile =
-        profile_manager_->CreateTestingProfile("user@gmail.com");
-    ASSERT_TRUE(primary_profile);
-    ASSERT_TRUE(profile_manager_->CreateTestingProfile("user2@gmail.com"));
-    primary_profile->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt,
-                                           "a");
-    primary_profile->GetPrefs()->SetBoolean(
+    primary_profile_ =
+        profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
+    ASSERT_TRUE(primary_profile_);
+    secondary_profile_ =
+        profile_manager_->CreateTestingProfile(account_id_2.GetUserEmail());
+    ASSERT_TRUE(secondary_profile_);
+    primary_profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt,
+                                            "a");
+    primary_profile_->GetPrefs()->SetBoolean(
         drive::prefs::kDriveFsPinnedMigrated, true);
 
     // Set up an Arc service manager with a fake file system.
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-    arc_service_manager_->set_browser_context(primary_profile);
+    arc_service_manager_->set_browser_context(primary_profile_);
     arc::ArcFileSystemOperationRunner::GetFactory()->SetTestingFactoryAndUse(
-        primary_profile,
+        primary_profile_,
         base::BindRepeating(&CreateFileSystemOperationRunnerForTesting));
     arc_service_manager_->arc_bridge_service()->file_system()->SetInstance(
         &fake_file_system_);
@@ -643,16 +645,16 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
     storage::ExternalMountPoints* mount_points =
         storage::ExternalMountPoints::GetSystemInstance();
     drive::DriveIntegrationService* integration_service =
-        drive::DriveIntegrationServiceFactory::GetForProfile(primary_profile);
+        drive::DriveIntegrationServiceFactory::GetForProfile(primary_profile_);
     drive_mount_point_ = integration_service->GetMountPointPath();
     integration_service->OnMounted(drive_mount_point_);
 
     // Add a crostini mount point for the primary profile.
-    crostini_mount_point_ = GetCrostiniMountDirectory(primary_profile);
-    mount_points->RegisterFileSystem(GetCrostiniMountPointName(primary_profile),
-                                     storage::kFileSystemTypeLocal,
-                                     storage::FileSystemMountOption(),
-                                     crostini_mount_point_);
+    crostini_mount_point_ = GetCrostiniMountDirectory(primary_profile_);
+    mount_points->RegisterFileSystem(
+        GetCrostiniMountPointName(primary_profile_),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        crostini_mount_point_);
 
     ash::disks::DiskMountManager::InitializeForTesting(
         new FakeDiskMountManager);
@@ -674,7 +676,7 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
     ASSERT_TRUE(mount_points->RegisterFileSystem(
         kShareCacheMountPointName, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(),
-        util::GetShareCacheFilePath(primary_profile)));
+        util::GetShareCacheFilePath(primary_profile_)));
 
     // Run pending async tasks resulting from profile construction to ensure
     // these are complete before the test begins.
@@ -699,6 +701,8 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   arc::FakeFileSystemInstance fake_file_system_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* primary_profile_;
+  TestingProfile* secondary_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;
@@ -743,9 +747,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyFiles) {
   base::test::ScopedRunningOnChromeOS running_on_chromeos;
   GURL url;
   bool requires_sharing = false;
-  const base::FilePath myfiles = GetMyFilesFolderForProfile(
-      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
-          "user@gmail.com-hash"));
+  const base::FilePath myfiles = GetMyFilesFolderForProfile(primary_profile_);
   EXPECT_TRUE(ConvertPathToArcUrl(myfiles.AppendASCII("a/b/c"), &url,
                                   &requires_sharing));
   EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
@@ -770,9 +772,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
   // Non-primary profile's downloads folder is not supported for ARC yet.
   GURL url;
   bool requires_sharing = false;
-  const base::FilePath downloads2 = GetDownloadsFolderForProfile(
-      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
-          "user2@gmail.com-hash"));
+  const base::FilePath downloads2 =
+      GetDownloadsFolderForProfile(secondary_profile_);
   EXPECT_FALSE(ConvertPathToArcUrl(downloads2.AppendASCII("a/b/c"), &url,
                                    &requires_sharing));
   EXPECT_FALSE(requires_sharing);
@@ -879,9 +880,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Removable) {
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MyFiles) {
   base::test::ScopedRunningOnChromeOS running_on_chromeos;
-  const base::FilePath myfiles = GetMyFilesFolderForProfile(
-      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
-          "user@gmail.com-hash"));
+  const base::FilePath myfiles = GetMyFilesFolderForProfile(primary_profile_);
   base::RunLoop run_loop;
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),
@@ -920,9 +919,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
-  const base::FilePath downloads = GetDownloadsFolderForProfile(
-      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
-          "user@gmail.com-hash"));
+  const base::FilePath downloads =
+      GetDownloadsFolderForProfile(primary_profile_);
   base::RunLoop run_loop;
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),
@@ -944,9 +942,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
 
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidDownloads) {
-  const base::FilePath downloads = GetDownloadsFolderForProfile(
-      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
-          "user2@gmail.com-hash"));
+  const base::FilePath downloads =
+      GetDownloadsFolderForProfile(secondary_profile_);
   base::RunLoop run_loop;
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),

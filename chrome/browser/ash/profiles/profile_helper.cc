@@ -171,14 +171,6 @@ ProfileHelper* ProfileHelper::Get() {
 }
 
 // static
-Profile* ProfileHelper::GetProfileByUserIdHashForTest(
-    const std::string& user_id_hash) {
-  base::ScopedAllowBlockingForTesting allow_io;
-  return g_browser_process->profile_manager()->GetProfile(
-      ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
-}
-
-// static
 base::FilePath ProfileHelper::GetProfilePathByUserIdHash(
     const std::string& user_id_hash) {
   // Fails if Chrome runs with "--login-manager", but not "--login-profile", and
@@ -265,11 +257,6 @@ std::string ProfileHelper::GetLockScreenAppProfileName() {
 // static
 base::FilePath ProfileHelper::GetLockScreenProfileDir() {
   return GetProfileDir(chrome::kLockScreenProfile);
-}
-
-// static
-Profile* ProfileHelper::GetLockScreenIncognitoProfile() {
-  return GetIncognitoProfile(GetLockScreenProfileDir());
 }
 
 // static

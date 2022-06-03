@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
@@ -335,8 +336,9 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
       false /* browser_restart */, false /* is_child */);
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* const profile =
-      ProfileHelper::GetProfileByUserIdHashForTest(user->username_hash());
+  Profile* const profile = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(),
+      ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
 
   // Verify that the user is allowed to lock the screen.
   EXPECT_TRUE(user_manager::UserManager::Get()->CanCurrentUserLock());
