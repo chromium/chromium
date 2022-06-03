@@ -60,6 +60,19 @@ presets:
           - motionmark_ramp_multiply
           - motionmark_ramp_paths
           - motionmark_ramp_suits
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-laptop_low_end-perf
+          - mac-m1_mini_2020-perf
+          - linux-perf
+          - win-10-perf
+        stories:
+          - motionmark_ramp_composite
+      - benchmark: rendering.mobile.notracing
+        configs:
+          - android-pixel4-perf
+        stories:
+          - motionmark_ramp_composite
   speedometer2:
     telemetry_batch_experiment:
       - benchmark: speedometer2-chrome-health
@@ -102,6 +115,19 @@ presets:
           - motionmark_ramp_multiply
           - motionmark_ramp_paths
           - motionmark_ramp_suits
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-laptop_low_end-perf
+          - mac-m1_mini_2020-perf
+          - linux-perf
+          - win-10-perf
+        stories:
+          - motionmark_ramp_composite
+      - benchmark: rendering.mobile.notracing
+        configs:
+          - android-pixel4-perf
+        stories:
+          - motionmark_ramp_composite
   cwv-ch:
     telemetry_batch_experiment:
       - benchmark: loading.desktop
