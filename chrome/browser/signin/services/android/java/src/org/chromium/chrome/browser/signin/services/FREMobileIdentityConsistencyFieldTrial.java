@@ -34,12 +34,12 @@ import java.util.Random;
  */
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
-    private static final String ENABLED_GROUP = "Enabled3";
+    private static final String ENABLED_GROUP = "Enabled4";
     @VisibleForTesting
-    public static final String DISABLED_GROUP = "Disabled3";
+    public static final String DISABLED_GROUP = "Disabled4";
     private static final String DEFAULT_GROUP = "Default";
     @VisibleForTesting
-    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog3";
+    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog4";
 
     /**
      * The group variation values should be consecutive starting from zero. WELCOME_TO_CHROME acts
