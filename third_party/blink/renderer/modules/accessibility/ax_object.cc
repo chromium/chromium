@@ -4335,6 +4335,13 @@ bool AXObject::IsMultiline() const {
   if (IsDetached() || !GetNode() || !IsTextField())
     return false;
 
+  // While the specs don't specify that we can't do <input aria-multiline=true>,
+  // it is in direct contradiction to the `HTMLInputElement` which is always
+  // single line. Ensure that we can't make an input report that it's multiline
+  // by returning early.
+  if (IsA<HTMLInputElement>(*GetNode()))
+    return false;
+
   bool is_multiline = false;
   if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kMultiline,
                                     is_multiline)) {
@@ -4349,18 +4356,8 @@ bool AXObject::IsRichlyEditable() const {
   const Node* node = GetNode();
   if (IsDetached() || !node)
     return false;
-#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
-  DCHECK(GetDocument());
-  DCHECK_GE(GetDocument()->Lifecycle().GetState(),
-            DocumentLifecycle::kStyleClean)
-      << "Unclean document style at lifecycle state "
-      << GetDocument()->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
 
-  if (HasRichlyEditableStyle(*node))
-    return true;
-
-  return false;
+  return node->IsRichlyEditableForAccessibility();
 }
 
 AXObject* AXObject::LiveRegionRoot() const {

@@ -104,6 +104,61 @@ TEST_F(AccessibilityTest, IsEditableInTextField) {
   EXPECT_FALSE(textarea_text->IsRichlyEditable());
 }
 
+TEST_F(AccessibilityTest, IsEditableInTextFieldWithContentEditableTrue) {
+  SetBodyInnerHTML(R"HTML(
+      <!-- This is technically an authoring error, but we should still handle
+           it correctly. -->
+      <input type="text" id="input" value="Test" contenteditable="true">
+      <textarea id="textarea" contenteditable="true">
+        Test
+      </textarea>)HTML");
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  const AXObject* input = GetAXObjectByElementId("input");
+  ASSERT_NE(nullptr, input);
+  const AXObject* input_text =
+      input->FirstChildIncludingIgnored()->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, input_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, input_text->RoleValue());
+  const AXObject* textarea = GetAXObjectByElementId("textarea");
+  ASSERT_NE(nullptr, textarea);
+  const AXObject* textarea_text =
+      textarea->FirstChildIncludingIgnored()->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, textarea_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, textarea_text->RoleValue());
+
+  EXPECT_FALSE(root->IsEditable());
+  EXPECT_TRUE(input->IsEditable());
+  EXPECT_TRUE(input_text->IsEditable());
+  EXPECT_TRUE(textarea->IsEditable());
+  EXPECT_TRUE(textarea_text->IsEditable());
+
+  EXPECT_FALSE(root->IsEditableRoot());
+  EXPECT_FALSE(input->IsEditableRoot());
+  EXPECT_FALSE(input_text->IsEditableRoot());
+  EXPECT_FALSE(textarea->IsEditableRoot());
+  EXPECT_FALSE(textarea_text->IsEditableRoot());
+
+  EXPECT_FALSE(root->HasContentEditableAttributeSet());
+  EXPECT_TRUE(input->HasContentEditableAttributeSet());
+  EXPECT_FALSE(input_text->HasContentEditableAttributeSet());
+  EXPECT_TRUE(textarea->HasContentEditableAttributeSet());
+  EXPECT_FALSE(textarea_text->HasContentEditableAttributeSet());
+
+  EXPECT_FALSE(root->IsMultiline());
+  EXPECT_FALSE(input->IsMultiline());
+  EXPECT_FALSE(input_text->IsMultiline());
+  EXPECT_TRUE(textarea->IsMultiline());
+  EXPECT_FALSE(textarea_text->IsMultiline());
+
+  EXPECT_FALSE(root->IsRichlyEditable());
+  EXPECT_FALSE(input->IsRichlyEditable());
+  EXPECT_FALSE(input_text->IsRichlyEditable());
+  EXPECT_FALSE(textarea->IsRichlyEditable());
+  EXPECT_FALSE(textarea_text->IsRichlyEditable());
+}
+
 TEST_F(AccessibilityTest, IsEditableInContentEditable) {
   // On purpose, also add the textbox role to ensure that it won't affect the
   // contenteditable state.

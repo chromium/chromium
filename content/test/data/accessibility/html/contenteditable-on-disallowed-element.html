@@ -1,0 +1,27 @@
+<!--
+@WIN-ALLOW:IA2_STATE_MULTI_LINE
+@BLINK-ALLOW:focusable*
+@BLINK-ALLOW:inputType=*
+@BLINK-ALLOW:multiline
+@BLINK-ALLOW:nonAtomicTextFieldRoot=true
+@BLINK-ALLOW:editable*
+@BLINK-ALLOW:richlyEditable*
+@BLINK-DENY:name
+@BLINK-DENY:value
+@AURALINUX-ALLOW:*-line
+@AURALINUX-DENY:selectable-text
+-->
+<!-- Width/font adds consistency. -->
+<!-- TODO(accessibility): deal with line break inconsistencies that require these styles. -->
+<body style="font-family:monospace;width:999px">
+  <textarea contenteditable="true">value</textarea>
+  <input type="text" value="value" contenteditable="true">
+  <select contenteditable="true">
+    <option contenteditable="true">option</option>
+  </select> 
+  <br contenteditable="true">
+  <hr contenteditable="true">
+  <img src="pipe.jpg" contenteditable="true">
+  <video controls contenteditable="true"></video>
+  <progress contenteditable="true"></progress>
+</body>

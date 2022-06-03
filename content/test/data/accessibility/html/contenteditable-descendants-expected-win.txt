@@ -5,7 +5,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1><obj2>' n_sel
 ++++++ROLE_SYSTEM_LINK name='link' LINKED IA2_STATE_EDITABLE ia2_hypertext='link' n_selections=0
 ++++++++ROLE_SYSTEM_STATICTEXT name='link' LINKED IA2_STATE_EDITABLE ia2_hypertext='link' n_selections=0
 ++++++ROLE_SYSTEM_STATICTEXT name=' and an ' IA2_STATE_EDITABLE ia2_hypertext=' and an ' n_selections=0
-++++++ROLE_SYSTEM_GRAPHIC name='Image' IA2_STATE_EDITABLE
+++++++ROLE_SYSTEM_GRAPHIC name='Image' READONLY IA2_STATE_EDITABLE
 ++++++ROLE_SYSTEM_STATICTEXT name=' and a ' IA2_STATE_EDITABLE ia2_hypertext=' and a ' n_selections=0
 ++++++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE IA2_STATE_EDITABLE ia2_hypertext='Button' n_selections=0
 ++++++ROLE_SYSTEM_STATICTEXT name='.' IA2_STATE_EDITABLE ia2_hypertext='.' n_selections=0

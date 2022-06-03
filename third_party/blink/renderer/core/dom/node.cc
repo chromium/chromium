@@ -1685,6 +1685,17 @@ bool Node::CanStartSelection() const {
   return parent ? parent->CanStartSelection() : true;
 }
 
+bool Node::IsRichlyEditableForAccessibility() const {
+#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kStyleClean)
+      << "Unclean document style at lifecycle state "
+      << GetDocument().Lifecycle().ToString();
+#endif  // DCHECK_IS_ON()
+
+  return HasRichlyEditableStyle(*this);
+}
+
 void Node::NotifyPriorityScrollAnchorStatusChanged() {
   auto* node = this;
   while (node && !node->GetLayoutObject())

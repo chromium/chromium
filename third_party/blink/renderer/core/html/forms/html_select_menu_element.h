@@ -64,6 +64,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   Element* ButtonPart() const { return button_part_; }
 
+  bool IsRichlyEditableForAccessibility() const override { return false; }
+
  private:
   class SelectMutationCallback;
 

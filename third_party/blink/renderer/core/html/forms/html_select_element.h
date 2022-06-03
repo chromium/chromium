@@ -195,6 +195,8 @@ class CORE_EXPORT HTMLSelectElement final
   Element& InnerElement() const;
   AXObject* PopupRootAXObject() const;
 
+  bool IsRichlyEditableForAccessibility() const override { return false; }
+
  private:
   const AtomicString& FormControlType() const override;
 

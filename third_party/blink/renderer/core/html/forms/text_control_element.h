@@ -69,6 +69,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   void SetFocused(bool, mojom::blink::FocusType) override;
 
+  bool IsRichlyEditableForAccessibility() const override { return false; }
+
   // The derived class should return true if placeholder processing is needed.
   virtual bool IsPlaceholderVisible() const = 0;
   virtual void SetPlaceholderVisibility(bool) = 0;

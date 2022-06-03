@@ -1701,10 +1701,6 @@ bool AXNode::IsLeaf() const {
   // implementation details, but we want to expose them as leaves to platform
   // accessibility APIs because screen readers might be confused if they find
   // any children.
-  // TODO(kschmi): <input type="search" contenteditable="true"> will cause
-  // different return values here, even though 'contenteditable' has no effect.
-  // This needs to be modified from the Blink side, so 'kRichlyEditable' isn't
-  // added in this case.
   if (data().IsAtomicTextField() || IsText())
     return true;
 

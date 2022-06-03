@@ -3110,6 +3110,11 @@ bool AXNodeObject::IsEditableRoot() const {
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
+  // Catches the case where the 'contenteditable' attribute is set on an atomic
+  // text field (which shouldn't have any effect).
+  if (IsAtomicTextField())
+    return false;
+
   // The DOM inside native text fields is an implementation detail that should
   // not be exposed to platform accessibility APIs.
   if (EnclosingTextControl(node))
