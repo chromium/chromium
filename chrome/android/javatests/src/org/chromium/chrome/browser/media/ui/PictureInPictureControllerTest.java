@@ -72,6 +72,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "https://crbug.com/1332360")
     public void testFullscreenVideoDetected() throws Throwable {
         enterFullscreen();
     }
