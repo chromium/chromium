@@ -12,8 +12,6 @@
 
 class PrefRegistrySimple;
 
-class AccountId;
-
 namespace base {
 class FilePath;
 }
