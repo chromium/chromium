@@ -109,7 +109,7 @@
           </div>
         </div>
         <template is="dom-repeat" items="[[allPorts_]]"
-            filter="[[byContainerId_(containerInfo.id)]]">
+            filter="[[byContainerId_(containerInfo.id)]]" mutable-data>
           <div class="list-item">
             <div id="crostiniPort[[cidx]]-[[index]]"
                 class="start"
@@ -139,7 +139,7 @@
                 aria-label="$i18n{crostiniPortForwardingToggleAriaLabel}"
                 aria-describedby$="crostiniPort[[cidx]]-[[index]] 
                     crostiniPortLabel[[cidx]]-[[index]]"
-                disabled="{{!containerInfo.ipv4}}">
+                disabled="[[!containerInfo.ipv4]]">
             </cr-toggle>
             <cr-icon-button 
                 id="showRemoveSinglePortMenu[[cidx]]-[[index]]"

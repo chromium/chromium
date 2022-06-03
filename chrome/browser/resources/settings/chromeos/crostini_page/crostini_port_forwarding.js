@@ -84,7 +84,9 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
       allContainers_: {
         type: Array,
         notify: true,
-        value: [DEFAULT_CONTAINER_ID],
+        value() {
+          return [];
+        },
       },
 
     };
@@ -137,7 +139,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
    * @param {!Array<!ContainerInfo>} containerInfos
    */
   onContainerInfo_(containerInfos) {
-    this.allContainers_ = containerInfos;
+    this.set('allContainers_', containerInfos);
   }
 
   /**

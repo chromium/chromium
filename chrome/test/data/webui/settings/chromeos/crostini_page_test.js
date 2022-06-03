@@ -819,13 +819,15 @@ suite('CrostiniPageTests', function() {
         assertFalse(crToggle.disabled);
 
         delete allContainers[0].ipv4;
-        webUIListenerCallback('crostini-container-info', allContainers);
-        //console.log(JSON.stringify(subpage.allContainers_));
-        //console.log(crToggle.disabled);
-        // assertTrue(crToggle.disabled);
+        webUIListenerCallback(
+            'crostini-container-info', structuredClone(allContainers));
+        await flushTasks();
+        assertTrue(crToggle.disabled);
 
         allContainers[0].ipv4 = '1.2.3.4';
-        webUIListenerCallback('crostini-container-info', allContainers);
+        webUIListenerCallback(
+            'crostini-container-info', structuredClone(allContainers));
+        await flushTasks();
         assertFalse(crToggle.disabled);
       });
     });
