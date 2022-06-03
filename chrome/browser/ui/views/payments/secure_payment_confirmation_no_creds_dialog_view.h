@@ -47,8 +47,7 @@ class SecurePaymentConfirmationNoCredsDialogView
 
   // SecurePaymentConfirmationNoCredsView:
   void ShowDialog(content::WebContents* web_contents,
-                  const std::u16string& no_creds_text,
-                  const std::u16string& opt_out_link_label,
+                  base::WeakPtr<SecurePaymentConfirmationNoCredsModel> model,
                   ResponseCallback response_callback,
                   OptOutCallback opt_out_callback) override;
   void HideDialog() override;
@@ -63,10 +62,10 @@ class SecurePaymentConfirmationNoCredsDialogView
   void OnDialogClosed();
   void OnOptOutClicked();
 
-  void InitChildViews(const std::u16string& no_creds_text,
-                      const std::u16string& opt_out_link_label);
-  std::unique_ptr<views::View> CreateBodyView(
-      const std::u16string& no_creds_text);
+  void InitChildViews();
+  std::unique_ptr<views::View> CreateBodyView();
+
+  base::WeakPtr<SecurePaymentConfirmationNoCredsModel> model_;
 
   // May be null.
   raw_ptr<ObserverForTest> observer_for_test_ = nullptr;

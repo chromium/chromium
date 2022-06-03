@@ -55,6 +55,8 @@ static_library("content") {
     "secure_payment_confirmation_model.h",
     "secure_payment_confirmation_no_creds.cc",
     "secure_payment_confirmation_no_creds.h",
+    "secure_payment_confirmation_no_creds_model.cc",
+    "secure_payment_confirmation_no_creds_model.h",
     "secure_payment_confirmation_no_creds_view.cc",
     "secure_payment_confirmation_no_creds_view.h",
     "secure_payment_confirmation_view.h",
@@ -217,6 +219,7 @@ source_set("unit_tests") {
     "payment_event_response_util_unittest.cc",
     "payment_method_manifest_table_unittest.cc",
     "secure_payment_confirmation_model_unittest.cc",
+    "secure_payment_confirmation_no_creds_model_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
     "web_app_manifest_section_table_unittest.cc",
   ]

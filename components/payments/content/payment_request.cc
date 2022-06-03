@@ -654,11 +654,11 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
             ? base::BindOnce(&PaymentRequest::OnUserOptedOut,
                              weak_ptr_factory_.GetWeakPtr())
             : base::NullCallback();
-
     delegate_->ShowNoMatchingPaymentCredentialDialog(
         url_formatter::FormatUrlForSecurityDisplay(
             state_->GetTopOrigin(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+        spec_->method_data().front()->secure_payment_confirmation->rp_id,
         base::BindOnce(&PaymentRequest::OnUserCancelled,
                        weak_ptr_factory_.GetWeakPtr()),
         std::move(opt_out_callback));

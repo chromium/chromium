@@ -24,6 +24,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 
 namespace payments {
 namespace {
@@ -104,6 +105,13 @@ class SecurePaymentConfirmationDialogViewTest
     model_.set_verify_button_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
     model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
+
+    model_.set_opt_out_visible(false);
+    model_.set_opt_out_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL));
+    model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL));
+    model_.set_relying_party_id(u"relyingparty.com");
   }
 
   void InvokeSecurePaymentConfirmationUI() {
@@ -134,8 +142,17 @@ class SecurePaymentConfirmationDialogViewTest
                         ->GetText());
   }
 
-  void ExpectLinkText(const std::u16string& text, views::View* link_view) {
-    EXPECT_EQ(text, static_cast<views::Link*>(link_view)->GetText());
+  void ExpectOptOutText(views::View* view,
+                        const std::u16string& relying_party_id,
+                        const std::u16string& opt_out_link_label) {
+    // To avoid overfitting, we check only that the opt-out label contains both
+    // the relying party and the call-to-action text that is expected.
+    std::string opt_out_text =
+        base::UTF16ToUTF8(static_cast<views::StyledLabel*>(view)->GetText());
+    EXPECT_THAT(opt_out_text,
+                ::testing::HasSubstr(base::UTF16ToUTF8(relying_party_id)));
+    EXPECT_THAT(opt_out_text,
+                ::testing::HasSubstr(base::UTF16ToUTF8(opt_out_link_label)));
   }
 
   void ExpectViewMatchesModel() {
@@ -204,10 +221,12 @@ class SecurePaymentConfirmationDialogViewTest
         SecurePaymentConfirmationDialogView::DialogViewID::TOTAL_VALUE);
 
     // The Opt Out link always exists, but should only be visible if requested.
-    views::View* opt_out_view = test_delegate_->dialog_view()->GetExtraView();
+    views::View* opt_out_view =
+        test_delegate_->dialog_view()->GetFootnoteViewForTesting();
     EXPECT_NE(opt_out_view, nullptr);
-    EXPECT_EQ(opt_out_view->GetVisible(), model_.opt_out_link_visible());
-    ExpectLinkText(model_.opt_out_link_label(), opt_out_view);
+    EXPECT_EQ(opt_out_view->GetVisible(), model_.opt_out_visible());
+    ExpectOptOutText(opt_out_view, model_.relying_party_id(),
+                     model_.opt_out_link_label());
   }
 
   void ClickAcceptAndWait() {
@@ -273,17 +292,9 @@ class SecurePaymentConfirmationDialogViewTest
   void ClickOptOutAndWait() {
     ResetEventWaiter(DialogEvent::OPT_OUT_CLICKED);
 
-    ui::MouseEvent pressed_event(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
-                                  gfx::Point(), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON);
-
-    views::View* opt_out_link = test_delegate_->dialog_view()->GetExtraView();
-    opt_out_link->OnMousePressed(pressed_event);
-    opt_out_link->OnMouseReleased(pressed_event);
+    views::StyledLabel* opt_out_label = static_cast<views::StyledLabel*>(
+        test_delegate_->dialog_view()->GetFootnoteViewForTesting());
+    opt_out_label->ClickLinkForTesting();
 
     event_waiter_->Wait();
 
@@ -603,12 +614,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 
   // Make sure that by default, opt-out wasn't requested. This means that every
   // other test is correctly testing the 'no opt out' path.
-  ASSERT_FALSE(model_.opt_out_link_visible());
+  ASSERT_FALSE(model_.opt_out_visible());
 
   // Now set it to true, and invoke SPC.
-  model_.set_opt_out_link_visible(true);
-  model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
-      IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL));
+  model_.set_opt_out_visible(true);
 
   InvokeSecurePaymentConfirmationUI();
 

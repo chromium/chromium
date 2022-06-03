@@ -23,6 +23,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
@@ -213,16 +214,7 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
   UpdateLabelView(DialogViewID::TOTAL_LABEL, model_->total_label());
   UpdateLabelView(DialogViewID::TOTAL_VALUE, model_->total_value());
 
-  // This method is called both during object construction, before the modal
-  // window widget is initialized, and also later if/when the underlying model
-  // updates (at which point the widget should be initialized). DialogDelegate
-  // only allows access to GetExtraView(), which stores the opt-out link, once
-  // the Widget has been initialized.
-  //
-  // Note that we set initial visibility of the opt-out link in InitChildViews.
-  if (GetWidget()) {
-    GetExtraView()->SetVisible(model_->opt_out_link_visible());
-  }
+  opt_out_view_->SetVisible(model_->opt_out_visible());
 }
 
 void SecurePaymentConfirmationDialogView::UpdateLabelView(
@@ -237,7 +229,7 @@ void SecurePaymentConfirmationDialogView::HideDialog() {
 }
 
 bool SecurePaymentConfirmationDialogView::ClickOptOutForTesting() {
-  if (!model_->opt_out_link_visible())
+  if (!model_->opt_out_visible())
     return false;
   OnOptOutClicked();
   return true;
@@ -256,8 +248,8 @@ bool SecurePaymentConfirmationDialogView::Accept() {
   //
   // TODO(crbug.com/1325854): Even disabled this link still looks clickable
   // (underline disappears, but color doesn't change). Force style the color?
-  if (GetExtraView()->GetVisible()) {
-    GetExtraView()->SetEnabled(false);
+  if (opt_out_view_->GetVisible()) {
+    opt_out_view_->SetEnabled(false);
   }
 
   // Returning "false" to keep the dialog open after "Confirm" button is
@@ -284,15 +276,13 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
   AddChildView(CreateBodyView());
 
   // We always create the view for the Opt Out link, but show or hide it
-  // depending on whether it was requested. The visibility status can also be
-  // updated in OnModelUpdated.
-  auto opt_out_link =
-      std::make_unique<views::Link>(model_->opt_out_link_label());
-  opt_out_link->SetVisible(model_->opt_out_link_visible());
-  opt_out_link->SetCallback(
+  // depending on whether it was requested. The visibility status is set in
+  // OnModelUpdated.
+  opt_out_view_ = SetFootnoteView(CreateSecurePaymentConfirmationOptOutView(
+      model_->relying_party_id(), model_->opt_out_label(),
+      model_->opt_out_link_label(),
       base::BindRepeating(&SecurePaymentConfirmationDialogView::OnOptOutClicked,
-                          weak_ptr_factory_.GetWeakPtr()));
-  SetExtraView(std::move(opt_out_link));
+                          weak_ptr_factory_.GetWeakPtr())));
 
   InvalidateLayout();
 }

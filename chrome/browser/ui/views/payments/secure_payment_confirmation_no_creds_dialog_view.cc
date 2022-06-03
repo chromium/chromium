@@ -7,10 +7,12 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_ui_observer.h"
+#include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -37,10 +39,12 @@ SecurePaymentConfirmationNoCredsDialogView::
 
 void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
     content::WebContents* web_contents,
-    const std::u16string& no_creds_text,
-    const std::u16string& opt_out_link_label,
+    base::WeakPtr<SecurePaymentConfirmationNoCredsModel> model,
     ResponseCallback response_callback,
     OptOutCallback opt_out_callback) {
+  DCHECK(model);
+  model_ = model;
+
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
@@ -50,9 +54,9 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetDefaultButton(ui::DIALOG_BUTTON_OK);
 
-  InitChildViews(no_creds_text, opt_out_link_label);
+  InitChildViews();
 
-  SetAccessibleTitle(no_creds_text);
+  SetAccessibleTitle(model_->no_creds_text());
 
   SetAcceptCallback(base::BindOnce(
       &SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed,
@@ -79,7 +83,7 @@ void SecurePaymentConfirmationNoCredsDialogView::HideDialog() {
 }
 
 bool SecurePaymentConfirmationNoCredsDialogView::ClickOptOutForTesting() {
-  if (opt_out_callback_.is_null())
+  if (!model_->opt_out_visible())
     return false;
   OnOptOutClicked();
   return true;
@@ -107,9 +111,7 @@ void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked() {
-  // We should only have shown the opt out link if the callback was originally
-  // passed in.
-  DCHECK(!opt_out_callback_.is_null());
+  DCHECK(model_->opt_out_visible());
 
   std::move(opt_out_callback_).Run();
 
@@ -118,9 +120,7 @@ void SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked() {
   }
 }
 
-void SecurePaymentConfirmationNoCredsDialogView::InitChildViews(
-    const std::u16string& no_creds_text,
-    const std::u16string& opt_out_link_label) {
+void SecurePaymentConfirmationNoCredsDialogView::InitChildViews() {
   RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -130,14 +130,16 @@ void SecurePaymentConfirmationNoCredsDialogView::InitChildViews(
       static_cast<int>(DialogViewID::PROGRESS_BAR),
       static_cast<int>(DialogViewID::HEADER_IMAGE), /*use_cart_image=*/true));
 
-  AddChildView(CreateBodyView(no_creds_text));
+  AddChildView(CreateBodyView());
 
-  auto opt_out_link = std::make_unique<views::Link>(opt_out_link_label);
-  opt_out_link->SetVisible(!opt_out_callback_.is_null());
-  opt_out_link->SetCallback(base::BindRepeating(
-      &SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked,
-      weak_ptr_factory_.GetWeakPtr()));
-  SetExtraView(std::move(opt_out_link));
+  if (model_->opt_out_visible()) {
+    SetFootnoteView(CreateSecurePaymentConfirmationOptOutView(
+        model_->relying_party_id(), model_->opt_out_label(),
+        model_->opt_out_link_label(),
+        base::BindRepeating(
+            &SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked,
+            weak_ptr_factory_.GetWeakPtr())));
+  }
 
   InvalidateLayout();
 }
@@ -150,10 +152,9 @@ void SecurePaymentConfirmationNoCredsDialogView::InitChildViews(
 // |                                     [OK] |
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 std::unique_ptr<views::View>
-SecurePaymentConfirmationNoCredsDialogView::CreateBodyView(
-    const std::u16string& no_creds_text) {
+SecurePaymentConfirmationNoCredsDialogView::CreateBodyView() {
   std::unique_ptr<views::Label> no_matching_creds_view =
-      std::make_unique<views::Label>(no_creds_text,
+      std::make_unique<views::Label>(model_->no_creds_text(),
                                      views::style::CONTEXT_DIALOG_BODY_TEXT,
                                      views::style::STYLE_PRIMARY);
   no_matching_creds_view->SetMultiLine(true);

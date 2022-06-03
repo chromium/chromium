@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_NO_CREDS_VIEW_H_
 #define COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_NO_CREDS_VIEW_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
@@ -15,6 +13,8 @@ class WebContents;
 }  // namespace content
 
 namespace payments {
+
+class SecurePaymentConfirmationNoCredsModel;
 
 // Draws the user interface in the payment credential enrollment no matching
 // credentials flow.
@@ -27,11 +27,11 @@ class SecurePaymentConfirmationNoCredsView {
 
   virtual ~SecurePaymentConfirmationNoCredsView() = 0;
 
-  virtual void ShowDialog(content::WebContents* web_contents,
-                          const std::u16string& no_creds_text,
-                          const std::u16string& opt_out_link_label,
-                          ResponseCallback response_callback,
-                          OptOutCallback opt_out_callback) = 0;
+  virtual void ShowDialog(
+      content::WebContents* web_contents,
+      base::WeakPtr<SecurePaymentConfirmationNoCredsModel> model,
+      ResponseCallback response_callback,
+      OptOutCallback opt_out_callback) = 0;
   virtual void HideDialog() = 0;
   virtual bool ClickOptOutForTesting() = 0;
 

@@ -12,6 +12,10 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace views {
+class StyledLabel;
+}
+
 namespace payments {
 
 class PaymentUIObserver;
@@ -107,6 +111,10 @@ class SecurePaymentConfirmationDialogView
   // Cache the instrument icon generation ID to check if the instrument_icon_
   // has changed pixels.
   uint32_t instrument_icon_generation_id_ = 0;
+
+  // The opt-out view stored in the dialog footnote. This is always created in
+  // InitChildViews, but is only marked visible if opt-out was requested.
+  raw_ptr<views::StyledLabel> opt_out_view_ = nullptr;
 
   // Tracks whether or not the user clicked the 'Opt Out' button to close the
   // transaction dialog. Necessary to distinguish between a cancellation and
