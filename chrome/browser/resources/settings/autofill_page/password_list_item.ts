@@ -53,7 +53,6 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
 
   static get properties() {
     return {
-      /** Whether password notes is enabled or not. */
       isPasswordNotesEnabled_: {
         type: Boolean,
         value() {
@@ -112,6 +111,18 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     const params = new URLSearchParams();
     params.set(PasswordViewPageUrlParams.SITE, this.entry.urls.shown);
     params.set(PasswordViewPageUrlParams.USERNAME, this.entry.username);
+    // For sync'ing and signed-out users, there is strictly only one password
+    // store, and hence no need to specify store information.
+    // For account store users, a credential can exist in one or both of the
+    // device and account stores, in which case, store information is required.
+    // For consistency with the sync'ing and signed-out case, store information
+    // isn't provided when the credentials exist only in the device store.
+    if (this.entry.isPresentInAccount()) {
+      params.set(PasswordViewPageUrlParams.IN_ACCOUNT, 'true');
+      if (this.entry.isPresentOnDevice()) {
+        params.set(PasswordViewPageUrlParams.ON_DEVICE, 'true');
+      }
+    }
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
   }
 

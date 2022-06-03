@@ -57,6 +57,8 @@ export enum PasswordRemovalUrlParams {
 export enum PasswordViewPageUrlParams {
   SITE = 'site',
   USERNAME = 'username',
+  IN_ACCOUNT = 'inAccount',
+  ON_DEVICE = 'onDevice',
 }
 
 export class PasswordViewElement extends PasswordViewElementBase {
@@ -81,10 +83,14 @@ export class PasswordViewElement extends PasswordViewElementBase {
         notify: true,
       },
 
+      inAccount_: Boolean,
+
       isPasswordVisible_: {
         type: Boolean,
         value: false,
       },
+
+      onDevice_: Boolean,
 
       password_: {
         type: String,
@@ -94,6 +100,12 @@ export class PasswordViewElement extends PasswordViewElementBase {
       // <if expr="chromeos_ash or chromeos_lacros">
       showPasswordPromptDialog_: Boolean,
       // </if>
+
+      /**
+       * Used to keep the password view page open when a credential is
+       * modified. savedPasswords may take its time to update.
+       */
+      recentlyEdited_: Boolean,
 
       site: {
         type: String,
@@ -108,13 +120,19 @@ export class PasswordViewElement extends PasswordViewElementBase {
   }
 
   static get observers() {
-    return ['savedPasswordsChanged_(savedPasswords.splices, site, username)'];
+    return [
+      'savedPasswordsChanged_(savedPasswords.splices, site, username, ' +
+      'inAccount_, onDevice_)'
+    ];
   }
 
   private activeDialogAnchorStack_: Array<HTMLElement>;
   credential: MultiStorePasswordUiEntry|null;
+  private inAccount_: boolean|undefined;
   private isPasswordVisible_: boolean;
+  private onDevice_: boolean|undefined;
   private password_: string;
+  private recentlyEdited_: boolean;
   // <if expr="chromeos_ash or chromeos_lacros">
   private showPasswordPromptDialog_: boolean;
   // </if>
@@ -143,6 +161,9 @@ export class PasswordViewElement extends PasswordViewElementBase {
     if (route !== routes.PASSWORD_VIEW) {
       this.site = '';
       this.username = '';
+      this.inAccount_ = undefined;
+      this.onDevice_ = undefined;
+      this.recentlyEdited_ = false;
       this.password_ = '';
       this.credential = null;
       return;
@@ -157,6 +178,21 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.username =
         queryParameters.get(PasswordViewPageUrlParams.USERNAME) || '';
     this.site = site;
+
+    // inAccount | onDevice
+    // ----------+---------
+    // true      | -/false  : look for the credential stored in account
+    // -/false   | true     : look for the credential stored on device
+    // true      | true     : look for the credential stored in both
+    // -/false   | -/false  : look for the credential stored on device
+    if (!queryParameters.has(PasswordViewPageUrlParams.IN_ACCOUNT)) {
+      this.onDevice_ = true;
+      this.inAccount_ = false;
+      return;
+    }
+
+    this.onDevice_ = queryParameters.has(PasswordViewPageUrlParams.ON_DEVICE);
+    this.inAccount_ = queryParameters.has(PasswordViewPageUrlParams.IN_ACCOUNT);
   }
 
   override onPasswordRemoveDialogPasswordsRemoved(
@@ -249,6 +285,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   }
 
   private onSavedPasswordEdited_(event: SavedPasswordEditedEvent) {
+    this.recentlyEdited_ = true;
     const newUsername = event.detail.username;
     if (this.credential!.username === newUsername) {
       return;
@@ -330,17 +367,21 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.credential = null;
     this.password_ = '';
     this.isPasswordVisible_ = false;
-    if (!this.savedPasswords.length || !this.site) {
+    // When an observed property changes, the observer will be called. Make sure
+    // that all properties are set.
+    if (!this.savedPasswords.length ||
+        !(!!this.site && this.inAccount_ !== undefined &&
+          this.onDevice_ !== undefined)) {
       return;
     }
+    const item = this.savedPasswords.find((item: MultiStorePasswordUiEntry) => {
+      return item.urls.shown === this.site && item.username === this.username &&
+          item.isPresentInAccount() === this.inAccount_ &&
+          item.isPresentOnDevice() === this.onDevice_;
+    });
 
-    const item =
-        this.savedPasswords.find((savedPassword: MultiStorePasswordUiEntry) => {
-          return savedPassword.urls.shown === this.site &&
-              savedPassword.username === this.username;
-        });
     if (!item) {
-      if (!this.showEditDialog_) {
+      if (!this.recentlyEdited_) {
         // Rerouting might have happened due to the edited username. Do not
         // reroute back.
         Router.getInstance().navigateTo(routes.PASSWORDS);
@@ -353,6 +394,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
       this.password_ = item.federationText!;
     }
     this.showEditDialog_ = false;
+    this.recentlyEdited_ = false;
   }
 }
 
