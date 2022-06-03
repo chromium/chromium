@@ -38,3 +38,25 @@ java_library("junit") {
     "//third_party/junit:junit",
   ]
 }
+
+# On-device unit tests.
+android_library("javatests") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/back_press/BackPressManagerTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+  ]
+}

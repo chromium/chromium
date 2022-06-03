@@ -2295,31 +2295,49 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mNativeInitialized) RecordUserAction.record("SystemBack");
 
         if (!BackPressManager.isEnabled()) {
-            // TODO(crbug.com/1279941): should this stop propagating the event?
-            TextBubble.dismissBubbles();
+            if (TextBubble.getCountSupplier().get() != null
+                    && TextBubble.getCountSupplier().get() > 0) {
+                // TODO(crbug.com/1279941): should this stop propagating the event?
+                TextBubble.dismissBubbles();
+                BackPressManager.record(Type.TEXT_BUBBLE);
+            }
 
-            if (VrModuleProvider.getDelegate().onBackPressed()) return;
+            if (VrModuleProvider.getDelegate().onBackPressed()) {
+                BackPressManager.record(Type.VR_DELEGATE);
+                return;
+            };
 
             ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-            if (arDelegate != null && arDelegate.onBackPressed()) return;
+            if (arDelegate != null && arDelegate.onBackPressed()) {
+                BackPressManager.record(Type.AR_DELEGATE);
+                return;
+            };
 
             if (mCompositorViewHolderSupplier.hasValue()) {
                 LayoutManagerImpl layoutManager =
                         mCompositorViewHolderSupplier.get().getLayoutManager();
-                if (layoutManager != null && layoutManager.onBackPressed()) return;
+                if (layoutManager != null && layoutManager.onBackPressed()) {
+                    BackPressManager.record(Type.LAYOUT_MANAGER);
+                    return;
+                };
             }
 
             SelectionPopupController controller = getSelectionPopupController();
             if (controller != null && controller.isSelectActionBarShowing()) {
                 controller.clearSelection();
+                BackPressManager.record(Type.SELECTION_POPUP);
                 return;
             }
-        }
 
-        if (!BackPressManager.isEnabled()) {
-            if (getManualFillingComponent().onBackPressed()) return;
+            if (getManualFillingComponent().onBackPressed()) {
+                BackPressManager.record(Type.MANUAL_FILLING);
+                return;
+            }
 
-            if (exitFullscreenIfShowing()) return;
+            if (exitFullscreenIfShowing()) {
+                BackPressManager.record(Type.FULLSCREEN);
+                return;
+            }
         }
 
         handleBackPressed();

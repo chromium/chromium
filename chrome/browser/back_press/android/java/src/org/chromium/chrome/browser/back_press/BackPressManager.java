@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -31,6 +32,8 @@ public class BackPressManager {
         }
     };
 
+    static final String HISTOGRAM = "Android.BackPress.Intercept";
+
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
 
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
@@ -42,6 +45,14 @@ public class BackPressManager {
      */
     public static boolean isEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.BACK_GESTURE_REFACTOR);
+    }
+
+    /**
+     * Record when the back press is consumed by a certain feature.
+     * @param type The {@link Type} which consumes the back press event.
+     */
+    public static void record(@Type int type) {
+        RecordHistogram.recordEnumeratedHistogram(HISTOGRAM, type, Type.NUM_TYPES);
     }
 
     /**
@@ -115,11 +126,13 @@ public class BackPressManager {
     }
 
     private void handleBackPress() {
-        for (BackPressHandler handler : mHandlers) {
+        for (int i = 0; i < mHandlers.length; i++) {
+            BackPressHandler handler = mHandlers[i];
             if (handler == null) continue;
             Boolean enabled = handler.getHandleBackPressChangedSupplier().get();
             if (enabled != null && enabled) {
                 handler.handleBackPress();
+                record(i);
                 return;
             }
         }

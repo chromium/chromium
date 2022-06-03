@@ -2190,10 +2190,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // TODO(1091411): Find a better mechanism for back-press handling for features.
         if (!BackPressManager.isEnabled()
                 && mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
+            BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
             return true;
         }
 
-        if (!BackPressManager.isEnabled() && mTabModalHandler.onBackPressed()) return true;
+        if (!BackPressManager.isEnabled() && mTabModalHandler.onBackPressed()) {
+            BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
+            return true;
+        }
 
         final Tab currentTab = getActivityTab();
         if (currentTab == null) {
@@ -2208,21 +2212,29 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
                                 == StartSurfaceState.SHOWN_TABSWITCHER)) {
             mLayoutManager.showLayout(LayoutType.BROWSING, true);
+            BackPressManager.record(BackPressHandler.Type.TAB_SWITCHER_TO_BROWSING);
             return true;
         }
 
         final WebContents webContents = currentTab.getWebContents();
         if (webContents != null) {
             RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-            if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) return true;
+            if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) {
+                BackPressManager.record(BackPressHandler.Type.CLOSE_WATCHER);
+                return true;
+            }
         }
 
-        if (!BackPressManager.isEnabled() && getToolbarManager().back()) return true;
+        if (!BackPressManager.isEnabled() && getToolbarManager().back()) {
+            BackPressManager.record(BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
+            return true;
+        }
 
         // If we aren't in the overview mode, we handle the Tab that is opened from Start Surface.
         if (!BackPressManager.isEnabled() && !isInOverviewMode()
                 && ReturnToChromeUtil.isTabFromStartSurface(currentTab)) {
             returnToOverviewModeOnBackPressed();
+            BackPressManager.record(BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
             return true;
         }
 
@@ -2231,6 +2243,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!BackPressManager.isEnabled() && type == TabLaunchType.FROM_READING_LIST) {
             assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
             ReadingListUtils.showReadingList(currentTab.isIncognito());
+            BackPressManager.record(BackPressHandler.Type.SHOW_READING_LIST);
             if (webContents != null) webContents.dispatchBeforeUnload(false);
             return true;
         }
@@ -2249,6 +2262,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         //   exit Chrome on top of closing the tab
         final boolean minimizeApp =
                 !shouldCloseTab || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
+        BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
         if (minimizeApp) {
             if (shouldCloseTab) {
                 sendToBackground(currentTab);

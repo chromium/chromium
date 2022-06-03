@@ -652,6 +652,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BackPress.Intercept" enum="BackPressConsumer"
+    expires_after="M114">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
+  <summary>
+    Records that a specific feature intercepted the system's back press gesture.
+  </summary>
+</histogram>
+
 <histogram name="Android.BiometricAuth.AuthRequester"
     enum="BiometricAuthRequester" expires_after="M108">
   <owner>ioanap@chromium.org</owner>

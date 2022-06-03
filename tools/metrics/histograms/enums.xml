@@ -10182,6 +10182,25 @@ others/histograms.xml -->
       label="Mixed. Some steps failed, but transaction committed successfully"/>
 </enum>
 
+<enum name="BackPressConsumer">
+  <int value="0" label="TEXT_BUBBLE"/>
+  <int value="1" label="VR_DELEGATE"/>
+  <int value="2" label="AR_DELEGATE"/>
+  <int value="3" label="LAYOUT_MANAGER"/>
+  <int value="4" label="START_SURFACE_MEDIATOR"/>
+  <int value="5" label="SELECTION_POPUP"/>
+  <int value="6" label="MANUAL_FILLING"/>
+  <int value="7" label="FULLSCREEN"/>
+  <int value="8" label="BOTTOM_SHEET"/>
+  <int value="9" label="TAB_MODAL_HANDLER"/>
+  <int value="10" label="TAB_SWITCHER_TO_BROWSING"/>
+  <int value="11" label="CLOSE_WATCHER"/>
+  <int value="12" label="TOOLBAR_TAB_CONTROLLER"/>
+  <int value="13" label="TAB_RETURN_TO_CHROME_START_SURFACE"/>
+  <int value="14" label="SHOW_READING_LIST"/>
+  <int value="15" label="MINIMIZE_APP_AND_CLOSE_TAB"/>
+</enum>
+
 <enum name="BadMessageReasonAutofill">
 <!-- Generated from components/autofill/content/browser/bad_message.h.
 Called by update_bad_message_reasons.py.-->
