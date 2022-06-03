@@ -139,8 +139,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("screenStateInitialize", &CoreOobeHandler::HandleInitialized);
   AddCallback("updateCurrentScreen",
               &CoreOobeHandler::HandleUpdateCurrentScreen);
-  AddCallback("skipToLoginForTesting",
-              &CoreOobeHandler::HandleSkipToLoginForTesting);
   AddCallback("launchHelpApp", &CoreOobeHandler::HandleLaunchHelpApp);
   AddCallback("raiseTabKeyEvent", &CoreOobeHandler::HandleRaiseTabKeyEvent);
   AddCallback("startDemoModeSetupForTesting",
@@ -181,12 +179,6 @@ void CoreOobeHandler::HandleUpdateCurrentScreen(
 void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {
   if (LoginDisplayHost::default_host())
     LoginDisplayHost::default_host()->SetShelfButtonsEnabled(enable);
-}
-
-void CoreOobeHandler::HandleSkipToLoginForTesting() {
-  WizardController* controller = WizardController::default_controller();
-  if (controller && controller->is_initialized())
-    WizardController::default_controller()->SkipToLoginForTesting();
 }
 
 void CoreOobeHandler::ShowOobeUI(bool show) {

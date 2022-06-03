@@ -106,7 +106,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleEnableShelfButtons(bool enable);
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);
-  void HandleSkipToLoginForTesting();
   void HandleLaunchHelpApp(int help_topic_id);
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // `demo_config`.

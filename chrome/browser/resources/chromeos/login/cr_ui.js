@@ -122,7 +122,7 @@ cr.define('cr.ui', function() {
      * Skip to login screen for telemetry.
      */
     static skipToLoginForTesting() {
-      chrome.send('skipToLoginForTesting');
+      chrome.send('OobeTestApi.skipToLoginForTesting');
     }
 
     /**
@@ -149,7 +149,7 @@ cr.define('cr.ui', function() {
         }
       }
 
-      chrome.send('skipToLoginForTesting');
+      chrome.send('OobeTestApi.skipToLoginForTesting');
 
       if (!enterpriseEnroll) {
         chrome.send('completeLogin', [gaia_id, username, password, false]);

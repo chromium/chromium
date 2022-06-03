@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_TrapFocus) {
 // skipToLoginForTesting is called.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, SkipToLoginForTesting) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  test::ExecuteOobeJS("Oobe.skipToLoginForTesting()");
+  ash::WizardController::default_controller()->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
   EXPECT_TRUE(IdleDetectionCancelledForTesting());
