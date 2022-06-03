@@ -6,6 +6,7 @@
  * @fileoverview A collection of JavaScript utilities used to simplify working
  * with keyboard events.
  */
+import {KeySequence} from '/chromevox/common/key_sequence.js';
 
 export class KeyUtil {
   /**

@@ -7,10 +7,6 @@
  * by the user.
  */
 
-goog.provide('KeySequence');
-
-goog.require('KeyCode');
-
 /**
  * A class to represent a sequence of keys entered by a user or affiliated with
  * a ChromeVox command.
@@ -28,7 +24,7 @@ goog.require('KeyCode');
  * - Whether or not a prefix key was entered before the discrete keys.
  * - Whether sticky mode was active.
  */
-KeySequence = class {
+export class KeySequence {
   /**
    * @param {Event|Object} originalEvent The original key event entered by a
    *     user.
@@ -525,8 +521,7 @@ KeySequence = class {
       seqEvent['keyCode'] = KeyCode.INSERT;
     }
   }
-};
-
+}
 
 // TODO(dtseng): This is incomplete; pull once we have appropriate libs.
 /**

@@ -10,7 +10,7 @@ goog.require('BackgroundBridge');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('ChromeVox');
-goog.require('KeySequence');
+goog.require('KeyCode');
 goog.require('LibLouis');
 goog.require('Msgs');
 goog.require('NavBraille');

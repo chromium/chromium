@@ -15,7 +15,6 @@ goog.require('EventSourceState');
 goog.require('EventSourceType');
 goog.require('FocusBounds');
 goog.require('KeyCode');
-goog.require('KeySequence');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('Msgs');

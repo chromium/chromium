@@ -21,7 +21,6 @@ goog.require('EventSourceState');
 goog.require('ExtraCellsSpan');
 goog.require('FocusBounds');
 goog.require('KeyCode');
-goog.require('KeySequence');
 goog.require('LibLouis');
 goog.require('LibLouis.FormType');
 goog.require('LocaleOutputHelper');

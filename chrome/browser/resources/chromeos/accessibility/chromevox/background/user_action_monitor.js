@@ -6,6 +6,7 @@
  * @fileoverview Monitors user actions.
  */
 import {Output} from '/chromevox/background/output/output.js';
+import {KeySequence} from '/chromevox/common/key_sequence.js';
 
 /**
  * The types of actions we want to monitor.
