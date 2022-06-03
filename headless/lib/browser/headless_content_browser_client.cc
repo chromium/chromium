@@ -216,6 +216,9 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+  if (old_command_line.HasSwitch(switches::kDisablePDFTagging))
+    command_line->AppendSwitch(switches::kDisablePDFTagging);
+
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
       command_line->GetSwitchValueASCII(::switches::kProcessType);

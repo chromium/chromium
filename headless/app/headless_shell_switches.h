@@ -24,6 +24,7 @@ HEADLESS_EXPORT extern const char kHideScrollbars[];
 HEADLESS_EXPORT extern const char kPasswordStore[];
 HEADLESS_EXPORT extern const char kPrintToPDF[];
 HEADLESS_EXPORT extern const char kPrintToPDFNoHeader[];
+HEADLESS_EXPORT extern const char kDisablePDFTagging[];
 HEADLESS_EXPORT extern const char kProxyBypassList[];
 HEADLESS_EXPORT extern const char kProxyServer[];
 HEADLESS_EXPORT extern const char kNoSystemProxyConfigService[];
