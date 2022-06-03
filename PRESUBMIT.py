@@ -70,6 +70,13 @@ _IMPLEMENTATION_EXTENSIONS = r'\.(cc|cpp|cxx|mm)$'
 _HEADER_EXTENSIONS = r'\.(h|hpp|hxx)$'
 
 
+# Paths with sources that don't use //base.
+_NON_BASE_DEPENDENT_PATHS = (
+    r"^chrome[\\/]browser[\\/]browser_switcher[\\/]bho[\\/]",
+    r"^tools[\\/]win[\\/]",
+)
+
+
 # Regular expression that matches code only used for test binaries
 # (best effort).
 _TEST_CODE_EXCLUDED_PATHS = (
@@ -1381,15 +1388,22 @@ def CheckNoIOStreamInHeaders(input_api, output_api):
     return []
 
 
-def _CheckNoStrCatRedefines(input_api, output_api):
+def CheckNoStrCatRedefines(input_api, output_api):
     """Checks no windows headers with StrCat redefined are included directly."""
     files = []
+    files_to_check = (r'.+%s' % _HEADER_EXTENSIONS,
+                      r'.+%s' % _IMPLEMENTATION_EXTENSIONS)
+    files_to_skip = (input_api.DEFAULT_FILES_TO_SKIP +
+                     _NON_BASE_DEPENDENT_PATHS)
+    sources_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=files_to_check, files_to_skip=files_to_skip)
+
     pattern_deny = input_api.re.compile(
         r'^#include\s*[<"](shlwapi|atlbase|propvarutil|sphelper).h[">]',
         input_api.re.MULTILINE)
     pattern_allow = input_api.re.compile(
         r'^#include\s"base/win/windows_defines.inc"', input_api.re.MULTILINE)
-    for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
+    for f in input_api.AffectedSourceFiles(sources_filter):
         contents = input_api.ReadFile(f)
         if pattern_deny.search(
                 contents) and not pattern_allow.search(contents):

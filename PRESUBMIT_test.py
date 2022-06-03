@@ -3044,7 +3044,7 @@ class CheckNoDirectIncludesHeadersWhichRedefineStrCat(unittest.TestCase):
       MockFile('dir/baz.h', ['#include <atlbase.h>']),
       MockFile('dir/jumbo.h', ['#include "sphelper.h"']),
     ]
-    results = PRESUBMIT._CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
+    results = PRESUBMIT.CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
     self.assertEqual(1, len(results))
     self.assertEqual(4, len(results[0].items))
     self.assertTrue('StrCat' in results[0].message)
@@ -3059,7 +3059,7 @@ class CheckNoDirectIncludesHeadersWhichRedefineStrCat(unittest.TestCase):
       MockFile('dir/baz_win.cc', ['#include "base/win/shlwapi.h"']),
       MockFile('dir/baz-win.h', ['#include "base/win/atl.h"']),
     ]
-    results = PRESUBMIT._CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
+    results = PRESUBMIT.CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
   def testAllowsToCreateWrapper(self):
@@ -3069,7 +3069,16 @@ class CheckNoDirectIncludesHeadersWhichRedefineStrCat(unittest.TestCase):
         '#include <shlwapi.h>',
         '#include "base/win/windows_defines.inc"']),
     ]
-    results = PRESUBMIT._CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
+    results = PRESUBMIT.CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testIgnoresNonImplAndHeaders(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockFile('dir/foo_win.txt', ['#include "shlwapi.h"']),
+      MockFile('dir/bar.asm', ['#include <propvarutil.h>']),
+    ]
+    results = PRESUBMIT.CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
 
