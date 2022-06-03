@@ -941,6 +941,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FencedFrame.CreationOrNavigationOutcome"
+    enum="FencedFrameCreationOutcome" expires_after="2023-06-01">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
+  <owner>lbrady@google.com</owner>
+  <summary>
+    Records creation and navigation outcomes for a fenced frame. This is written
+    either when a fenced frame navigates successfully, or when some issue causes
+    either the creation or navigation of a fenced frame to stop.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FencedFrame.IsFrameResizedAfterSizeFrozen"
+    enum="BooleanYesNo" expires_after="2023-06-01">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
+  <owner>lbrady@google.com</owner>
+  <summary>
+    Records if a fenced frame's size is set after the size had been frozen. The
+    size of a fenced frame is frozen once it navigates to a page, and results in
+    the inner contents being scaled to fit the new dimensions without telling it
+    the frame's new size. This is only logged up to one time throughout a fenced
+    frame's life, and will not be logged if the size is never set after being
+    frozen.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FencedFrame.IsOpaqueFrameSizeCoerced"
+    enum="BooleanChanged" expires_after="2023-06-01">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
+  <owner>lbrady@google.com</owner>
+  <summary>
+    Records whether an opaque-ads fenced frame's size was changed because the
+    provided size was not in the list of allowed sizes. This will not log
+    anything for a default mode fenced frame. This will log when an opaque-ads
+    fenced frame has its size frozen (which is triggered when it navigates to
+    its first page).
+  </summary>
+</histogram>
+
 <histogram name="Blink.Fetch.ReducedUserAgent" enum="Boolean"
     expires_after="M110">
   <owner>miketaylr@chromium.org</owner>

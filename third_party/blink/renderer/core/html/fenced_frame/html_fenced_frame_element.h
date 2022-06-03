@@ -103,6 +103,19 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // while keeping the inner frame size unchanged.
   HTMLIFrameElement* InnerIFrameElement() const;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CreationOutcome {
+    kSuccessDefault = 0,  // creates/navigates in default mode
+    kSuccessOpaque = 1,   // creates/navigates in opaque ads mode
+    kSandboxFlagsNotSet = 2,
+    kIncompatibleMode = 3,
+    kInsecureContext = 4,
+    kIncompatibleURLDefault = 5,
+    kIncompatibleURLOpaque = 6,
+    kMaxValue = kIncompatibleURLOpaque
+  };
+
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`. It will be deferred if the page is currently prerendering.
@@ -168,6 +181,11 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // variable below so we can know when to reject updates to `mode_`.
   mojom::blink::FencedFrameMode mode_ = mojom::blink::FencedFrameMode::kDefault;
   bool freeze_mode_attribute_ = false;
+  // Used to track if the Blink.FencedFrame.IsFrameResizedAfterSizeFrozen
+  // histogram has already been logged for this fenced frame if its size was
+  // set after being frozen. This ensures that multiple logs don't happen
+  // for one fenced frame if it's constantly being resized.
+  bool size_set_after_freeze_ = false;
 
   friend class FencedFrameMPArchDelegate;
   friend class FencedFrameShadowDOMDelegate;

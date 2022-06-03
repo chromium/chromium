@@ -40831,6 +40831,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="CONTENT_DISMISSED"/>
 </enum>
 
+<enum name="FencedFrameCreationOutcome">
+  <int value="0" label="Success (default mode)"/>
+  <int value="1" label="Success (opaque ads mode)"/>
+  <int value="2" label="Required sandbox flags not set"/>
+  <int value="3" label="Mode incompatible with parent's mode"/>
+  <int value="4" label="Load in an insecure context"/>
+  <int value="5" label="URL is incompatible with mode=default"/>
+  <int value="6" label="URL is incompatible with mode=opaque ads"/>
+</enum>
+
 <enum name="FetchFailedReasonOrResourceRequestBlockedReason">
   <int value="0" label="kRedirectToDataUrlWithImpermissibleFetchMode"/>
   <int value="1" label="kContentSecurityPolicyViolation"/>

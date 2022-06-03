@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -150,6 +151,22 @@ double ComputeSizeLossFunction(const PhysicalSize& requested_size,
   return wasted_area_fraction + resolution_penalty;
 }
 
+void RecordCreationOutcome(
+    const HTMLFencedFrameElement::CreationOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.FencedFrame.CreationOrNavigationOutcome",
+                            outcome);
+}
+
+void RecordOpaqueSizeCoercion(bool did_coerce) {
+  UMA_HISTOGRAM_BOOLEAN("Blink.FencedFrame.IsOpaqueFrameSizeCoerced",
+                        did_coerce);
+}
+
+void RecordResizedAfterSizeFrozen() {
+  UMA_HISTOGRAM_BOOLEAN("Blink.FencedFrame.IsFrameResizedAfterSizeFrozen",
+                        true);
+}
+
 }  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
@@ -228,6 +245,7 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
             "allow-same-origin, allow-forms, allow-scripts, allow-popups, "
             "allow-popups-to-escape-sandbox and "
             "allow-top-navigation-by-user-activation."));
+    RecordCreationOutcome(CreationOutcome::kSandboxFlagsNotSet);
     return nullptr;
   }
 
@@ -277,6 +295,7 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
                 FencedFrameModeToString(outer_element->GetMode()) +
                 "' nested in a fenced frame with mode '" +
                 FencedFrameModeToString(parent_mode) + "'."));
+    RecordCreationOutcome(CreationOutcome::kIncompatibleMode);
     return nullptr;
   }
 
@@ -392,6 +411,7 @@ void HTMLFencedFrameElement::Navigate() {
         mojom::blink::ConsoleMessageLevel::kWarning,
         "A fenced frame was not loaded because the page is not in a secure "
         "context."));
+    RecordCreationOutcome(CreationOutcome::kInsecureContext);
     return;
   }
 
@@ -403,26 +423,31 @@ void HTMLFencedFrameElement::Navigate() {
         "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
             " must be navigated to an \"https\" URL, an \"http\" localhost URL,"
             " or \"about:blank\"."));
+    RecordCreationOutcome(CreationOutcome::kIncompatibleURLDefault);
     return;
   }
 
-  if (mode_ == mojom::blink::FencedFrameMode::kOpaqueAds) {
-    if (!IsValidUrnUuidURL(GURL(url)) && !IsValidFencedFrameURL(GURL(url))) {
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
-              " must be navigated to an opaque \"urn:uuid\" URL,"
-              " an \"https\" URL, an \"http\" localhost URL,"
-              " or \"about:blank\"."));
-      return;
-    }
+  if (mode_ == mojom::blink::FencedFrameMode::kOpaqueAds &&
+      !IsValidUrnUuidURL(GURL(url)) && !IsValidFencedFrameURL(GURL(url))) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
+            " must be navigated to an opaque \"urn:uuid\" URL,"
+            " an \"https\" URL, an \"http\" localhost URL,"
+            " or \"about:blank\"."));
+    RecordCreationOutcome(CreationOutcome::kIncompatibleURLOpaque);
+    return;
   }
 
   frame_delegate_->Navigate(url);
 
-  if (!frozen_frame_size_)
+  if (!frozen_frame_size_) {
     FreezeFrameSize();
+    RecordCreationOutcome(mode_ == mojom::blink::FencedFrameMode::kDefault
+                              ? CreationOutcome::kSuccessDefault
+                              : CreationOutcome::kSuccessOpaque);
+  }
 }
 
 void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
@@ -505,6 +530,7 @@ PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
   static_assert(kAllowedAdSizes.size() > 0UL);
   for (const gfx::Size& allowed_size : kAllowedAdSizes) {
     if (SizeMatchesExactly(requested_size, allowed_size)) {
+      RecordOpaqueSizeCoercion(false);
       return requested_size;
     }
   }
@@ -551,6 +577,7 @@ PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
       "A fenced frame in opaque-ads mode attempted to load with an "
       "unsupported size, and was therefore rounded to the nearest supported "
       "size."));
+  RecordOpaqueSizeCoercion(true);
 
   // The best size so far, and its loss. A lower loss represents
   // a better fit, so we will find the size that minimizes it, i.e.
@@ -655,6 +682,11 @@ void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
 }
 
 void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
+  if (frozen_frame_size_.has_value() && !size_set_after_freeze_) {
+    // Only log this once per fenced frame.
+    RecordResizedAfterSizeFrozen();
+    size_set_after_freeze_ = true;
+  }
   content_rect_ = content_rect;
   // If the size information at |FreezeFrameSize| is not complete and we
   // needed to postpone freezing until the next resize, do it now. See
