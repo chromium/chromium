@@ -124,12 +124,8 @@ class CONTENT_EXPORT ContentMainDelegate {
   // Allows the embedder to perform its own initialization after early content
   // initialization.
   //
-  // At this point, in the browser process it is possible to post to
-  // base::ThreadPool, but the tasks won't run until
-  // base::ThreadPoolInstance::Start() is called. In other processes the
-  // ThreadPool will not exist yet so it is not safe to post to it.
-  // TODO(https://crbug.com/1327069): Create the ThreadPool before this in all
-  // processes.
+  // At this point, it is possible to post to base::ThreadPool, but the tasks
+  // won't run until base::ThreadPoolInstance::Start() is called.
   //
   // It is also possible to post tasks to the main thread loop via
   // base::ThreadTaskRunnerHandle. These tasks won't run until

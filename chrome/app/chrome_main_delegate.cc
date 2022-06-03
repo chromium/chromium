@@ -10,6 +10,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/cpu_reduction_experiment.h"
@@ -29,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -579,6 +581,7 @@ ChromeMainDelegate::~ChromeMainDelegate() {
 }
 
 void ChromeMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  DCHECK(base::ThreadPoolInstance::Get());
   if (invoked_in == InvokedIn::kChildProcess) {
     CommonEarlyInitialization();
     return;

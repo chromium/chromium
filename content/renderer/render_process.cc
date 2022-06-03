@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/renderer/render_process.h"
+
 #include <utility>
 
 #include "base/feature_list.h"
-#include "content/renderer/render_process.h"
+#include "base/threading/platform_thread.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -22,11 +24,9 @@ base::ThreadPriority GetRenderIOThreadPriority() {
 }  // namespace
 
 RenderProcess::RenderProcess(
-    const std::string& thread_pool_name,
     std::unique_ptr<base::ThreadPoolInstance::InitParams>
         thread_pool_init_params)
     : ChildProcess(GetRenderIOThreadPriority(),
-                   thread_pool_name,
                    std::move(thread_pool_init_params)) {}
 
 }  // namespace content

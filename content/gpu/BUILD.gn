@@ -37,8 +37,6 @@ target(link_target_type, "gpu_sources") {
     "gpu_child_thread.h",
     "gpu_child_thread_receiver_bindings.cc",
     "gpu_main.cc",
-    "gpu_process.cc",
-    "gpu_process.h",
     "gpu_service_factory.cc",
     "gpu_service_factory.h",
     "in_process_gpu_thread.cc",

@@ -7,8 +7,8 @@
 #include "base/command_line.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/child/child_process.h"
 #include "content/gpu/gpu_child_thread.h"
-#include "content/gpu/gpu_process.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/config/gpu_preferences.h"
@@ -50,7 +50,7 @@ void InProcessGpuThread::Init() {
   io_thread_priority = base::ThreadPriority::DISPLAY;
 #endif
 
-  gpu_process_ = new GpuProcess(io_thread_priority);
+  gpu_process_ = new ChildProcess(io_thread_priority);
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   gpu_init->InitializeInProcess(base::CommandLine::ForCurrentProcess(),

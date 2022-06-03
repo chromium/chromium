@@ -64,6 +64,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // ThreadPoolInstance:
   void Start(const ThreadPoolInstance::InitParams& init_params,
              WorkerThreadObserver* worker_thread_observer) override;
+  bool WasStarted() const final;
+  bool WasStartedUnsafe() const final;
   int GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
       const TaskTraits& traits) const override;
   void Shutdown() override;

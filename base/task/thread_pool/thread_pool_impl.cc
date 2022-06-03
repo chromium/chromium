@@ -27,6 +27,7 @@
 #include "base/task/thread_pool/task_source_sort_key.h"
 #include "base/task/thread_pool/thread_group_impl.h"
 #include "base/task/thread_pool/worker_thread.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -243,6 +244,15 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   }
 
   started_ = true;
+}
+
+bool ThreadPoolImpl::WasStarted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return started_;
+}
+
+bool ThreadPoolImpl::WasStartedUnsafe() const {
+  return TS_UNCHECKED_READ(started_);
 }
 
 bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,

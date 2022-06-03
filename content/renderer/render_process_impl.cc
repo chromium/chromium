@@ -92,7 +92,7 @@ void V8DcheckCallbackHandler(const char* file, int line, const char* message) {
 namespace content {
 
 RenderProcessImpl::RenderProcessImpl()
-    : RenderProcess("Renderer", GetThreadPoolInitParams()) {
+    : RenderProcess(GetThreadPoolInitParams()) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
 #if defined(DCHECK_IS_CONFIGURABLE)

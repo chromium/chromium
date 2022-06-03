@@ -518,6 +518,19 @@ bool ShouldAllowSystemTracingConsumer() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+void CreateChildThreadPool(const std::string& process_type) {
+  // Thread pool should only be initialized once.
+  DCHECK(!base::ThreadPoolInstance::Get());
+  base::StringPiece thread_pool_name;
+  if (process_type == switches::kGpuProcess)
+    thread_pool_name = "GPU";
+  else if (process_type == switches::kRendererProcess)
+    thread_pool_name = "Renderer";
+  else
+    thread_pool_name = "ContentChild";
+  base::ThreadPoolInstance::Create(thread_pool_name);
+}
+
 }  // namespace
 
 class ContentClientCreator {
@@ -612,6 +625,8 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
 
   internal::PartitionAllocSupport::Get()->ReconfigureAfterZygoteFork(
       process_type);
+
+  CreateChildThreadPool(process_type);
 
   ContentClientInitializer::Set(process_type, delegate);
 
@@ -995,6 +1010,7 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
     if (process_type != switches::kZygoteProcess) {
       // Zygotes will run this at a later point in time when the command line
       // has been updated.
+      CreateChildThreadPool(process_type);
       if (delegate_->ShouldCreateFeatureList(InvokedIn::kChildProcess))
         InitializeFieldTrialAndFeatureList();
       delegate_->PostEarlyInitialization(InvokedIn::kChildProcess);
@@ -1053,7 +1069,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
   if (is_browser_main_loop_started_)
     return -1;
 
-  bool should_start_minimal_browser = start_minimal_browser;
   if (!mojo_ipc_support_) {
     const auto invoked_in = main_params.ui_task
                                 ? InvokedIn::kBrowserProcessUnderTest
@@ -1068,8 +1083,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       mojo::core::InitFeatures();
     }
 
-    // Create and start the ThreadPool early to allow upcoming code to use the
-    // thread_pool.h API.
+    // Create and start the ThreadPool early to allow the rest of the startup
+    // code to use the thread_pool.h API.
     const bool has_thread_pool =
         GetContentClient()->browser()->CreateThreadPool("Browser");
 
@@ -1131,7 +1146,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     AndroidBatteryMetrics::GetInstance();
 #endif
 
-    if (should_start_minimal_browser)
+    if (start_minimal_browser)
       ForceInProcessNetworkService(true);
 
     discardable_shared_memory_manager_ =
@@ -1162,7 +1177,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
   internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit("");
   internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit("");
 
-  if (should_start_minimal_browser) {
+  if (start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";
     return -1;
   }

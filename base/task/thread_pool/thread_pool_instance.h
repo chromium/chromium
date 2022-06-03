@@ -134,6 +134,15 @@ class BASE_EXPORT ThreadPoolInstance {
       const InitParams& init_params,
       WorkerThreadObserver* worker_thread_observer = nullptr) = 0;
 
+  // Returns true if Start() was called. This will continue returning true even
+  // after Shutdown() is called. Must be called on the same sequence as Start().
+  virtual bool WasStarted() const = 0;
+
+  // Same as WasStarted(), but can be called from any sequence. The caller must
+  // make sure this call is properly synchronized with Start(), to avoid
+  // undefined behavior.
+  virtual bool WasStartedUnsafe() const = 0;
+
   // Synchronously shuts down the thread pool. Once this is called, only tasks
   // posted with the BLOCK_SHUTDOWN behavior will be run. When this returns:
   // - All SKIP_ON_SHUTDOWN tasks that were already running have completed their
