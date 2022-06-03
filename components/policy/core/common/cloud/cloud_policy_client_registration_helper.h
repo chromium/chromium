@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
@@ -71,7 +72,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   void OnTokenFetched(const std::string& oauth_access_token);
 
   // UserInfoFetcher::Delegate implementation:
-  void OnGetUserInfoSuccess(const base::DictionaryValue* response) override;
+  void OnGetUserInfoSuccess(const base::Value::Dict& response) override;
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error) override;
 
   // CloudPolicyClient::Observer implementation:

@@ -206,15 +206,15 @@ absl::optional<int64_t> GetPsmDeterminationTimestamp(
 // Returns binary config which is encrypted by a password that the joining user
 // has to enter.
 std::string GetActiveDirectoryDomainJoinConfig(
-    const base::DictionaryValue* config) {
+    const base::Value::Dict* config) {
   if (!config)
     return std::string();
-  const base::Value* base64_value = config->FindKeyOfType(
-      "active_directory_domain_join_config", base::Value::Type::STRING);
+  const std::string* base64_value =
+      config->FindString("active_directory_domain_join_config");
   if (!base64_value)
     return std::string();
   std::string result;
-  if (!base::Base64Decode(base64_value->GetString(), &result)) {
+  if (!base::Base64Decode(*base64_value, &result)) {
     LOG(ERROR) << "Active Directory config is not base64";
     return std::string();
   }

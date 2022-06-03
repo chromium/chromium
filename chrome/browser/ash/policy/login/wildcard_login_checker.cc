@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/values.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -59,9 +60,9 @@ void WildcardLoginChecker::StartWithAccessToken(const std::string& access_token,
 }
 
 void WildcardLoginChecker::OnGetUserInfoSuccess(
-    const base::DictionaryValue* response) {
-  OnCheckCompleted(response->FindKey(kHostedDomainKey) ? RESULT_ALLOWED
-                                                       : RESULT_BLOCKED);
+    const base::Value::Dict& response) {
+  OnCheckCompleted(response.Find(kHostedDomainKey) ? RESULT_ALLOWED
+                                                   : RESULT_BLOCKED);
 }
 
 void WildcardLoginChecker::OnGetUserInfoFailure(

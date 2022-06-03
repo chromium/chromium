@@ -57,10 +57,6 @@ class MockCallbackObserver {
                     absl::optional<base::Value::Dict>));
 };
 
-MATCHER_P(MatchDict, expected, "matches DictionaryValue") {
-  return arg == expected;
-}
-
 class RealtimeReportingJobConfigurationTest : public testing::Test {
  public:
   RealtimeReportingJobConfigurationTest()

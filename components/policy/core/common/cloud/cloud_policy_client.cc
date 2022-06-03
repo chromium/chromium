@@ -1186,12 +1186,16 @@ void CloudPolicyClient::OnRegisterCompleted(
     dm_token_ = response.register_response().device_management_token();
     reregistration_dm_token_.clear();
     if (response.register_response().has_configuration_seed()) {
-      configuration_seed_ =
-          base::DictionaryValue::From(base::JSONReader::ReadDeprecated(
-              response.register_response().configuration_seed(),
-              base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
-      if (!configuration_seed_)
+      absl::optional<base::Value> configuration_seed = base::JSONReader::Read(
+          response.register_response().configuration_seed(),
+          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+      if (configuration_seed && configuration_seed->is_dict()) {
+        configuration_seed_ = std::make_unique<base::Value::Dict>(
+            std::move(configuration_seed->GetDict()));
+      } else {
+        configuration_seed_.reset();
         LOG(ERROR) << "Failed to parse configuration seed";
+      }
     }
     DVLOG(1) << "Client registration complete - DMToken = " << dm_token_;
 
