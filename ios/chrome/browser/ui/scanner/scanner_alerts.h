@@ -15,9 +15,9 @@ namespace scanner {
 // when the Cancel button of a UIAlertView is pressed.
 typedef void (^CancelAlertAction)(UIAlertAction* alertAction);
 
-// Returns a dialog to be displayed when the camera state is |state|.
-// |cancelBlock| is executed when the button to close the dialog is tapped. If
-// |cancelBlock| is nil, the dialog is dismissed on cancel.
+// Returns a dialog to be displayed when the camera state is `state`.
+// `cancelBlock` is executed when the button to close the dialog is tapped. If
+// `cancelBlock` is nil, the dialog is dismissed on cancel.
 UIAlertController* DialogForCameraState(CameraState state,
                                         CancelAlertAction cancelBlock);
 

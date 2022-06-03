@@ -47,10 +47,10 @@ const CGFloat kFlashDuration = 0.5;
   PreviewOverlayView* _previewOverlay;
   // The constraint specifying that the preview overlay should be square.
   NSLayoutConstraint* _overlaySquareConstraint;
-  // The constraint relating the size of the |_previewOverlay| to the width of
+  // The constraint relating the size of the `_previewOverlay` to the width of
   // the ScannerView.
   NSLayoutConstraint* _overlayWidthConstraint;
-  // The constraint relating the size of the |_previewOverlay| to the height of
+  // The constraint relating the size of the `_previewOverlay` to the height of
   // te ScannerView.
   NSLayoutConstraint* _overlayHeightConstraint;
 }
@@ -306,7 +306,7 @@ const CGFloat kFlashDuration = 0.5;
       UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
 }
 
-// Adds a preview view to |self| and configures its layout constraints.
+// Adds a preview view to `self` and configures its layout constraints.
 - (void)setupPreviewView {
   DCHECK(!_previewView);
   _previewView = [[VideoPreviewView alloc] initWithFrame:self.frame
@@ -314,7 +314,7 @@ const CGFloat kFlashDuration = 0.5;
   [self insertSubview:_previewView atIndex:0];
 }
 
-// Adds a transparent overlay with a viewport border to |self| and configures
+// Adds a transparent overlay with a viewport border to `self` and configures
 // its layout constraints.
 - (void)setupPreviewOverlayView {
   DCHECK(!_previewOverlay);

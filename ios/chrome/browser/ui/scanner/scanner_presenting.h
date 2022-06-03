@@ -9,8 +9,8 @@
 // dismissed on screen.
 @protocol ScannerPresenting
 
-// Asks the implementer to dismiss the given |controller| and call the given
-// |completion| afterwards.
+// Asks the implementer to dismiss the given `controller` and call the given
+// `completion` afterwards.
 - (void)dismissScannerViewController:(UIViewController*)controller
                           completion:(void (^)(void))completion;
 

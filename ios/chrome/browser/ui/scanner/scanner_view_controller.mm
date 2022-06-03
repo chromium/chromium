@@ -59,7 +59,7 @@ using base::UserMetricsAction;
 
   [self.view addSubview:self.scannerView];
 
-  // Constraints for |self.scannerView|.
+  // Constraints for `self.scannerView`.
   [self.scannerView setTranslatesAutoresizingMaskIntoConstraints:NO];
   [NSLayoutConstraint activateConstraints:@[
     [[self.scannerView leadingAnchor]
@@ -192,8 +192,8 @@ using base::UserMetricsAction;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-// Requests the torch mode to be set to |mode| by the |self.cameraController|
-// and the icon of the torch button to be changed by the |self.scannerView|.
+// Requests the torch mode to be set to `mode` by the `self.cameraController`
+// and the icon of the torch button to be changed by the `self.scannerView`.
 - (void)setTorchMode:(AVCaptureTorchMode)mode {
   [self.cameraController setTorchMode:mode];
 }

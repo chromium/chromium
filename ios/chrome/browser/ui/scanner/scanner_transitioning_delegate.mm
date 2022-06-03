@@ -19,10 +19,10 @@ enum ScannerTransition { PRESENT, DISMISS };
 
 }  // namespace
 
-// Animates the Scanner transition. If initialized with the |PRESENT|
+// Animates the Scanner transition. If initialized with the `PRESENT`
 // transition, positions the Scanner view below its presenting view
 // controller's view in the container view and animates the presenting view to
-// slide up. If initialized with the |DISMISS| transition, positions the
+// slide up. If initialized with the `DISMISS` transition, positions the
 // presenting view controller's view above the Scanner view in the container
 // view and animates the presenting view to slide down.
 @interface ScannerTransitionAnimator

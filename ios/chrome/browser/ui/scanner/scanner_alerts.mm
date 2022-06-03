@@ -17,7 +17,7 @@
 
 namespace {
 
-// Returns a "Cancel" UIAlertAction for the given |block|.
+// Returns a "Cancel" UIAlertAction for the given `block`.
 UIAlertAction* CancelAction(scanner::CancelAlertAction block) {
   NSString* cancelButtonTitle =
       l10n_util::GetNSString(IDS_IOS_SCANNER_ALERT_CANCEL);
@@ -26,9 +26,9 @@ UIAlertAction* CancelAction(scanner::CancelAlertAction block) {
                                 handler:block];
 }
 
-// Returns a UIAlertController with a title |title| and message |body|
+// Returns a UIAlertController with a title `title` and message `body`
 // containing a single "Cancel" button with the action specified by
-// |cancelBlock|.
+// `cancelBlock`.
 UIAlertController* AlertWithCancelButton(
     NSString* title,
     NSString* body,

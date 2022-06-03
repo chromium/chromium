@@ -48,17 +48,17 @@
 - (AVCaptureVideoPreviewLayer*)previewLayer;
 
 // Sets the state of the torch button to enabled or disabled according to the
-// value of |torchIsAvailable|.
+// value of `torchIsAvailable`.
 - (void)enableTorchButton:(BOOL)torchIsAvailable;
 
-// Sets the torch button icon to on or off based on the value of |torchIsOn|.
+// Sets the torch button icon to on or off based on the value of `torchIsOn`.
 - (void)setTorchButtonTo:(BOOL)torchIsOn;
 
 // Resets the frame of the preview layer to a CGRect with origin (0, 0) and
-// size equal to |size|.
+// size equal to `size`.
 - (void)resetPreviewFrame:(CGSize)size;
 
-// Rotates the preview layer by |angle|. Used for a transform which prevents the
+// Rotates the preview layer by `angle`. Used for a transform which prevents the
 // preview layer from rotating with the rest of the interface.
 - (void)rotatePreviewByAngle:(CGFloat)angle;
 
@@ -72,7 +72,7 @@
 // recognized.
 - (CGRect)viewportRectOfInterest;
 
-// Displays a flash animation when a result is scanned. |completion| will be
+// Displays a flash animation when a result is scanned. `completion` will be
 // called when the animation completes.
 - (void)animateScanningResultWithCompletion:(void (^)(void))completion;
 
