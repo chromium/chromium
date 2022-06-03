@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/audio_data.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/audio_stream_factory.mojom";
 import "media/mojo/mojom/media_types.mojom";

@@ -73,6 +73,7 @@ mojom("mojom") {
   }
 
   public_deps = [
+    ":audio_data",
     ":encryption_pattern",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
@@ -728,6 +729,11 @@ mojom("mojom") {
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
+}
+
+mojom("audio_data") {
+  generate_java = true
+  sources = [ "audio_data.mojom" ]
 }
 
 mojom("encryption_pattern") {

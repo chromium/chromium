@@ -6,6 +6,7 @@ module media.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
+import "media/mojo/mojom/audio_data.mojom";
 import "media/mojo/mojom/encryption_pattern.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -271,22 +272,6 @@ struct AudioBuffer {
 
   // Channel data. Will be empty for EOS buffers.
   array<uint8> data;
-};
-
-// This defines a mojo transport format for an interleaved, signed
-// 16-bit audio buffer.
-struct AudioDataS16 {
-  // Number of channels.
-  int32 channel_count;
-
-  // Sample rate of the buffer.
-  int32 sample_rate;
-
-  // Number of frames in the buffer.
-  int32 frame_count;
-
-  // Channel data.
-  array<int16> data;
 };
 
 // See media/base/video_frame_metadata.h for a description of fields.
