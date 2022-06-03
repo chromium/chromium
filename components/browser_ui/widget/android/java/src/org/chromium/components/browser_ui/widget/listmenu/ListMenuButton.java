@@ -12,6 +12,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
@@ -130,6 +132,7 @@ public class ListMenuButton
      */
     public void showMenu() {
         if (!mIsAttachedToWindow) return;
+        dismiss();
         initPopupWindow();
         mPopupMenu.show();
         notifyPopupListeners(true);
@@ -153,6 +156,11 @@ public class ListMenuButton
         menu.addContentViewClickRunnable(this::dismiss);
 
         final View contentView = menu.getContentView();
+        ViewParent viewParent = contentView.getParent();
+        // TODO(crbug.com/1323202): figure out why contentView is not removed from popup menu.
+        if (viewParent instanceof ViewGroup) {
+            ((ViewGroup) viewParent).removeView(contentView);
+        }
         mPopupMenu = new AnchoredPopupWindow(getContext(), this,
                 new ColorDrawable(Color.TRANSPARENT), contentView, mDelegate.getRectProvider(this));
         mPopupMenu.setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor);
@@ -252,5 +260,9 @@ public class ListMenuButton
                 l.onPopupMenuDismissed();
             }
         });
+    }
+
+    void setAttachedToWindowForTesting() {
+        mIsAttachedToWindow = true;
     }
 }
