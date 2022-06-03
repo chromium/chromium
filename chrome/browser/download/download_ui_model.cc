@@ -1318,12 +1318,17 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
     // Offline items have these null.
     return l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE);
   } else {
-    std::u16string total_text = ui::FormatBytes(model_->GetTotalBytes());
-    std::u16string delta_str = ui::TimeFormat::Simple(
-        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-        base::Time::Now() - model_->GetEndTime());
+    std::u16string size_text = ui::FormatBytes(model_->GetTotalBytes());
+    base::TimeDelta time_elapsed = base::Time::Now() - model_->GetEndTime();
+    std::u16string delta_str =
+        time_elapsed.InMinutes() == 0
+            ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE)
+            : ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                                     ui::TimeFormat::LENGTH_LONG, time_elapsed);
+    // If less than 1 minute has passed since download completed: "2 B • Done"
+    // Otherwise: e.g. "2 B • 3 minutes ago"
     return base::StrCat(
-        {total_text,
+        {size_text,
          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR),
          delta_str});
   }

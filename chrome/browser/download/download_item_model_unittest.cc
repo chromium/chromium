@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/download_item_reroute_info.h"
@@ -126,12 +127,12 @@ class DownloadItemModelTest : public testing::Test {
                        : DownloadItem::INTERRUPTED));
   }
 
-  void SetupCompletedDownloadItem() {
+  void SetupCompletedDownloadItem(base::TimeDelta time_since_complete) {
     ON_CALL(item_, GetFileExternallyRemoved()).WillByDefault(Return(false));
     EXPECT_CALL(item_, GetState())
         .WillRepeatedly(Return(DownloadItem::COMPLETE));
     base::Time now = base::Time::Now();
-    base::TimeDelta diff = base::Hours(23);
+    base::TimeDelta diff = time_since_complete;
     clock_.SetNow(now);
     model_.set_clock_for_testing(&clock_);
     ON_CALL(item_, GetEndTime()).WillByDefault(Return(now - diff));
@@ -590,14 +591,26 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
 
 TEST_F(DownloadItemModelTest, CompletedStatus) {
   SetupDownloadItemDefaults();
-  SetupCompletedDownloadItem();
 
-  SetStatusTextBuilder(/*for_bubble=*/false);
-  EXPECT_TRUE(model().GetStatusText().empty());
-
-  SetStatusTextBuilder(/*for_bubble=*/true);
-  EXPECT_EQ("2 B \xE2\x80\xA2 23 hours ago",
-            base::UTF16ToUTF8(model().GetStatusText()));
+  const struct TimeElapsedTestCase {
+    base::TimeDelta time_since_download_complete;
+    std::string expected_status_message;
+    std::string expected_bubble_status_msg;
+  } kTimeElapsedTestCases[] = {
+      {base::Seconds(10), "", "2 B \xE2\x80\xA2 Done"},
+      {base::Seconds(50), "", "2 B \xE2\x80\xA2 Done"},
+      {base::Seconds(60), "", "2 B \xE2\x80\xA2 1 minute ago"},
+      {base::Hours(23), "", "2 B \xE2\x80\xA2 23 hours ago"},
+  };
+  for (const auto& test_case : kTimeElapsedTestCases) {
+    SetupCompletedDownloadItem(test_case.time_since_download_complete);
+    SetStatusTextBuilder(/*for_bubble=*/false);
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_status_message);
+    SetStatusTextBuilder(/*for_bubble=*/true);
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+  }
 
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ("Show in Finder", base::UTF16ToUTF8(model().GetShowInFolderText()));
