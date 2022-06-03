@@ -1035,12 +1035,80 @@ bool CSSMathExpressionAnchorQuery::operator==(
          base::ValuesEquivalent(fallback_, other_anchor->fallback_);
 }
 
+namespace {
+
+AnchorValue CSSValueIDToAnchorValueEnum(CSSValueID value) {
+  switch (value) {
+    case CSSValueID::kTop:
+      return AnchorValue::kTop;
+    case CSSValueID::kLeft:
+      return AnchorValue::kLeft;
+    case CSSValueID::kRight:
+      return AnchorValue::kRight;
+    case CSSValueID::kBottom:
+      return AnchorValue::kBottom;
+    case CSSValueID::kStart:
+      return AnchorValue::kStart;
+    case CSSValueID::kEnd:
+      return AnchorValue::kEnd;
+    case CSSValueID::kSelfStart:
+      return AnchorValue::kSelfStart;
+    case CSSValueID::kSelfEnd:
+      return AnchorValue::kSelfEnd;
+    case CSSValueID::kCenter:
+      return AnchorValue::kCenter;
+    default:
+      NOTREACHED();
+      return AnchorValue::kCenter;
+  }
+}
+
+AnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
+  switch (value) {
+    case CSSValueID::kWidth:
+      return AnchorSizeValue::kWidth;
+    case CSSValueID::kHeight:
+      return AnchorSizeValue::kHeight;
+    case CSSValueID::kBlock:
+      return AnchorSizeValue::kBlock;
+    case CSSValueID::kInline:
+      return AnchorSizeValue::kInline;
+    case CSSValueID::kSelfBlock:
+      return AnchorSizeValue::kSelfBlock;
+    case CSSValueID::kSelfInline:
+      return AnchorSizeValue::kSelfInline;
+    default:
+      NOTREACHED();
+      return AnchorSizeValue::kSelfInline;
+  }
+}
+
+}  // namespace
+
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
-    const CSSLengthResolver&) const {
-  // TODO(crbug.com/1309178): Implement.
-  return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-      PixelsAndPercent(0, 0));
+    const CSSLengthResolver& length_resolver) const {
+  AtomicString anchor_name = anchor_name_->Value();
+  Length fallback = fallback_ ? fallback_->ConvertToLength(length_resolver)
+                              : Length::Fixed(0);
+
+  if (type_ == CSSAnchorQueryType::kAnchor) {
+    if (const CSSPrimitiveValue* percentage =
+            DynamicTo<CSSPrimitiveValue>(*value_)) {
+      DCHECK(percentage->IsPercentage());
+      return CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
+          anchor_name, percentage->GetFloatValue(), fallback);
+    }
+    const CSSIdentifierValue& side = To<CSSIdentifierValue>(*value_);
+    return CalculationExpressionAnchorQueryNode::CreateAnchor(
+        anchor_name, CSSValueIDToAnchorValueEnum(side.GetValueID()), fallback);
+  }
+
+  DCHECK_EQ(type_, CSSAnchorQueryType::kAnchorSize);
+  const CSSIdentifierValue& size = To<CSSIdentifierValue>(*value_);
+  return CalculationExpressionAnchorQueryNode::CreateAnchorSize(
+      anchor_name, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
+      fallback);
 }
 
 void CSSMathExpressionAnchorQuery::Trace(Visitor* visitor) const {
@@ -1401,6 +1469,56 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(PixelsAndPercent value) {
       op);
 }
 
+namespace {
+
+CSSValue* AnchorQueryValueToCSSValue(
+    const CalculationExpressionAnchorQueryNode& anchor_query) {
+  if (anchor_query.Type() == AnchorQueryType::kAnchor) {
+    switch (anchor_query.AnchorSide()) {
+      case AnchorValue::kTop:
+        return CSSIdentifierValue::Create(CSSValueID::kTop);
+      case AnchorValue::kLeft:
+        return CSSIdentifierValue::Create(CSSValueID::kLeft);
+      case AnchorValue::kRight:
+        return CSSIdentifierValue::Create(CSSValueID::kRight);
+      case AnchorValue::kBottom:
+        return CSSIdentifierValue::Create(CSSValueID::kBottom);
+      case AnchorValue::kStart:
+        return CSSIdentifierValue::Create(CSSValueID::kStart);
+      case AnchorValue::kEnd:
+        return CSSIdentifierValue::Create(CSSValueID::kEnd);
+      case AnchorValue::kSelfStart:
+        return CSSIdentifierValue::Create(CSSValueID::kSelfStart);
+      case AnchorValue::kSelfEnd:
+        return CSSIdentifierValue::Create(CSSValueID::kSelfEnd);
+      case AnchorValue::kCenter:
+        return CSSIdentifierValue::Create(CSSValueID::kCenter);
+      case AnchorValue::kPercentage:
+        return CSSNumericLiteralValue::Create(
+            anchor_query.AnchorSidePercentage(),
+            CSSPrimitiveValue::UnitType::kPercentage);
+    }
+  }
+
+  DCHECK_EQ(anchor_query.Type(), AnchorQueryType::kAnchorSize);
+  switch (anchor_query.AnchorSize()) {
+    case AnchorSizeValue::kWidth:
+      return CSSIdentifierValue::Create(CSSValueID::kWidth);
+    case AnchorSizeValue::kHeight:
+      return CSSIdentifierValue::Create(CSSValueID::kHeight);
+    case AnchorSizeValue::kBlock:
+      return CSSIdentifierValue::Create(CSSValueID::kBlock);
+    case AnchorSizeValue::kInline:
+      return CSSIdentifierValue::Create(CSSValueID::kInline);
+    case AnchorSizeValue::kSelfBlock:
+      return CSSIdentifierValue::Create(CSSValueID::kSelfBlock);
+    case AnchorSizeValue::kSelfInline:
+      return CSSIdentifierValue::Create(CSSValueID::kSelfInline);
+  }
+}
+
+}  // namespace
+
 // static
 CSSMathExpressionNode* CSSMathExpressionNode::Create(
     const CalculationExpressionNode& node) {
@@ -1408,6 +1526,20 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     const auto& pixels_and_percent =
         To<CalculationExpressionPixelsAndPercentNode>(node);
     return Create(pixels_and_percent.GetPixelsAndPercent());
+  }
+
+  if (node.IsAnchorQuery()) {
+    const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
+    CSSAnchorQueryType type = anchor_query.Type() == AnchorQueryType::kAnchor
+                                  ? CSSAnchorQueryType::kAnchor
+                                  : CSSAnchorQueryType::kAnchorSize;
+    CSSCustomIdentValue* anchor_name =
+        MakeGarbageCollected<CSSCustomIdentValue>(anchor_query.AnchorName());
+    CSSValue* value = AnchorQueryValueToCSSValue(anchor_query);
+    CSSPrimitiveValue* fallback = CSSPrimitiveValue::CreateFromLength(
+        anchor_query.GetFallback(), /* zoom */ 1);
+    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
+        type, *anchor_name, *value, fallback);
   }
 
   DCHECK(node.IsOperation());
