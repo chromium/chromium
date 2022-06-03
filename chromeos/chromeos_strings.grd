@@ -2748,6 +2748,19 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_TRY_AGAIN_BUTTON" desc="Default text for Try Again button used to retry an action.">
         Try again
       </message>
+      <!-- Exit dialog -->
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE" translateable="false" desc="Title for the exit dialog.">
+        Exit repair?
+      </message>
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_DESCRIPTION" translateable="false" desc="Detailed description for the exit dialog.">
+        Are you sure you want to exit?
+      </message>
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_CANCEL_BUTTON_LABEL" translateable="false" desc="Button used to close the exit dialog.">
+        Cancel
+      </message>
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_CONFIRM_BUTTON_LABEL" translateable="false" desc="Button used to confirm exiting the RMA process and close the exit dialog.">
+        Confirm
+      </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" desc="Title for the landing page at the start of RMA.">
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair

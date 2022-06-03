@@ -164,10 +164,41 @@ export function shimlessRMAAppTest() {
 
     assertFalse(initialPage.allButtonsDisabled);
     exitButton.click();
+
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+
+    const confirmExitButton =
+        component.shadowRoot.querySelector('#confirmExitDialogButton');
+    assertTrue(!!confirmExitButton);
+    confirmExitButton.click();
     await flushTasks();
 
     assertEquals(1, abortRmaCount);
     assertTrue(initialPage.allButtonsDisabled);
+  });
+
+  test('CancelExitDialog', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    let abortRmaCount = 0;
+    service.abortRma = () => {
+      abortRmaCount++;
+      return Promise.resolve(RmadErrorCode.kOk);
+    };
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-landing-page');
+    const exitButton = component.shadowRoot.querySelector('#exit');
+
+    assertFalse(initialPage.allButtonsDisabled);
+    exitButton.click();
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+    component.shadowRoot.querySelector('#cancelExitDialogButton').click();
+    assertFalse(exitDialog.open);
+    await flushTasks();
+
+    assertEquals(0, abortRmaCount);
+    assertFalse(initialPage.allButtonsDisabled);
   });
 
   test('NextButtonClickedOnReady', async () => {
@@ -360,6 +391,14 @@ export function shimlessRMAAppTest() {
     await clickExit();
     assertTrue(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
+
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+    await component.shadowRoot.querySelector('#confirmExitDialogButton')
+        .click();
+    assertTrue(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
     assertFalse(exitButtonSpinner.hidden);
 
     exitResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
@@ -422,7 +461,9 @@ export function shimlessRMAAppTest() {
         ));
 
     await flushTasks();
-    assertEquals(1, callCounter);
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+    assertEquals(0, callCounter);
   });
 
   test('TransitionStateListener', async () => {

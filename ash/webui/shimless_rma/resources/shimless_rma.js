@@ -314,7 +314,7 @@ export class ShimlessRma extends ShimlessRmaBase {
        * processed.
        * @protected
        */
-      exitButtonClicked_: {
+      confirmExitButtonClicked_: {
         type: Boolean,
         value: false,
       },
@@ -531,7 +531,7 @@ export class ShimlessRma extends ShimlessRmaBase {
     // Reset clicked variables to hide the spinners.
     this.nextButtonClicked_ = false;
     this.backButtonClicked_ = false;
-    this.exitButtonClicked_ = false;
+    this.confirmExitButtonClicked_ = false;
 
     const nextStatePageInfo = StateComponentMapping[stateResult.state];
     assert(nextStatePageInfo);
@@ -564,7 +564,7 @@ export class ShimlessRma extends ShimlessRmaBase {
       // A special case for the landing page, which has its own navigation
       // buttons.
       currentPageComponent.getStartedButtonClicked = false;
-      currentPageComponent.landingExitButtonClicked = false;
+      currentPageComponent.confirmExitButtonClicked = false;
     }
 
     this.setAllButtonsState_(
@@ -694,10 +694,9 @@ export class ShimlessRma extends ShimlessRmaBase {
 
   /** @protected */
   onExitButtonClicked_() {
-    this.exitButtonClicked_ = true;
-    this.setAllButtonsState_(
-        /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
     const page = this.shadowRoot.querySelector(this.currentPage_.componentIs);
+
+    // Don't show the exit dialog if it's on calibration failed page.
     if (page.onExitButtonClick) {
       // A special case for the calibration failed page, where the skip button
       // replaces the exit button.
@@ -707,17 +706,38 @@ export class ShimlessRma extends ShimlessRmaBase {
             this.processStateResult_(stateResult);
           })
           .catch((err) => {
-            this.exitButtonClicked_ = false;
+            this.confirmExitButtonClicked_ = false;
             this.setAllButtonsState_(
                 /* shouldDisableButtons= */ false,
                 /* showBusyStateOverlay= */ false);
           });
     } else {
-      this.shimlessRmaService_.abortRma().then((result) => {
-        this.exitButtonClicked_ = false;
-        this.handleStandardAndCriticalError_(result.error);
-      });
+      this.shadowRoot.querySelector('#exitDialog').showModal();
     }
+  }
+
+  /** @protected */
+  onConfirmExitButtonClicked_() {
+    this.confirmExitButtonClicked_ = true;
+    this.shadowRoot.querySelector('#exitDialog').close();
+
+    // Show exit button spinner on the landing page
+    const currentPageComponent =
+        this.shadowRoot.querySelector(this.currentPage_.componentIs);
+    currentPageComponent.confirmExitButtonClicked = true;
+
+    this.setAllButtonsState_(
+        /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
+
+    this.shimlessRmaService_.abortRma().then((result) => {
+      this.confirmExitButtonClicked_ = false;
+      this.handleStandardAndCriticalError_(result.error);
+    });
+  }
+
+  /** @protected */
+  closeDialog_() {
+    this.shadowRoot.querySelector('#exitDialog').close();
   }
 
   /**

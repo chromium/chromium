@@ -116,7 +116,7 @@
         [[getExitButtonLabel_(currentPage_.buttonExitLabelKey)]]
       </span>
       <paper-spinner-lite id="exitButtonSpinner" class="busy-icon"
-          hidden$="[[!exitButtonClicked_]]" active>
+          hidden$="[[!confirmExitButtonClicked_]]" active>
       </paper-spinner-lite>
     </cr-button>
     <cr-button
@@ -135,3 +135,21 @@
     </cr-button>
   </div>
 </div>
+<cr-dialog id="exitDialog">
+  <div slot="title">
+    [[i18n('exitDialogTitleText')]]
+  </div>
+  <div slot="body">
+    [[i18n('exitDialogDescriptionText')]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="cancelExitDialogButton" class="pill"
+        on-click="closeDialog_">
+      [[i18n('exitDialogCancelButtonLabel')]]
+    </cr-button>
+    <cr-button id="confirmExitDialogButton" class="action-button"
+        on-click="onConfirmExitButtonClicked_">
+      [[i18n('exitDialogConfirmButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

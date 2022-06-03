@@ -80,6 +80,13 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"cancelButtonLabel", IDS_SHIMLESS_RMA_CANCEL_BUTTON},
       {"retryButtonLabel", IDS_SHIMLESS_RMA_RETRY_BUTTON},
       {"tryAgainButtonLabel", IDS_SHIMLESS_RMA_TRY_AGAIN_BUTTON},
+      // Exit dialog
+      {"exitDialogTitleText", IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE},
+      {"exitDialogDescriptionText", IDS_SHIMLESS_RMA_EXIT_DIALOG_DESCRIPTION},
+      {"exitDialogCancelButtonLabel",
+       IDS_SHIMLESS_RMA_EXIT_DIALOG_CANCEL_BUTTON_LABEL},
+      {"exitDialogConfirmButtonLabel",
+       IDS_SHIMLESS_RMA_EXIT_DIALOG_CONFIRM_BUTTON_LABEL},
       // Landing page
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},
       {"validatingComponentsText", IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS},
