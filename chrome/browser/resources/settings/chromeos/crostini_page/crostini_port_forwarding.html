@@ -139,7 +139,7 @@
                 aria-label="$i18n{crostiniPortForwardingToggleAriaLabel}"
                 aria-describedby$="crostiniPort[[cidx]]-[[index]] 
                     crostiniPortLabel[[cidx]]-[[index]]"
-                disabled="[[!crostiniRunning_]]">
+                disabled="{{!containerInfo.ipv4}}">
             </cr-toggle>
             <cr-icon-button 
                 id="showRemoveSinglePortMenu[[cidx]]-[[index]]"

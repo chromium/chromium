@@ -152,6 +152,10 @@ void CrostiniHandler::RegisterMessages() {
       "shutdownCrostini",
       base::BindRepeating(&CrostiniHandler::HandleShutdownCrostini,
                           handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "requestContainerInfo",
+      base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
     web_ui()->RegisterMessageCallback(
         "createContainer",
@@ -160,10 +164,6 @@ void CrostiniHandler::RegisterMessages() {
     web_ui()->RegisterMessageCallback(
         "deleteContainer",
         base::BindRepeating(&CrostiniHandler::HandleDeleteContainer,
-                            handler_weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
-        "requestContainerInfo",
-        base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
                             handler_weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
         "setContainerBadgeColor",
@@ -758,9 +758,6 @@ void CrostiniHandler::HandleRequestContainerInfo(
   constexpr char kIdKey[] = "id";
   constexpr char kIpv4Key[] = "ipv4";
 
-  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-    return;
-  }
   base::Value::List container_info_list;
 
   const base::Value::List& containers =

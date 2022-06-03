@@ -59,15 +59,6 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
         notify: true,
       },
 
-      /**
-       * Whether Crostini is running.
-       * @private {boolean}
-       */
-      crostiniRunning_: {
-        type: Boolean,
-        value: false,
-      },
-
       /** @private */
       showAddPortDialog_: {
         type: Boolean,
@@ -93,7 +84,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
       allContainers_: {
         type: Array,
         notify: true,
-        value: [],
+        value: [DEFAULT_CONTAINER_ID],
       },
 
     };
@@ -127,14 +118,9 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
         'crostini-port-forwarder-active-ports-changed',
         (ports) => this.onCrostiniPortsActiveStateChanged_(ports));
     this.addWebUIListener(
-        'crostini-status-changed',
-        (isRunning) => this.onCrostiniIsRunningStateChanged_(isRunning));
-    this.addWebUIListener(
         'crostini-container-info', (infos) => this.onContainerInfo_(infos));
     CrostiniBrowserProxyImpl.getInstance().getCrostiniActivePorts().then(
         (ports) => this.onCrostiniPortsActiveStateChanged_(ports));
-    CrostiniBrowserProxyImpl.getInstance().checkCrostiniIsRunning().then(
-        (isRunning) => this.onCrostiniIsRunningStateChanged_(isRunning));
     CrostiniBrowserProxyImpl.getInstance().requestContainerInfo();
   }
 
@@ -145,14 +131,6 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   getProtocolName(protocol) {
     return Object.keys(CrostiniPortProtocol)
         .find(k => CrostiniPortProtocol[k] === protocol);
-  }
-
-  /**
-   * @param {boolean} isRunning boolean indicating if Crostini is running.
-   * @private
-   */
-  onCrostiniIsRunningStateChanged_(isRunning) {
-    this.crostiniRunning_ = isRunning;
   }
 
   /**

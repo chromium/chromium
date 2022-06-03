@@ -516,8 +516,21 @@ suite('CrostiniPageTests', function() {
 
       const allContainers = /** @type {!Array<!ContainerInfo>}*/
           ([
-            {id: {vm_name: 'termina', container_name: 'penguin'}},
-            {id: {vm_name: 'not-termina', container_name: 'not-penguin'}}
+            {
+              id: {
+                vm_name: 'termina',
+                container_name: 'penguin',
+              },
+              ipv4: '1.2.3.4',
+            },
+            {
+              id: {
+                vm_name: 'not-termina',
+                container_name: 'not-penguin',
+
+              },
+              ipv4: '1.2.3.5',
+            }
           ]);
       setup(async function() {
         crostiniBrowserProxy.portOperationSuccess = true;
@@ -548,6 +561,8 @@ suite('CrostiniPageTests', function() {
         await flushTasks();
         subpage = crostiniPage.$$('settings-crostini-port-forwarding');
         assertTrue(!!subpage);
+        assertEquals(
+            1, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
       });
 
       test('DisplayPorts', async function() {
@@ -677,11 +692,13 @@ suite('CrostiniPageTests', function() {
       });
 
 
-      test('ActivateSinglePortSucess', async function() {
+      test('ActivateSinglePortSuccess', async function() {
         assertFalse(subpage.$$('#errorToast').open);
         await flushTasks();
         subpage = crostiniPage.$$('settings-crostini-port-forwarding');
-        subpage.$$('#toggleActivationButton0-0').click();
+        const crToggle = subpage.$$('#toggleActivationButton0-0');
+        assertFalse(crToggle.disabled);
+        crToggle.click();
 
         await flushTasks();
         assertEquals(
@@ -697,6 +714,7 @@ suite('CrostiniPageTests', function() {
         subpage = crostiniPage.$$('settings-crostini-port-forwarding');
         const crToggle = subpage.$$('#toggleActivationButton1-0');
         assertTrue(!!crToggle);
+        assertFalse(crToggle.disabled);
         assertEquals(crToggle.checked, false);
         crToggle.click();
 
@@ -712,6 +730,7 @@ suite('CrostiniPageTests', function() {
         await flushTasks();
         subpage = crostiniPage.$$('settings-crostini-port-forwarding');
         const crToggle = subpage.$$('#toggleActivationButton0-0');
+        assertFalse(crToggle.disabled);
         crToggle.checked = true;
         crToggle.click();
 
@@ -795,14 +814,18 @@ suite('CrostiniPageTests', function() {
             0, subpage.shadowRoot.querySelectorAll('.list-item').length);
       });
 
-      test('CrostiniStopAndStart', async function() {
+      test('ContainerStopAndStart', async function() {
         const crToggle = subpage.$$('#toggleActivationButton0-0');
         assertFalse(crToggle.disabled);
 
-        webUIListenerCallback('crostini-status-changed', false);
-        assertTrue(crToggle.disabled);
+        delete allContainers[0].ipv4;
+        webUIListenerCallback('crostini-container-info', allContainers);
+        //console.log(JSON.stringify(subpage.allContainers_));
+        //console.log(crToggle.disabled);
+        // assertTrue(crToggle.disabled);
 
-        webUIListenerCallback('crostini-status-changed', true);
+        allContainers[0].ipv4 = '1.2.3.4';
+        webUIListenerCallback('crostini-container-info', allContainers);
         assertFalse(crToggle.disabled);
       });
     });
