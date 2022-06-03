@@ -1040,6 +1040,8 @@
 
     'tryserver.chromium.fuchsia': {
       'fuchsia-arm64-cast': 'release_trybot_fuchsia_arm64_cast',
+      'fuchsia-binary-size': 'release_fuchsia_arm64',
+      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
       'fuchsia-deterministic-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -1056,8 +1058,6 @@
       'cast_shell_linux_arm64': 'cast_arm64_release_bot',
       'cast_shell_linux_dbg': 'cast_debug_bot',
       'chromium_presubmit': 'presubmit',
-      'fuchsia-binary-size': 'release_fuchsia_arm64',
-      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia',
       'fuchsia-fyi-arm64-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-fyi-x64-rel': 'release_trybot_fuchsia',
       'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
