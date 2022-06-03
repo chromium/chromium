@@ -52,7 +52,7 @@ class FirstRunFieldTrialConfig {
       const base::FieldTrial::EntropyProvider& low_entropy_provider);
 
   // Adds a new FieldTrial group of |name| with a probability of |percentage|.
-  // |variation| defines a server-side variation configuration.
+  // |variation| defines a server-side variation configuration (non-trigger).
   void AddGroup(const std::string& name,
                 variations::VariationID variation,
                 base::FieldTrial::Probability percentage);
