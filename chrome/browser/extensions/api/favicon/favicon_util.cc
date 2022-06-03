@@ -74,8 +74,9 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
   }
 
   // Parse url. Restrict which parameters are exposed to the Extension API.
+  // pageUrl must be present.
   chrome::ParsedFaviconPath parsed;
-  if (!ParseFaviconPath(url, &parsed)) {
+  if (!ParseFaviconPath(url, &parsed) || parsed.page_url.empty()) {
     std::move(callback).Run(nullptr);
     return;
   }
