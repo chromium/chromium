@@ -229,6 +229,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeForceTabletFirstRun[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeLargeScreenSpecialScaling[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeScreenshotDirectory[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeShowBlazeyScreen[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipPostLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipToLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeTimerInterval[];
