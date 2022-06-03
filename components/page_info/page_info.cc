@@ -42,8 +42,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #endif
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "build/chromeos_buildflags.h"
 #include "components/page_info/core/features.h"
 #include "components/safe_browsing/buildflags.h"
@@ -1137,10 +1135,7 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
 void PageInfo::PresentSiteData(base::OnceClosure done) {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings) {
-    SCOPED_CRASH_KEY_STRING256("page_info", "site_scheme", site_url_.scheme());
-    base::debug::DumpWithoutCrashing();
-  } else {
+  if (settings) {
     settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
         base::BindOnce(&PageInfo::PresentSiteDataInternal,
                        weak_factory_.GetWeakPtr(), std::move(done)));
