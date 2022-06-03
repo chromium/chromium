@@ -3006,6 +3006,13 @@ const char kWebSQLAccessName[] = "Allows access to WebSQL APIs";
 const char kWebSQLAccessDescription[] =
     "The WebSQL API is enabled by default, but can be disabled here.";
 
+#if !BUILDFLAG(IS_CHROMEOS)
+const char kDmTokenDeletionName[] = "DMToken deletion";
+const char kDmTokenDeletionDescription[] =
+    "Delete the corresponding DMToken when a managed browser is deleted in "
+    "Chrome Browser Cloud Management.";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

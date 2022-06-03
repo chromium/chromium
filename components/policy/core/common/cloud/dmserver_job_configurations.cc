@@ -4,10 +4,12 @@
 
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -184,7 +186,8 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
       // The `kDeviceNotFound` response code can correspond to different DM
       // statuses depending on the contents of the response body.
       em::DeviceManagementResponse response;
-      if (response.ParseFromString(response_body) &&
+      if (base::FeatureList::IsEnabled(features::kDmTokenDeletion) &&
+          response.ParseFromString(response_body) &&
           std::find(response.error_detail().begin(),
                     response.error_detail().end(),
                     em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN) !=

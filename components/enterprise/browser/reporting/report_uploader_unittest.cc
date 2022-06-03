@@ -145,6 +145,7 @@ TEST_F(ReportUploaderTest, PersistentError) {
   EXPECT_TRUE(has_responded_);
   histogram_tester_.ExpectUniqueSample(
       kResponseMetricsName, ReportResponseMetricsStatus::kOtherError, 1);
+  ::testing::Mock::VerifyAndClearExpectations(&client_);
 }
 
 TEST_F(ReportUploaderTest, RequestTooBigError) {
