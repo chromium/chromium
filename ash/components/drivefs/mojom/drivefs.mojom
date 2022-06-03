@@ -186,7 +186,7 @@ interface DriveFsDelegate {
     HttpRequest request, pending_remote<HttpDelegate> delegate);
 };
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 struct DriveFsConfiguration {
   string user_email;
 
@@ -206,6 +206,11 @@ struct DriveFsConfiguration {
 
   [MinVersion=5]
   bool enable_verbose_logging = false;
+
+  // Whether the network service bridge is available. This is enabled on CrOS by
+  // the |drive-fs-chrome-networking| flag.
+  [MinVersion=6]
+  bool enable_cros_network = false;
 };
 
 enum AccessTokenStatus {
