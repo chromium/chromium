@@ -125,7 +125,8 @@ class WaylandEventSource : public PlatformEventSource,
   void OnTouchReleaseEvent(base::TimeTicks timestamp, PointerId id) override;
   void OnTouchMotionEvent(const gfx::PointF& location,
                           base::TimeTicks timestamp,
-                          PointerId id) override;
+                          PointerId id,
+                          EventDispatchPolicy dispatch_policy) override;
   void OnTouchCancelEvent() override;
   void OnTouchFrame() override;
   void OnTouchFocusChanged(WaylandWindow* window) override;

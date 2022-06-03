@@ -269,8 +269,9 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
     base::TimeTicks timestamp = base::TimeTicks::Now();
     auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     DCHECK_EQ(touch_pointer_ids.size(), 1u);
-    touch_delegate_->OnTouchMotionEvent(location, timestamp,
-                                        touch_pointer_ids[0]);
+    touch_delegate_->OnTouchMotionEvent(
+        location, timestamp, touch_pointer_ids[0],
+        WaylandTouch::Delegate::EventDispatchPolicy::kImmediate);
   }
 }
 
@@ -327,7 +328,8 @@ void WaylandWindowDragController::OnDragLeave() {
     // the drag event is discarded.
     touch_delegate_->OnTouchMotionEvent(
         {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp,
-        touch_pointer_ids[0]);
+        touch_pointer_ids[0],
+        WaylandTouch::Delegate::EventDispatchPolicy::kImmediate);
   }
 }
 

@@ -87,7 +87,8 @@ void WaylandTouch::Motion(void* data,
   gfx::PointF location = touch->connection_->MaybeConvertLocation(
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchMotionEvent(location, timestamp, id);
+  touch->delegate_->OnTouchMotionEvent(location, timestamp, id,
+                                       Delegate::EventDispatchPolicy::kOnFrame);
 }
 
 void WaylandTouch::Cancel(void* data, wl_touch* obj) {

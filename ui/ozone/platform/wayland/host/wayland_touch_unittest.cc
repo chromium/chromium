@@ -87,6 +87,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotion) {
 
   wl_touch_send_motion(touch_->resource(), 500, 0 /* id */,
                        wl_fixed_from_int(100), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
   CheckEventType(ui::ET_TOUCH_MOVED, event.get());
@@ -115,6 +116,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
 
   wl_touch_send_motion(touch_->resource(), 500, 0 /* id */,
                        wl_fixed_from_int(100), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
   CheckEventType(ui::ET_TOUCH_MOVED, event.get(), ui::EventPointerType::kPen);
@@ -187,8 +189,12 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
   // Now send many touches and cancel them.
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id1, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_frame(touch_->resource());
+
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id2, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_frame(touch_->resource());
+
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id3, wl_fixed_from_int(30), wl_fixed_from_int(40));
   wl_touch_send_frame(touch_->resource());
@@ -231,6 +237,7 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
 
   wl_touch_send_motion(touch_->resource(), ++timestamp, 0 /* id */,
                        wl_fixed_from_int(100), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
   Sync();
   CheckEventType(ui::ET_TOUCH_MOVED, event.get());
   EXPECT_TRUE(event->flags() & ui::EF_CONTROL_DOWN);
@@ -255,6 +262,7 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
 
   wl_touch_send_motion(touch_->resource(), ++timestamp, 0 /* id */,
                        wl_fixed_from_int(100), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
   Sync();
   CheckEventType(ui::ET_TOUCH_MOVED, event.get());
   EXPECT_FALSE(event->flags() & ui::EF_CONTROL_DOWN);

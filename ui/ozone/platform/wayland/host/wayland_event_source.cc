@@ -398,9 +398,11 @@ void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
     last_touch_stylus_tool_.erase(stylus_it);
 }
 
-void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
-                                            base::TimeTicks timestamp,
-                                            PointerId id) {
+void WaylandEventSource::OnTouchMotionEvent(
+    const gfx::PointF& location,
+    base::TimeTicks timestamp,
+    PointerId id,
+    EventDispatchPolicy dispatch_policy) {
   const auto it = touch_points_.find(id);
   // Make sure this touch point was present before.
   if (it == touch_points_.end()) {
@@ -411,7 +413,12 @@ void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
   PointerDetails details(PointerDetailsForDispatching(id));
   TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details,
                    keyboard_modifiers_);
-  DispatchEvent(&event);
+  if (dispatch_policy == DispatchPolicy::kImmediate) {
+    DispatchEvent(&event);
+  } else {
+    touch_frames_.push_front(
+        std::make_unique<TouchFrame>(event, base::NullCallback()));
+  }
 }
 
 void WaylandEventSource::OnTouchCancelEvent() {
@@ -436,12 +443,15 @@ void WaylandEventSource::OnTouchCancelEvent() {
 }
 
 void WaylandEventSource::OnTouchFrame() {
-  for (auto& touch_frame : touch_frames_) {
+  while (!touch_frames_.empty()) {
+    // It is OK/safe to pop the first queued event for processing.
+    auto touch_frame = std::move(touch_frames_.front());
+    touch_frames_.pop_front();
+
     DispatchEvent(&(touch_frame->event));
     if (!touch_frame->completion_cb.is_null())
       std::move(touch_frame->completion_cb).Run();
   }
-  touch_frames_.clear();
 }
 
 void WaylandEventSource::OnTouchFocusChanged(WaylandWindow* window) {
