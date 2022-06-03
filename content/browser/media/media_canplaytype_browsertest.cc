@@ -71,7 +71,8 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp3) {
   ExecuteTest("testMp3Variants()");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
+// TODO(https://crbug.com/1332367): Flaky.
+IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, DISABLED_CodecSupportTest_mp4) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   ExecuteTest("testMp4Variants(true)");  // has_proprietary_codecs=true
 #else
