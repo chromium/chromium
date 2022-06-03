@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/assistant_settings_impl.h"
+#include "chromeos/ash/services/assistant/assistant_settings_impl.h"
 
 #include <utility>
 
@@ -10,10 +10,10 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "chromeos/ash/services/assistant/service_context.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
-#include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 

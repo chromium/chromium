@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/assistant_host.h"
+#include "chromeos/ash/services/assistant/assistant_host.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "chromeos/services/assistant/libassistant_service_host.h"
+#include "chromeos/ash/services/assistant/libassistant_service_host.h"
 
 namespace chromeos {
 namespace assistant {

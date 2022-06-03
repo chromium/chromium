@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/media_host.h"
+#include "chromeos/ash/services/assistant/media_host.h"
 
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"

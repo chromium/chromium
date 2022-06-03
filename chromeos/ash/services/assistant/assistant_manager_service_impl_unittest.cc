@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/assistant_manager_service_impl.h"
+#include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 
 #include <string>
 #include <utility>
@@ -16,6 +16,9 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/assistant/test_support/expect_utils.h"
+#include "chromeos/ash/services/assistant/assistant_manager_service.h"
+#include "chromeos/ash/services/assistant/libassistant_service_host.h"
+#include "chromeos/ash/services/assistant/service_context.h"
 #include "chromeos/ash/services/assistant/test_support/fake_libassistant_service.h"
 #include "chromeos/ash/services/assistant/test_support/fake_service_context.h"
 #include "chromeos/ash/services/assistant/test_support/fully_initialized_assistant_state.h"
@@ -24,11 +27,8 @@
 #include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/test_support/scoped_device_actions.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/services/assistant/assistant_manager_service.h"
-#include "chromeos/services/assistant/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

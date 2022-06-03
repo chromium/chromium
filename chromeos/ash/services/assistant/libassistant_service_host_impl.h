@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_
+#ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_
+#define CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_
 
 #include <memory>
 
 #include "base/thread_annotations.h"
 #include "build/buildflag.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
-#include "chromeos/services/assistant/libassistant_service_host.h"
+#include "chromeos/ash/services/assistant/libassistant_service_host.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -47,4 +47,4 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_
+#endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_

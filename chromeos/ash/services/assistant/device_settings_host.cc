@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/device_settings_host.h"
+#include "chromeos/ash/services/assistant/device_settings_host.h"
+
 #include "ash/public/cpp/assistant/controller/assistant_notification_controller.h"
+#include "chromeos/ash/services/assistant/service_context.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
-#include "chromeos/services/assistant/service_context.h"
 
 namespace chromeos {
 namespace assistant {

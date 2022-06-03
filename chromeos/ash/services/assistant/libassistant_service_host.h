@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_
-#define CHROMEOS_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_
+#ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_
+#define CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_
 
 #include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,4 +33,4 @@ class LibassistantServiceHost {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_
+#endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_

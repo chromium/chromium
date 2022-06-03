@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/assistant_interaction_logger.h"
+#include "chromeos/ash/services/assistant/assistant_interaction_logger.h"
 
 #include <utility>
 

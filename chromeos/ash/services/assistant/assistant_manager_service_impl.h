@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_
+#ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_
+#define CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -18,11 +18,11 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/assistant/assistant_host.h"
+#include "chromeos/ash/services/assistant/assistant_manager_service.h"
+#include "chromeos/ash/services/assistant/assistant_settings_impl.h"
+#include "chromeos/ash/services/assistant/libassistant_service_host.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/services/assistant/assistant_host.h"
-#include "chromeos/services/assistant/assistant_manager_service.h"
-#include "chromeos/services/assistant/assistant_settings_impl.h"
-#include "chromeos/services/assistant/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -293,4 +293,4 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_
+#endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_

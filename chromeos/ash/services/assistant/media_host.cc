@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/media_host.h"
+#include "chromeos/ash/services/assistant/media_host.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/assistant/media_session/assistant_media_session.h"

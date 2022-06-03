@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
-#define CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
+#ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
+#define CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
 
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -154,4 +154,4 @@ class AssistantHost {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
+#endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_HOST_H_

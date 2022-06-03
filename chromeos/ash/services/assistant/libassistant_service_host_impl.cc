@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/libassistant_service_host_impl.h"
+#include "chromeos/ash/services/assistant/libassistant_service_host_impl.h"
 
 #include "base/check.h"
 #include "base/sequence_checker.h"

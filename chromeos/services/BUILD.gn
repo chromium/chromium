@@ -19,7 +19,7 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 source_set("unit_tests") {
   testonly = true
   deps = [
-    "//chromeos/services/assistant:tests",
+    "//chromeos/ash/services/assistant:tests",
     "//chromeos/services/bluetooth_config:unit_tests",
     "//chromeos/services/cros_healthd/private/cpp:unit_tests",
     "//chromeos/services/cros_healthd/public/cpp:unit_tests",

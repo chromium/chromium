@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/media_host.h"
+#include "chromeos/ash/services/assistant/media_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/cpp/features.h"

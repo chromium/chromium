@@ -16,8 +16,8 @@ static_library("test_support") {
   ]
 
   deps = [
+    "//chromeos/ash/services/assistant:lib",
     "//chromeos/assistant/internal:internal",
-    "//chromeos/services/assistant:lib",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/views:views",

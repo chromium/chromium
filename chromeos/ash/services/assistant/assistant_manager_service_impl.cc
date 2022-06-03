@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/assistant_manager_service_impl.h"
+#include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -27,21 +27,21 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/assistant/device_settings_host.h"
+#include "chromeos/ash/services/assistant/libassistant_service_host_impl.h"
+#include "chromeos/ash/services/assistant/media_host.h"
 #include "chromeos/ash/services/assistant/platform/audio_input_host_impl.h"
 #include "chromeos/ash/services/assistant/platform/audio_output_delegate_impl.h"
 #include "chromeos/ash/services/assistant/platform/platform_delegate_impl.h"
+#include "chromeos/ash/services/assistant/service_context.h"
+#include "chromeos/ash/services/assistant/timer_host.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/util/version_loader.h"
-#include "chromeos/services/assistant/device_settings_host.h"
-#include "chromeos/services/assistant/libassistant_service_host_impl.h"
-#include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
-#include "chromeos/services/assistant/service_context.h"
-#include "chromeos/services/assistant/timer_host.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_SERVICE_H_
-#define CHROMEOS_SERVICES_ASSISTANT_SERVICE_H_
+#ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_H_
+#define CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -18,8 +18,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/assistant/assistant_manager_service.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -202,4 +202,4 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_SERVICE_H_
+#endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_H_

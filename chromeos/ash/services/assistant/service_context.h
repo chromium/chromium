@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_
-#define CHROMEOS_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_
+#ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_
+#define CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_
 
 #include <string>
 
@@ -67,4 +67,4 @@ class ServiceContext {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_
+#endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_

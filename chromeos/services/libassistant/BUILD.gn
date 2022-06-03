@@ -40,7 +40,7 @@ component("libassistant") {
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
 
   # The default output name of this service, `libassistant_service.so`, already
-  # exists (as build target of //chromeos/services/assistant), so we have to
+  # exists (as build target of //chromeos/ash/services/assistant), so we have to
   # use `lib_libassistant_service.so`.
   output_name = "lib_libassistant_service"
 }
