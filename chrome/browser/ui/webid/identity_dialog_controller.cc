@@ -12,8 +12,26 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "components/infobars/core/infobar.h"
+#include "components/url_formatter/elide_url.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::string FormatUrlForDisplay(const GURL& url) {
+  std::string formatted_url_str =
+      net::IsLocalhost(url)
+          ? url.GetWithEmptyPath().spec()
+          : net::registry_controlled_domains::GetDomainAndRegistry(
+                url,
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+      GURL(url.scheme() + "://" + formatted_url_str),
+      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+}
+
+}  // namespace
 
 IdentityDialogController::IdentityDialogController() = default;
 
@@ -39,19 +57,14 @@ void IdentityDialogController::ShowAccountsDialog(
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
   rp_web_contents_ = rp_web_contents;
   on_account_selection_ = std::move(on_selected);
-  std::string rp_etld_plus_one =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          rp_web_contents_->GetLastCommittedURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  std::string idp_etld_plus_one =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          idp_url,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  std::string rp_for_display =
+      FormatUrlForDisplay(rp_web_contents_->GetLastCommittedURL());
+  std::string idp_for_display = FormatUrlForDisplay(idp_url);
 
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  account_view_->Show(rp_etld_plus_one, idp_etld_plus_one, accounts,
-                      idp_metadata, client_data, sign_in_mode);
+  account_view_->Show(rp_for_display, idp_for_display, accounts, idp_metadata,
+                      client_data, sign_in_mode);
 }
 
 void IdentityDialogController::OnAccountSelected(const Account& account) {

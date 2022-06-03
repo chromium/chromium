@@ -123,8 +123,8 @@ void SendAccessibilityEvent(views::Widget* widget,
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
-    const std::string& rp_etld_plus_one,
-    const std::string& idp_etld_plus_one,
+    const std::string& rp_for_display,
+    const std::string& idp_for_display,
     base::span<const content::IdentityRequestAccount> accounts,
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
@@ -135,7 +135,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
         on_account_selected_callback)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::Arrow::TOP_RIGHT),
-      idp_etld_plus_one_(base::UTF8ToUTF16(idp_etld_plus_one)),
+      idp_for_display_(base::UTF8ToUTF16(idp_for_display)),
       brand_text_color_(idp_metadata.brand_text_color),
       brand_background_color_(idp_metadata.brand_background_color),
       tab_strip_model_(tab_strip_model),
@@ -159,7 +159,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       kTopBottomPadding));
   std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-      base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_);
+      base::UTF8ToUTF16(rp_for_display), idp_for_display_);
   bool has_icon = idp_metadata.brand_icon_url.is_valid();
   header_view_ = AddChildView(CreateHeaderView(title, has_icon));
   AddChildView(std::make_unique<views::Separator>());
@@ -293,7 +293,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     // Case for both the privacy policy and terms of service URLs are missing.
     std::u16string disclosure_text = l10n_util::GetStringFUTF16(
         IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS,
-        {idp_etld_plus_one_});
+        {idp_for_display_});
     disclosure_label->SetText(disclosure_text);
     return row;
   }
@@ -304,7 +304,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     // 'terms of service' in order to style that text as a link.
     std::u16string disclosure_text = l10n_util::GetStringFUTF16(
         IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP,
-        {idp_etld_plus_one_, std::u16string(), std::u16string()}, &offsets);
+        {idp_for_display_, std::u16string(), std::u16string()}, &offsets);
     disclosure_label->SetText(disclosure_text);
     // Add link styling for terms of service url.
     disclosure_label->AddStyleRange(
@@ -322,7 +322,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     // 'privacy policy' in order to style that text as a link.
     std::u16string disclosure_text = l10n_util::GetStringFUTF16(
         IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS,
-        {idp_etld_plus_one_, std::u16string(), std::u16string()}, &offsets);
+        {idp_for_display_, std::u16string(), std::u16string()}, &offsets);
     disclosure_label->SetText(disclosure_text);
     // Add link styling for privacy policy url.
     disclosure_label->AddStyleRange(
@@ -338,7 +338,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // 'privacy policy' and 'terms of service' in order to style both of them as
   // links.
   std::vector<std::u16string> replacements = {
-      idp_etld_plus_one_, std::u16string(), std::u16string(), std::u16string(),
+      idp_for_display_, std::u16string(), std::u16string(), std::u16string(),
       std::u16string()};
   std::u16string disclosure_text = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT, replacements, &offsets);

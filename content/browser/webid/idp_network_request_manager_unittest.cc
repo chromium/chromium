@@ -421,6 +421,49 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
   EXPECT_TRUE(accounts.empty());
 }
 
+TEST_F(IdpNetworkRequestManagerTest, ComputeManifestListUrl) {
+  EXPECT_EQ("https://localhost:8000/.well-known/fedcm.json",
+            IdpNetworkRequestManager::ComputeManifestListUrl(
+                GURL("https://localhost:8000/test/"))
+                ->spec());
+
+  EXPECT_EQ("https://google.com/.well-known/fedcm.json",
+            IdpNetworkRequestManager::ComputeManifestListUrl(
+                GURL("https://www.google.com:8000/test/"))
+                ->spec());
+
+  EXPECT_EQ(absl::nullopt, IdpNetworkRequestManager::ComputeManifestListUrl(
+                               GURL("https://192.101.0.1/test/")));
+}
+
+// Test that IdpNetworkRequestManager::FetchManifestList() fails when the
+// identity provider domain is empty.
+TEST_F(IdpNetworkRequestManagerTest, FetchManifestListIllegalDomainFails) {
+  GURL illegal_idp_url("https://192.101.0.1/test/");
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  auto network_manager = std::make_unique<IdpNetworkRequestManager>(
+      illegal_idp_url, url::Origin::Create(GURL(kTestRpUrl)),
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory),
+      network::mojom::ClientSecurityState::New());
+
+  std::string manifest_list_contents =
+      "({\"provider_urls\": [\"" + illegal_idp_url.spec() + "\"]})";
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus fetch_status, const std::set<GURL>& urls) {
+        EXPECT_EQ(FetchStatus::kHttpNotFoundError, fetch_status);
+        run_loop.Quit();
+      });
+  network_manager->FetchManifestList(std::move(callback));
+  run_loop.Run();
+
+  // Manifest list download should not have been attempted.
+  EXPECT_EQ(0, test_url_loader_factory.NumPending());
+}
+
 TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
   FetchStatus fetch_status;
   std::set<GURL> urls;

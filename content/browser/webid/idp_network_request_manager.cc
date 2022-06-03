@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -25,7 +26,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
@@ -316,6 +316,9 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 FetchStatus GetResponseError(network::SimpleURLLoader* url_loader,
                              std::string* response_body) {
+  if (!url_loader)
+    return FetchStatus::kHttpNotFoundError;
+
   int response_code = -1;
   auto* response_info = url_loader->ResponseInfo();
   if (response_info && response_info->headers)
@@ -410,6 +413,26 @@ GURL IdpNetworkRequestManager::FixupProviderUrl(const GURL& url) {
   return target_url;
 }
 
+// static
+absl::optional<GURL> IdpNetworkRequestManager::ComputeManifestListUrl(
+    const GURL& provider) {
+  GURL manifest_list_url;
+  if (net::IsLocalhost(provider)) {
+    manifest_list_url = provider.GetWithEmptyPath();
+  } else {
+    std::string etld_plus_one = GetDomainAndRegistry(
+        provider, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    if (etld_plus_one.empty())
+      return absl::nullopt;
+    manifest_list_url = GURL(provider.scheme() + "://" + etld_plus_one);
+  }
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(kManifestListPath);
+  return manifest_list_url.ReplaceComponents(replacements);
+}
+
 void IdpNetworkRequestManager::FetchManifestList(
     FetchManifestListCallback callback) {
   DCHECK(!manifest_list_url_loader_);
@@ -417,11 +440,17 @@ void IdpNetworkRequestManager::FetchManifestList(
 
   manifest_list_callback_ = std::move(callback);
 
-  std::string etld_plus_one = GetDomainAndRegistry(
-      provider_, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  GURL url(provider_.scheme() + "://" + etld_plus_one + kManifestListPath);
+  absl::optional<GURL> manifest_list_url =
+      IdpNetworkRequestManager::ComputeManifestListUrl(provider_);
+
+  if (!manifest_list_url) {
+    OnManifestListLoaded(nullptr);
+    return;
+  }
+
   manifest_list_url_loader_ = CreateUncredentialedUrlLoader(
-      url, /* send_referrer= */ false, /* follow_redirects= */ true);
+      *manifest_list_url, /* send_referrer= */ false,
+      /* follow_redirects= */ true);
   manifest_list_url_loader_->DownloadToString(
       loader_factory_.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnManifestListLoaded,

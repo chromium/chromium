@@ -108,8 +108,8 @@ public class AccountSelectionViewTest {
             mModel.set(ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
+                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .build());
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
@@ -128,8 +128,8 @@ public class AccountSelectionViewTest {
             mModel.set(ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
+                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .build());
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
@@ -226,8 +226,8 @@ public class AccountSelectionViewTest {
             mModel.set(ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
+                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .build());
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
@@ -331,7 +331,7 @@ public class AccountSelectionViewTest {
     private PropertyModel buildDataSharingConsentItem(String idpEtldPlusOne) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
-        properties.mFormattedIdpEtldPlusOne = idpEtldPlusOne;
+        properties.mIdpForDisplay = idpEtldPlusOne;
         properties.mTermsOfServiceUrl = "https://rp.com/tos";
         properties.mPrivacyPolicyUrl = "https://rp.com/privacy";
 

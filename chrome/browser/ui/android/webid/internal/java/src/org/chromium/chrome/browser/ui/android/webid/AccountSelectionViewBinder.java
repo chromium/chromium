@@ -188,8 +188,8 @@ class AccountSelectionViewBinder {
             } else {
                 consentTextId = R.string.account_selection_data_sharing_consent;
             }
-            String consentText = String.format(
-                    context.getString(consentTextId), properties.mFormattedIdpEtldPlusOne);
+            String consentText =
+                    String.format(context.getString(consentTextId), properties.mIdpForDisplay);
 
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
             if (privacyPolicySpan != null) {
@@ -322,15 +322,14 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE
-                || key == HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE
+        if (key == HeaderProperties.RP_FOR_DISPLAY || key == HeaderProperties.IDP_FOR_DISPLAY
                 || key == HeaderProperties.TYPE) {
             Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
             String title = computeHeaderTitle(resources, headerType,
-                    model.get(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE),
-                    model.get(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE));
+                    model.get(HeaderProperties.RP_FOR_DISPLAY),
+                    model.get(HeaderProperties.IDP_FOR_DISPLAY));
             headerTitleText.setText(title);
 
             // Make instructions for closing the bottom sheet part of the header's content

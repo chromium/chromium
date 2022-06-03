@@ -27,8 +27,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
-      const std::string& rp_etld_plus_one,
-      const std::string& idp_etld_plus_one,
+      const std::string& rp_for_display,
+      const std::string& idp_for_display,
       base::span<const content::IdentityRequestAccount> accounts,
       const content::IdentityProviderMetadata& idp_metadata,
       const content::ClientIdData& client_data,
@@ -105,7 +105,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // Used in various messages so the user is aware of who the IDP is.
-  std::u16string idp_etld_plus_one_;
+  std::u16string idp_for_display_;
 
   // Used in single account chooser to determine the look of the consent button.
   absl::optional<SkColor> brand_text_color_;
