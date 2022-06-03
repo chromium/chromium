@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/scoped_add_feature_flags.h"
+#include "android_webview/browser/scoped_add_feature_flags.h"
 
 #include <string>
 
@@ -11,7 +11,9 @@
 #include "base/feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
+using base::CommandLine;
+
+namespace android_webview {
 
 TEST(ScopedAddFeatureFlags, ConflictWithExistingFlags) {
   CommandLine command_line(CommandLine::NO_PROGRAM);
@@ -20,12 +22,14 @@ TEST(ScopedAddFeatureFlags, ConflictWithExistingFlags) {
   command_line.AppendSwitchASCII(switches::kDisableFeatures,
                                  "ExistingDisabledFoo,ExistingDisabledBar");
 
-  const Feature kExistingEnabledFoo{"ExistingEnabledFoo",
-                                    FEATURE_DISABLED_BY_DEFAULT};
-  const Feature kExistingDisabledFoo{"ExistingDisabledFoo",
-                                     FEATURE_DISABLED_BY_DEFAULT};
-  const Feature kEnabledBaz{"EnabledBaz", FEATURE_DISABLED_BY_DEFAULT};
-  const Feature kDisabledBaz{"DisabledBaz", FEATURE_DISABLED_BY_DEFAULT};
+  const base::Feature kExistingEnabledFoo{"ExistingEnabledFoo",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+  const base::Feature kExistingDisabledFoo{"ExistingDisabledFoo",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+  const base::Feature kEnabledBaz{"EnabledBaz",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+  const base::Feature kDisabledBaz{"DisabledBaz",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
   {
     ScopedAddFeatureFlags scoped_add(&command_line);
     scoped_add.EnableIfNotSet(kExistingEnabledFoo);
@@ -46,10 +50,10 @@ TEST(ScopedAddFeatureFlags, FlagWithParameter) {
   CommandLine command_line(CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kEnableFeatures,
                                  "ExistingEnabledFoo");
-  const Feature kExistingEnabledFoo{"ExistingEnabledFoo",
-                                    FEATURE_DISABLED_BY_DEFAULT};
-  const Feature kFeatureWithParameter{"FeatureWithParam",
-                                      FEATURE_DISABLED_BY_DEFAULT};
+  const base::Feature kExistingEnabledFoo{"ExistingEnabledFoo",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+  const base::Feature kFeatureWithParameter{"FeatureWithParam",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
   {
     ScopedAddFeatureFlags scoped_add(&command_line);
@@ -64,4 +68,4 @@ TEST(ScopedAddFeatureFlags, FlagWithParameter) {
             command_line.GetSwitchValueASCII(switches::kEnableFeatures));
 }
 
-}  // namespace base
+}  // namespace android_webview
