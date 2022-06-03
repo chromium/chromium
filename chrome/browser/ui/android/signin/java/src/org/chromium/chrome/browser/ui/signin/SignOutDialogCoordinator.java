@@ -104,7 +104,7 @@ public class SignOutDialogCoordinator {
             case ActionType.REVOKE_SYNC_CONSENT:
                 return R.string.turn_off_sync_title;
             case ActionType.CLEAR_PRIMARY_ACCOUNT:
-                return R.string.signout_title;
+                return R.string.turn_off_sync_and_signout_title;
             default:
                 throw new IllegalArgumentException(
                         "Unexpected value for actionType: " + actionType);

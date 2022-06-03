@@ -164,6 +164,8 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
-        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.turn_off_sync_and_signout_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 }

@@ -1902,7 +1902,7 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
 
       <!-- Sign-in strings -->
-      <message name="IDS_SIGNOUT_TITLE" desc="Title for sign out of Chrome dialog [CHAR_LIMIT=40]">
+      <message name="IDS_TURN_OFF_SYNC_AND_SIGNOUT_TITLE" desc="Title for sign out of Chrome dialog [CHAR_LIMIT=40]">
         Sign out and turn off sync?
       </message>
       <message name="IDS_TURN_OFF_SYNC_TITLE" desc="Title for turn off sync dialog [CHAR_LIMIT=40]">
@@ -1911,7 +1911,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGNOUT_MANAGED_ACCOUNT_TITLE" desc="Title for sign out of Chrome dialog for enterprise account [CHAR_LIMIT=40]">
         Clear your Chrome data from this device?
       </message>
-      <message name="IDS_SIGNOUT_MESSAGE" desc="Message to display in 'Sign out and turn off sync?' dialog">
+      <message name="IDS_TURN_OFF_SYNC_AND_SIGNOUT_MESSAGE" desc="Message to display in 'Sign out and turn off sync?' dialog">
         Your bookmarks, history, passwords, and other Chrome data will no longer be synced to your Google Account
       </message>
       <message name="IDS_REMOVE_LOCAL_DATA" desc="Checkbox to delete all existing data in local device storage">

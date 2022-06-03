@@ -235,7 +235,9 @@ public class ManageSyncSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.turn_off_sync_and_signout_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test
