@@ -280,11 +280,11 @@ static_library("browser") {
   ]
   deps = [
     ":affiliation",
+    ":affiliation_proto",
     ":csv",
     ":hash_password_manager",
     ":password_generator",
     ":password_hash_data",
-    ":proto",
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
@@ -342,6 +342,7 @@ static_library("browser") {
       "password_store_proxy_backend.cc",
       "password_store_proxy_backend.h",
     ]
+    deps += [ ":unified_password_manager_proto" ]
   }
 
   if (!is_ios) {
@@ -480,7 +481,7 @@ if (is_android) {
   }
 }
 
-fuzzable_proto_library("proto") {
+fuzzable_proto_library("affiliation_proto") {
   sources = [ "android_affiliation/affiliation_api.proto" ]
 }
 
@@ -794,7 +795,7 @@ source_set("unit_tests") {
     "//components/favicon/core/test:test_support",
     "//components/os_crypt",
     "//components/os_crypt:test_support",
-    "//components/password_manager/core/browser:proto",
+    "//components/password_manager/core/browser:affiliation_proto",
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/password_manager/core/browser/form_parsing:unit_tests",
     "//components/password_manager/core/browser/form_parsing/fuzzer:unit_tests",
@@ -856,8 +857,8 @@ if (use_libfuzzer) {
     sources =
         [ "android_affiliation/lookup_affiliation_response_parser_fuzzer.cc" ]
     deps = [
+      ":affiliation_proto",
       ":browser",
-      ":proto",
       "//base:base",
       "//base:i18n",
       "//third_party/libprotobuf-mutator",
@@ -904,4 +905,26 @@ source_set("affiliation_unittests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  fuzzable_proto_library("unified_password_manager_proto") {
+    sources = [
+      "protos/list_passwords_result.proto",
+      "protos/password_with_local_data.proto",
+    ]
+    deps = [ "//components/sync/protocol" ]
+    proto_in_dir = "//"
+  }
+
+  proto_java_library("unified_password_manager_proto_java") {
+    proto_path = "//"
+    sources = [
+      "protos/list_passwords_result.proto",
+      "protos/password_with_local_data.proto",
+    ]
+    deps = [ "//components/sync/protocol:protocol_java" ]
+  }
 }
