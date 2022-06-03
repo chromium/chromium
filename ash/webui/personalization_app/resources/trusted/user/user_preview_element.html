@@ -96,14 +96,17 @@
   }
 
   #iconContainer {
+    align-items: center;
     background-color: var(--cros-icon-color-prominent);
     cursor: pointer;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
     z-index: 1;
   }
 
-  #iconContainer iron-icon {
-    padding-block-start: 3px;
-    padding-inline-start: 4px;
+  #iconContainer > svg {
+    fill: var(--cros-button-label-color-primary);
   }
 
   /** TODO(b/231359911) find suitable semantic colors for enterprise icon. */
@@ -143,7 +146,11 @@
         <div id="iconContainer"
             on-click="onClickUserSubpageLink_"
             on-keypress="onClickUserSubpageLink_">
-          <iron-icon icon="personalization:pencil"></iron-icon>
+          <svg viewBox="0 0 16 16" width="16" height="16">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M13.5575 3.45125L12.545 2.43875C11.96 1.85375 11.0075 1.85375 10.4225 2.43875L8.3 4.55375L2 10.8612V13.9962H5.135L13.5575 5.57375C14.15 4.98875 14.15 4.03625 13.5575 3.45125ZM3.5 12.4963V11.4763L9.365 5.61125L10.4225 6.66875L4.5575 12.5413L3.5 12.4963Z">
+            </path>
+          </svg>
         </div>
         <paper-ripple class="circle"></paper-ripple>
         <img tabindex="0" id="avatar" class="clickable" src$="[[imageUrl_.url]]"
