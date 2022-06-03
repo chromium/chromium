@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_helpers.h"
+#include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/platform_util.h"
@@ -629,9 +630,16 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
     urls.push_back(node->url());
   }
 
+  std::string error;
+  windows_util::IncognitoResult incognito_result =
+      windows_util::ShouldOpenIncognitoWindow(calling_profile,
+                                              params->incognito, &urls, &error);
+  if (incognito_result == windows_util::IncognitoResult::kError)
+    return Error(std::move(error));
+
   DCHECK(!calling_profile->IsOffTheRecord());
   Profile* window_profile =
-      params->incognito
+      incognito_result == windows_util::IncognitoResult::kIncognito
           ? calling_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : calling_profile;
 

@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_WINDOWS_UTIL_H__
 
 #include <string>
+#include <vector>
 
 #include "chrome/browser/extensions/window_controller_list.h"
 
 class ExtensionFunction;
+class Profile;
+class GURL;
 
 namespace extensions {
 class WindowController;
@@ -34,6 +37,20 @@ bool GetBrowserFromWindowID(ExtensionFunction* function,
 bool CanOperateOnWindow(const ExtensionFunction* function,
                         const extensions::WindowController* controller,
                         extensions::WindowController::TypeFilter filter);
+
+// Enum return value for `ShouldOpenIncognitoWindow`, indicating whether to use
+// incognito or the presence of an error.
+enum IncognitoResult { kRegular, kIncognito, kError };
+
+// Returns whether the window should be created in incognito mode. `incognito`
+// is the optional caller preference. `urls` is the list of urls to open. If
+// we are creating an incognito window, the function will remove these urls
+// which may not be opened in incognito mode.  If window creation leads the
+// browser into an erroneous state, `error` is populated.
+IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
+                                          absl::optional<bool> incognito,
+                                          std::vector<GURL>* urls,
+                                          std::string* error);
 
 }  // namespace windows_util
 
