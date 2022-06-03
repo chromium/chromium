@@ -2668,7 +2668,14 @@ message CollectUserDataProto {
   }
 
   // Specifies information about the data source to be used.
-  message DataSource {}
+  message DataSource {
+    // If enabled and the user data request fails, fall back to the Chrome
+    // Autofill data instead where possible. E.g. in WebLayer this setting is
+    // ignored (Chrome Autofill data is not available). If this is false, the
+    // action will fail if the user data request fails, even if Chrome Autofill
+    // data would have been available.
+    optional bool allow_fallback = 1 [default = true];
+  }
 
   optional string prompt = 1;
   // NOTE: The action does not ask separately for billing address.

@@ -609,10 +609,15 @@ void CollectUserDataAction::UpdateUserData(UserData* user_data) {
     delegate_->RequestUserData(
         UserDataEventField::NONE, *collect_user_data_options_,
         base::BindOnce(&CollectUserDataAction::OnRequestUserData,
-                       weak_ptr_factory_.GetWeakPtr(), user_data));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /* is_initial_request= */ true, user_data));
     return;
   }
 
+  UseChromeData(user_data);
+}
+
+void CollectUserDataAction::UseChromeData(UserData* user_data) {
   DCHECK(delegate_->GetPersonalDataManager());
   delegate_->GetPersonalDataManager()->AddObserver(this);
   UpdatePersonalDataManagerProfiles(user_data);
@@ -624,10 +629,17 @@ void CollectUserDataAction::UpdateUserData(UserData* user_data) {
 }
 
 void CollectUserDataAction::OnRequestUserData(
+    bool is_initial_request,
     UserData* user_data,
     bool success,
     const GetUserDataResponseProto& response) {
   if (!success) {
+    if (is_initial_request && !delegate_->MustUseBackendData() &&
+        proto_.collect_user_data().data_source().allow_fallback()) {
+      FallbackToChromeData(user_data);
+      return;
+    }
+
     EndAction(ClientStatus(USER_DATA_REQUEST_FAILED),
               Metrics::CollectUserDataResult::FAILURE);
     return;
@@ -637,6 +649,37 @@ void CollectUserDataAction::OnRequestUserData(
   UpdateUi();
 
   action_stopwatch_.StartWaitTime();
+}
+
+void CollectUserDataAction::FallbackToChromeData(UserData* user_data) {
+  if (collect_user_data_options_->request_phone_number_separately) {
+    collect_user_data_options_->request_payer_phone = true;
+    collect_user_data_options_->request_phone_number_separately = false;
+    collect_user_data_options_->phone_number_section_title = std::string();
+
+    for (const auto& required_data_piece :
+         collect_user_data_options_->required_phone_number_data_pieces) {
+      collect_user_data_options_->required_contact_data_pieces.emplace_back(
+          required_data_piece);
+    }
+    collect_user_data_options_->required_phone_number_data_pieces.clear();
+
+    collect_user_data_options_->contact_summary_fields.emplace_back(
+        AutofillContactField::PHONE_HOME_WHOLE_NUMBER);
+    collect_user_data_options_->contact_summary_max_lines++;
+
+    collect_user_data_options_->contact_full_fields.emplace_back(
+        AutofillContactField::PHONE_HOME_WHOLE_NUMBER);
+    collect_user_data_options_->contact_full_max_lines++;
+  }
+
+  collect_user_data_options_->data_origin_notice.reset();
+
+  collect_user_data_options_->should_store_data_changes =
+      !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord();
+  collect_user_data_options_->use_alternative_edit_dialogs = false;
+
+  UseChromeData(user_data);
 }
 
 void CollectUserDataAction::UpdateUi() {
@@ -812,7 +855,8 @@ void CollectUserDataAction::ReloadUserData(UserDataEventField event_field,
   delegate_->RequestUserData(
       event_field, *collect_user_data_options_,
       base::BindOnce(&CollectUserDataAction::OnRequestUserData,
-                     weak_ptr_factory_.GetWeakPtr(), user_data));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /* is_initial_request= */ false, user_data));
 }
 
 void CollectUserDataAction::OnSelectionStateChanged(

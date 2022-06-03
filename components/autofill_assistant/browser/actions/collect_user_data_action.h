@@ -88,9 +88,12 @@ class CollectUserDataAction : public Action,
   void ShowToUser();
   void OnShowToUser(UserData* user_data, UserDataFieldChange* field_change);
   void UpdateUserData(UserData* user_data);
-  void OnRequestUserData(UserData* user_data,
+  void UseChromeData(UserData* user_data);
+  void OnRequestUserData(bool is_initial_request,
+                         UserData* user_data,
                          bool success,
                          const GetUserDataResponseProto& response);
+  void FallbackToChromeData(UserData* user_data);
   void UpdateMetrics(UserData* user_data);
   void UpdateUi();
 

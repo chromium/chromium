@@ -2759,6 +2759,9 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
       kMemoryLocation);
   collect_user_data->mutable_contact_details()
       ->set_separate_phone_number_section(true);
+  *collect_user_data->mutable_contact_details()
+       ->add_phone_number_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER);
   collect_user_data->mutable_contact_details()->set_phone_number_section_title(
       "Phone number");
   collect_user_data->mutable_data_source();
@@ -4064,6 +4067,131 @@ TEST_F(CollectUserDataActionTest, MergesTransientDataWithUserDataFromBackend) {
       kMemoryLocation);
   collect_user_data->mutable_data_source();
 
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, FallBackToChromeDataOnFailedRequest) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  autofill::AutofillProfile profile;
+  autofill::test::SetProfileInfo(
+      &profile, "Adam", "", "West", "adam.west@gmail.com", "", "Main St. 18",
+      "", "abc", "New York", "NY", "10001", "us", "+1 123-456-7890");
+
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(
+          Return(std::vector<autofill::AutofillProfile*>({&profile})));
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<2>(false, GetUserDataResponseProto()));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        ExpectSelectedProfileMatches(kMemoryLocation, &profile);
+
+        EXPECT_TRUE(collect_user_data_options->request_payer_phone);
+        EXPECT_FALSE(
+            collect_user_data_options->request_phone_number_separately);
+        EXPECT_THAT(collect_user_data_options->contact_summary_fields,
+                    ElementsAre(AutofillContactField::NAME_FULL,
+                                AutofillContactField::PHONE_HOME_WHOLE_NUMBER));
+        EXPECT_EQ(collect_user_data_options->contact_summary_max_lines, 2);
+        EXPECT_THAT(collect_user_data_options->contact_full_fields,
+                    ElementsAre(AutofillContactField::NAME_FULL,
+                                AutofillContactField::PHONE_HOME_WHOLE_NUMBER));
+        EXPECT_EQ(collect_user_data_options->contact_full_max_lines, 2);
+        EXPECT_FALSE(collect_user_data_options->data_origin_notice.has_value());
+        EXPECT_TRUE(collect_user_data_options->should_store_data_changes);
+        EXPECT_FALSE(collect_user_data_options->use_alternative_edit_dialogs);
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, nullptr);
+      });
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->mutable_contact_details()->set_request_payer_name(true);
+  collect_user_data->mutable_contact_details()->add_summary_fields(
+      ContactDetailsProto::NAME_FULL);
+  collect_user_data->mutable_contact_details()->set_max_number_summary_lines(1);
+  collect_user_data->mutable_contact_details()->add_full_fields(
+      ContactDetailsProto::NAME_FULL);
+  collect_user_data->mutable_contact_details()->set_max_number_full_lines(1);
+  *collect_user_data->mutable_contact_details()->add_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL);
+  collect_user_data->mutable_contact_details()->set_contact_details_name(
+      kMemoryLocation);
+  collect_user_data->mutable_contact_details()
+      ->set_separate_phone_number_section(true);
+  collect_user_data->mutable_contact_details()->set_phone_number_section_title(
+      "Phone number");
+  *collect_user_data->mutable_contact_details()
+       ->add_phone_number_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER);
+  collect_user_data->mutable_data_source()->set_allow_fallback(true);
+  collect_user_data->mutable_data_origin_notice()->set_link_text("Link");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_title("Title");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_text("Text");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_button_text(
+      "Button");
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, FailActionIfFallbackIsNotPossible) {
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
+      .WillByDefault(Return(nullptr));
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<2>(false, GetUserDataResponseProto()));
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->mutable_contact_details()->set_request_payer_name(true);
+  collect_user_data->mutable_contact_details()->set_contact_details_name(
+      kMemoryLocation);
+  collect_user_data->mutable_data_source()->set_allow_fallback(true);
+
+  EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
+                                              USER_DATA_REQUEST_FAILED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, FailActionIfReloadFails) {
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
+      .WillByDefault(Return(nullptr));
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<2>(true, GetUserDataResponseProto()))
+      .WillOnce(RunOnceCallback<2>(false, GetUserDataResponseProto()));
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce([&](CollectUserDataOptions* collect_user_data_options) {
+        std::move(collect_user_data_options->reload_data_callback)
+            .Run(UserDataEventField::NONE, &user_data_);
+      });
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->mutable_contact_details()->set_request_payer_name(true);
+  collect_user_data->mutable_contact_details()->set_contact_details_name(
+      kMemoryLocation);
+  collect_user_data->mutable_data_source()->set_allow_fallback(true);
+
+  EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
+                                              USER_DATA_REQUEST_FAILED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 }
