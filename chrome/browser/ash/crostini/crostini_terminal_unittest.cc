@@ -18,15 +18,58 @@ namespace crostini {
 
 using CrostiniTerminalTest = testing::Test;
 
+TEST_F(CrostiniTerminalTest, GenerateTerminalURL) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  EXPECT_EQ(
+      GenerateTerminalURL(&profile, "", ContainerId::GetDefault(), "", {}),
+      "chrome-untrusted://terminal/html/terminal.html"
+      "?command=vmshell"
+      "&args[]=--vm_name%3Dtermina"
+      "&args[]=--target_container%3Dpenguin"
+      "&args[]=--owner_id%3Dtest");
+  EXPECT_EQ(GenerateTerminalURL(&profile, "red",
+                                ContainerId("test-vm", "test-container"),
+                                "/home/user", {"arg1"}),
+            "chrome-untrusted://terminal/html/terminal.html"
+            "?command=vmshell"
+            "&settings_profile=red"
+            "&args[]=--vm_name%3Dtest-vm"
+            "&args[]=--target_container%3Dtest-container"
+            "&args[]=--owner_id%3Dtest"
+            "&args[]=--cwd%3D%2Fhome%2Fuser"
+            "&args[]=--&args[]=arg1");
+}
+
 TEST_F(CrostiniTerminalTest, ShortcutIdForSSH) {
   EXPECT_EQ(ShortcutIdForSSH("test-profile"),
             R"({"profileId":"test-profile","shortcut":"ssh"})");
 }
 
 TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
   ContainerId id("test-vm", "test-container");
-  EXPECT_EQ(ShortcutIdFromContainerId(id),
+  EXPECT_EQ(ShortcutIdFromContainerId(&profile, id),
             R"({"container_name":"test-container","shortcut":"terminal",)"
+            R"("vm_name":"test-vm"})");
+
+  // Container with multi-profile should include settings_profile.
+  auto pref = base::JSONReader::Read(R"({
+    "/vsh/profile-ids": ["p1", "p2"],
+    "/vsh/profiles/p1/vm-name": "test-vm",
+    "/vsh/profiles/p1/container-name": "other-container",
+    "/vsh/profiles/p1/terminal-profile": "red",
+    "/vsh/profiles/p2/vm-name": "test-vm",
+    "/vsh/profiles/p2/container-name": "test-container",
+    "/vsh/profiles/p2/terminal-profile": "green"
+  })");
+  ASSERT_TRUE(pref.has_value());
+  profile.GetPrefs()->Set(prefs::kCrostiniTerminalSettings, std::move(*pref));
+  EXPECT_EQ(ShortcutIdFromContainerId(&profile, id),
+            R"({"container_name":"test-container",)"
+            R"("settings_profile":"green",)"
+            R"("shortcut":"terminal",)"
             R"("vm_name":"test-vm"})");
 }
 

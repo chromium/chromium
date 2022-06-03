@@ -78,7 +78,10 @@ const size_t kSettingPrefixSize = std::size(kSettingPrefix) - 1;
 
 constexpr char kSettingsProfileUrlParam[] = "settings_profile";
 constexpr char kSettingsPrefixHterm[] = "hterm";
+constexpr char kSettingsPrefixNassh[] = "nassh";
+constexpr char kSettingsPrefixVsh[] = "vsh";
 constexpr char kSettingsKeyBackgroundColor[] = "background-color";
+constexpr char kSettingsKeyTerminalProfile[] = "terminal-profile";
 constexpr char kSettingsProfileDefault[] = "default";
 constexpr char kDefaultBackgroundColor[] = "#202124";
 
@@ -167,14 +170,21 @@ const std::string& GetTerminalDefaultUrl() {
 }
 
 GURL GenerateTerminalURL(Profile* profile,
+                         const std::string& settings_profile,
                          const ContainerId& container_id,
                          const std::string& cwd,
                          const std::vector<std::string>& terminal_args) {
   auto escape = [](std::string param) {
     return base::EscapeQueryParamValue(param, /*use_plus=*/true);
   };
+  std::string settings_profile_param;
+  if (!settings_profile.empty()) {
+    settings_profile_param = base::StrCat(
+        {"&", kSettingsProfileUrlParam, "=", escape(settings_profile)});
+  }
   std::string start = base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
-                                    "html/terminal.html?command=vmshell"});
+                                    "html/terminal.html?command=vmshell",
+                                    settings_profile_param});
   std::string vm_name_param =
       escape(base::StringPrintf("--vm_name=%s", container_id.vm_name.c_str()));
   std::string container_name_param = escape(base::StringPrintf(
@@ -204,7 +214,8 @@ void LaunchTerminal(Profile* profile,
                     const ContainerId& container_id,
                     const std::string& cwd,
                     const std::vector<std::string>& terminal_args) {
-  GURL url = GenerateTerminalURL(profile, container_id, cwd, terminal_args);
+  GURL url = GenerateTerminalURL(profile, /*settings_profile=*/std::string(),
+                                 container_id, cwd, terminal_args);
   LaunchTerminalWithUrl(profile, display_id, url);
 }
 
@@ -253,14 +264,17 @@ void LaunchTerminalWithIntent(Profile* profile,
     return std::move(callback).Run(false, "Crostini not installed");
   }
 
-  // Look for vm_name and container_name in intent->extras.
+  // Look for vm_name, container_name, and settings_profile in intent->extras.
   ContainerId container_id = ContainerId::GetDefault();
+  std::string settings_profile;
   if (intent && intent->extras.has_value()) {
     for (const auto& extra : intent->extras.value()) {
       if (extra.first == "vm_name") {
         container_id.vm_name = extra.second;
       } else if (extra.first == "container_name") {
         container_id.container_name = extra.second;
+      } else if (extra.first == kSettingsProfileUrlParam) {
+        settings_profile = extra.second;
       }
     }
   }
@@ -300,7 +314,9 @@ void LaunchTerminalWithIntent(Profile* profile,
 
   CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
       container_id, std::move(options), base::DoNothing());
-  LaunchTerminal(profile, display_id, container_id, cwd);
+  GURL url = GenerateTerminalURL(profile, settings_profile, container_id, cwd,
+                                 /*terminal_args=*/{});
+  LaunchTerminalWithUrl(profile, display_id, url);
   std::move(callback).Run(true, "");
 }
 
@@ -468,9 +484,35 @@ std::string ShortcutIdForSSH(const std::string& profileId) {
   return shortcut_id;
 }
 
-std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
+std::string ShortcutIdFromContainerId(Profile* profile,
+                                      const crostini::ContainerId& id) {
   base::Value::Dict dict = id.ToDictValue();
   dict.Set(kShortcutKey, base::Value(kShortcutValueTerminal));
+
+  // Find terminal profile from prefs.
+  const base::Value::Dict& settings =
+      profile->GetPrefs()
+          ->GetDictionary(crostini::prefs::kCrostiniTerminalSettings)
+          ->GetDict();
+  const base::Value::List* vsh_ids = settings.FindList("/vsh/profile-ids");
+  if (vsh_ids) {
+    for (const auto& vsh_id : *vsh_ids) {
+      if (!vsh_id.is_string()) {
+        continue;
+      }
+      const std::string* vm_name = settings.FindString(
+          GetSettingsKey(kSettingsPrefixVsh, vsh_id.GetString(), "vm-name"));
+      const std::string* container_name = settings.FindString(GetSettingsKey(
+          kSettingsPrefixVsh, vsh_id.GetString(), "container-name"));
+      const std::string* settings_profile = settings.FindString(GetSettingsKey(
+          kSettingsPrefixVsh, vsh_id.GetString(), "terminal-profile"));
+      if (vm_name && *vm_name == id.vm_name && container_name &&
+          *container_name == id.container_name && settings_profile) {
+        dict.Set(kSettingsProfileUrlParam, *settings_profile);
+      }
+    }
+  }
+
   std::string shortcut_id;
   base::JSONWriter::Write(dict, &shortcut_id);
   return shortcut_id;
@@ -492,7 +534,7 @@ std::vector<std::pair<std::string, std::string>> GetSSHConnections(
       continue;
     }
     const std::string* description = settings.FindString(
-        base::StrCat({"/nassh/profiles/", id.GetString(), "/description"}));
+        GetSettingsKey(kSettingsPrefixNassh, id.GetString(), "description"));
     if (description) {
       result.emplace_back(id.GetString(), *description);
     }
@@ -535,12 +577,6 @@ void AddTerminalMenuShortcuts(
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
   }
 
-  for (const auto& connection : connections) {
-    apps::AddShortcutCommandItem(
-        next_command_id++, ShortcutIdForSSH(connection.first),
-        connection.second, terminal_ssh_icon, &menu_items);
-  }
-
   for (const auto& container : containers) {
     // Use <container_name> for termina, else <vm_name>:<container_name>.
     std::string label = container.container_name;
@@ -548,8 +584,14 @@ void AddTerminalMenuShortcuts(
       label = base::StrCat({container.vm_name, ":", container.container_name});
     }
     apps::AddShortcutCommandItem(next_command_id++,
-                                 ShortcutIdFromContainerId(container), label,
-                                 crostini_mascot_icon, &menu_items);
+                                 ShortcutIdFromContainerId(profile, container),
+                                 label, crostini_mascot_icon, &menu_items);
+  }
+
+  for (const auto& connection : connections) {
+    apps::AddShortcutCommandItem(
+        next_command_id++, ShortcutIdForSSH(connection.first),
+        connection.second, terminal_ssh_icon, &menu_items);
   }
 
   std::move(callback).Run(std::move(menu_items));
@@ -568,10 +610,24 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
     if (!profileId) {
       return false;
     }
+    const base::Value* settings = profile->GetPrefs()->GetDictionary(
+        crostini::prefs::kCrostiniTerminalSettings);
+    const std::string* settings_profile =
+        settings->FindStringKey(GetSettingsKey(kSettingsPrefixNassh, *profileId,
+                                               kSettingsKeyTerminalProfile));
+    auto escape = [](const std::string& v) {
+      return base::EscapeQueryParamValue(v, /*use_plus=*/true);
+    };
+    std::string settings_profile_param;
+    if (settings_profile && !settings_profile->empty()) {
+      settings_profile_param = base::StrCat(
+          {"?", kSettingsProfileUrlParam, "=", escape(*settings_profile)});
+    }
     LaunchTerminalWithUrl(
         profile, display_id,
         GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
-                           "html/terminal_ssh.html#profile-id:", *profileId})));
+                           "html/terminal_ssh.html", settings_profile_param,
+                           "#profile-id:", escape(*profileId)})));
     return true;
   }
 

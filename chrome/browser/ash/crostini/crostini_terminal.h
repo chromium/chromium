@@ -117,6 +117,7 @@ const std::string& GetTerminalDefaultUrl();
 // Generate URL to launch terminal.
 GURL GenerateTerminalURL(
     Profile* profile,
+    const std::string& setings_profile,
     const ContainerId& container_id = ContainerId::GetDefault(),
     const std::string& cwd = "",
     const std::vector<std::string>& terminal_args = {});
@@ -159,7 +160,8 @@ bool GetTerminalSettingPassCtrlW(Profile* profile);
 std::string ShortcutIdForSSH(const std::string& profileId);
 
 // Menu shortcut ID for Linux container.
-std::string ShortcutIdFromContainerId(const crostini::ContainerId& id);
+std::string ShortcutIdFromContainerId(Profile* profile,
+                                      const crostini::ContainerId& id);
 
 // Returns list of SSH connections {<profile-id>, <description>}.
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(
