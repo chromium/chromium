@@ -111,4 +111,6 @@ void ExoAppTypeResolver::PopulateProperties(
     out_properties_container.SetProperty(
         app_restore::kParentToHiddenContainerKey, true);
   }
+
+  out_properties_container.SetProperty(aura::client::kSkipImeProcessing, true);
 }
