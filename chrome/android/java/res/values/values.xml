@@ -36,7 +36,7 @@
     <item name="contextual_search_sheet_full_height_fraction" format="float" type="dimen">0.95</item>
 
     <!-- Tablet tab strip -->
-    <item name="compositor_background_tab_outline_alpha" format="float" type="dimen">0.2</item>
+    <item name="compositor_background_tab_outline_alpha" format="float" type="dimen">0.5</item>
     <item name="compositor_background_tab_overlay_alpha" format="float" type="dimen">0</item>
 
     <!-- Revamped Incognito NTP -->
