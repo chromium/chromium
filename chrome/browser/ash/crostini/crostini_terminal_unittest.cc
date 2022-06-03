@@ -12,6 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace crostini {
 
@@ -46,6 +47,49 @@ TEST_F(CrostiniTerminalTest, GetSSHConnections) {
 
   expected = {{"p1", "d1"}, {"p2", "d2"}};
   EXPECT_EQ(GetSSHConnections(&profile), expected);
+}
+
+TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  auto pref = base::JSONReader::Read(R"({
+    "/hterm/profiles/default/background-color": "#101010",
+    "/hterm/profiles/red/background-color": "#FF0000"
+  })");
+  ASSERT_TRUE(pref.has_value());
+  profile.GetPrefs()->Set(prefs::kCrostiniTerminalSettings, std::move(*pref));
+
+  // Use settings_profile param.
+  EXPECT_EQ(GetTerminalSettingBackgroundColor(
+                &profile,
+                GURL("chrome-untrusted://terminal/html/"
+                     "terminal.html?settings_profile=red"),
+                SK_ColorGREEN),
+            "#FF0000");
+
+  // Use opener color.
+  EXPECT_EQ(
+      GetTerminalSettingBackgroundColor(
+          &profile, GURL("chrome-untrusted://terminal/html/terminal.html"),
+          SK_ColorGREEN),
+      "#00ff00ff");
+
+  // Use color from 'default' profile.
+  EXPECT_EQ(
+      GetTerminalSettingBackgroundColor(
+          &profile, GURL("chrome-untrusted://terminal/html/terminal.html"),
+          absl::nullopt),
+      "#101010");
+
+  // Use default color.
+  profile.GetPrefs()->Set(prefs::kCrostiniTerminalSettings,
+                          base::Value(base::Value::Type::DICT));
+  EXPECT_EQ(
+      GetTerminalSettingBackgroundColor(
+          &profile, GURL("chrome-untrusted://terminal/html/terminal.html"),
+          absl::nullopt),
+      "#202124");
 }
 
 }  // namespace crostini

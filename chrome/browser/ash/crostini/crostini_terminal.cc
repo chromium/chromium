@@ -47,12 +47,14 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/url_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -74,8 +76,10 @@ namespace {
 constexpr char kSettingPrefix[] = "/hterm/profiles/default/";
 const size_t kSettingPrefixSize = std::size(kSettingPrefix) - 1;
 
-constexpr char kSettingBackgroundColor[] =
-    "/hterm/profiles/default/background-color";
+constexpr char kSettingsProfileUrlParam[] = "settings_profile";
+constexpr char kSettingsPrefixHterm[] = "hterm";
+constexpr char kSettingsKeyBackgroundColor[] = "background-color";
+constexpr char kSettingsProfileDefault[] = "default";
 constexpr char kDefaultBackgroundColor[] = "#202124";
 
 constexpr char kSettingPassCtrlW[] = "/hterm/profiles/default/pass-ctrl-w";
@@ -88,6 +92,12 @@ base::flat_map<std::string, std::string> ExtrasFromShortcutId(
     extras[it.first] = it.second.GetString();
   }
   return extras;
+}
+
+std::string GetSettingsKey(const std::string& prefix,
+                           const std::string& profile,
+                           const std::string& key) {
+  return base::StrCat({"/", prefix, "/profiles/", profile, "/", key});
 }
 
 void LaunchTerminalImpl(Profile* profile,
@@ -412,10 +422,34 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
   }
 }
 
-std::string GetTerminalSettingBackgroundColor(Profile* profile) {
-  const base::Value* value = profile->GetPrefs()->GetDictionary(
+std::string GetTerminalSettingBackgroundColor(
+    Profile* profile,
+    GURL url,
+    absl::optional<SkColor> opener_background_color) {
+  auto key = [](const std::string& profile) {
+    return GetSettingsKey(kSettingsPrefixHterm, profile,
+                          kSettingsKeyBackgroundColor);
+  };
+  const base::Value* settings = profile->GetPrefs()->GetDictionary(
       crostini::prefs::kCrostiniTerminalSettings);
-  const std::string* result = value->FindStringKey(kSettingBackgroundColor);
+  // 1. Use 'settings_profile' url param.
+  std::string settings_profile;
+  if (net::GetValueForKeyInQuery(url, kSettingsProfileUrlParam,
+                                 &settings_profile)) {
+    const std::string* result = settings->FindStringKey(key(settings_profile));
+    if (result) {
+      return *result;
+    }
+  }
+
+  // 2. Use same color as opener.
+  if (opener_background_color) {
+    return ui::ConvertSkColorToCSSColor(*opener_background_color);
+  }
+
+  // 3. Use 'default' profile color, or default color.
+  const std::string* result =
+      settings->FindStringKey(key(kSettingsProfileDefault));
   return result ? *result : kDefaultBackgroundColor;
 }
 

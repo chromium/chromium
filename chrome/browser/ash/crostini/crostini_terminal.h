@@ -146,8 +146,11 @@ void LaunchTerminalSettings(Profile* profile,
 // Record which terminal settings have been changed by users.
 void RecordTerminalSettingsChangesUMAs(Profile* profile);
 
-// Returns terminal setting 'background-color'.
-std::string GetTerminalSettingBackgroundColor(Profile* profile);
+// Returns terminal setting 'background-color' to use for |url|.
+std::string GetTerminalSettingBackgroundColor(
+    Profile* profile,
+    GURL url,
+    absl::optional<SkColor> opener_background_color);
 
 // Returns terminal setting 'pass-ctrl-w'.
 bool GetTerminalSettingPassCtrlW(Profile* profile);
