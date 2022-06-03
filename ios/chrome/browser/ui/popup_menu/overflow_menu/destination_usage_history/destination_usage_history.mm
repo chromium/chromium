@@ -189,6 +189,10 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 
 - (std::vector<overflow_menu::Destination>)updatedRankWithCurrentRanking:
     (std::vector<overflow_menu::Destination>&)ranking {
+  // Delete expired usage data older than |kDataExpirationWindow| days before
+  // running the ranking algorithm.
+  [self deleteExpiredData];
+
   base::Value::Dict allHistory =
       [self flattenedHistoryWithinWindow:kDataExpirationWindow];
   base::Value::Dict recentHistory =
@@ -226,25 +230,22 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 
 // Track click for |destination| and associate it with TodaysDay().
 - (void)trackDestinationClick:(overflow_menu::Destination)destination {
-  DCHECK(_prefService);
+  DCHECK(self.prefService);
   // Exit early if there's no pref service; this is not expected to happen.
-  if (!_prefService)
+  if (!self.prefService)
     return;
 
-  const base::Value* pref =
-      _prefService->GetDictionary(prefs::kOverflowMenuDestinationUsageHistory);
+  const base::Value* pref = self.prefService->GetDictionary(
+      prefs::kOverflowMenuDestinationUsageHistory);
   const base::Value::Dict* history = pref->GetIfDict();
   const std::string path = base::NumberToString(TodaysDay()) + "." +
                            overflow_menu::StringNameForDestination(destination);
 
   int numClicks = history->FindIntByDottedPath(path).value_or(0) + 1;
 
-  DictionaryPrefUpdate update(_prefService,
+  DictionaryPrefUpdate update(self.prefService,
                               prefs::kOverflowMenuDestinationUsageHistory);
   update->SetIntPath(path, numClicks);
-
-  // TODO: In a follow-up CL coming shortly - remove expired usage data before
-  // running the ranking algorithm below.
 
   // Calculate new ranking and store to prefs; Calculate the new ranking
   // ahead of time so overflow menu presentation needn't run ranking algorithm
@@ -256,10 +257,36 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 
 #pragma mark - Private
 
+// Delete expired usage data (data older than |kDataExpirationWindow| days) and
+// saves back to prefs. Returns true if expired usage data was found/removed,
+// false otherwise.
+- (void)deleteExpiredData {
+  const base::Value* pref = self.prefService->GetDictionary(
+      prefs::kOverflowMenuDestinationUsageHistory);
+  const base::Value::Dict* history = pref->GetIfDict();
+
+  if (!history)
+    return;
+
+  base::Value::Dict prunedHistory = history->Clone();
+
+  for (auto&& [day, dayHistory] : *history) {
+    // Skip over entry corresponding to previous ranking.
+    if (day == kRankingKey)
+      continue;
+
+    if (!ValidDay(day, kDataExpirationWindow))
+      prunedHistory.Remove(day);
+  }
+
+  self.prefService->SetDict(prefs::kOverflowMenuDestinationUsageHistory,
+                            std::move(prunedHistory));
+}
+
 // Fetches the current ranking saved in prefs and returns it.
 - (const base::Value::List*)fetchCurrentRanking {
-  const base::Value* pref =
-      _prefService->GetDictionary(prefs::kOverflowMenuDestinationUsageHistory);
+  const base::Value* pref = self.prefService->GetDictionary(
+      prefs::kOverflowMenuDestinationUsageHistory);
   const base::Value::Dict* history = pref->GetIfDict();
 
   if (!history)
@@ -294,8 +321,8 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 // (int). Only usage data within previous |window| days will be included in the
 // returned result.
 - (base::Value::Dict)flattenedHistoryWithinWindow:(int)window {
-  const base::Value* pref =
-      _prefService->GetDictionary(prefs::kOverflowMenuDestinationUsageHistory);
+  const base::Value* pref = self.prefService->GetDictionary(
+      prefs::kOverflowMenuDestinationUsageHistory);
   const base::Value::Dict* history = pref->GetIfDict();
 
   base::Value::Dict flatHistory;

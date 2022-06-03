@@ -331,3 +331,61 @@ TEST_F(DestinationUsageHistoryTest, DoesNotSwapTwoUnshownDestinations) {
   EXPECT_EQ(ranking,
             [destination_usage_history updatedRankWithCurrentRanking:ranking]);
 }
+
+TEST_F(DestinationUsageHistoryTest, DeletesExpiredUsageData) {
+  std::vector<overflow_menu::Destination> ranking = {
+      overflow_menu::Destination::Bookmarks,
+      overflow_menu::Destination::History,
+      overflow_menu::Destination::ReadingList,
+      overflow_menu::Destination::Passwords,
+      overflow_menu::Destination::Downloads,
+      overflow_menu::Destination::RecentTabs,
+      overflow_menu::Destination::SiteInfo,
+      overflow_menu::Destination::Settings,
+  };
+
+  base::Value::Dict history;
+
+  // Usage data just a bit older than 1 year.
+  int recently_expired_day = TodaysDay() - 366;
+  base::Value::Dict recently_expired_day_history;
+  recently_expired_day_history.Set(overflow_menu::StringNameForDestination(
+                                       overflow_menu::Destination::Bookmarks),
+                                   1);
+  history.Set(base::NumberToString(recently_expired_day),
+              std::move(recently_expired_day_history));
+
+  // Usage data almost 3 years old.
+  int expired_day = TodaysDay() - 1000;
+  base::Value::Dict expired_day_history;
+  expired_day_history.Set(overflow_menu::StringNameForDestination(
+                              overflow_menu::Destination::Bookmarks),
+                          1);
+  history.Set(base::NumberToString(expired_day),
+              std::move(expired_day_history));
+
+  DestinationUsageHistory* destination_usage_history =
+      CreateDestinationUsageHistoryWithData(ranking, history);
+
+  // Click destination to trigger ranking algorithm which removes expired data.
+  [destination_usage_history
+      trackDestinationClick:overflow_menu::Destination::Settings];
+
+  // Fetch saved destination usage history.
+  const base::Value* saved_history =
+      destination_usage_history.prefService->GetDictionary(
+          prefs::kOverflowMenuDestinationUsageHistory);
+  ASSERT_NE(saved_history, nullptr);
+  ASSERT_TRUE(saved_history->is_dict());
+
+  const base::Value::Dict* history_dict = saved_history->GetIfDict();
+  ASSERT_NE(history_dict, nullptr);
+
+  std::set<std::string> seen_keys;
+  for (auto&& [day, day_history] : *history_dict)
+    seen_keys.insert(day);
+
+  std::set<std::string> expected_keys = {"ranking",
+                                         base::NumberToString(TodaysDay())};
+  ASSERT_EQ(expected_keys, seen_keys);
+}
