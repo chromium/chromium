@@ -179,12 +179,12 @@ TEST(DrawQuadTest, CopyDebugBorderDrawQuad) {
   CREATE_QUAD_NEW(DebugBorderDrawQuad, visible_rect, color, width);
   EXPECT_EQ(DrawQuad::Material::kDebugBorder, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
-  EXPECT_EQ(color, copy_quad->color);
+  EXPECT_EQ(SkColor4f::FromColor(color), copy_quad->color);
   EXPECT_EQ(width, copy_quad->width);
 
   CREATE_QUAD_ALL(DebugBorderDrawQuad, color, width);
   EXPECT_EQ(DrawQuad::Material::kDebugBorder, copy_quad->material);
-  EXPECT_EQ(color, copy_quad->color);
+  EXPECT_EQ(SkColor4f::FromColor(color), copy_quad->color);
   EXPECT_EQ(width, copy_quad->width);
 }
 

@@ -580,7 +580,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
           out_render_pass->quad_list.ElementAt(0));
   EXPECT_EQ(rect1, out_debug_border_draw_quad->rect);
   EXPECT_EQ(rect1, out_debug_border_draw_quad->visible_rect);
-  EXPECT_EQ(color1, out_debug_border_draw_quad->color);
+  EXPECT_EQ(SkColor4f::FromColor(color1), out_debug_border_draw_quad->color);
   EXPECT_EQ(width1, out_debug_border_draw_quad->width);
 
   const SolidColorDrawQuad* out_solid_color_draw_quad =
@@ -1038,7 +1038,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect1, out_debug_border_draw_quad->rect);
   EXPECT_EQ(rect1, out_debug_border_draw_quad->visible_rect);
   EXPECT_FALSE(out_debug_border_draw_quad->needs_blending);
-  EXPECT_EQ(color1, out_debug_border_draw_quad->color);
+  EXPECT_EQ(SkColor4f::FromColor(color1), out_debug_border_draw_quad->color);
   EXPECT_EQ(width1, out_debug_border_draw_quad->width);
 
   const SolidColorDrawQuad* out_solid_color_draw_quad =

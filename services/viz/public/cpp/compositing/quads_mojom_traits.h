@@ -29,7 +29,9 @@
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/quads.mojom-shared.h"
+#include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -246,7 +248,7 @@ struct StructTraits<viz::mojom::VideoHoleQuadStateDataView, viz::DrawQuad> {
 
 template <>
 struct StructTraits<viz::mojom::DebugBorderQuadStateDataView, viz::DrawQuad> {
-  static uint32_t color(const viz::DrawQuad& input) {
+  static SkColor4f color(const viz::DrawQuad& input) {
     const viz::DebugBorderDrawQuad* quad =
         viz::DebugBorderDrawQuad::MaterialCast(&input);
     return quad->color;

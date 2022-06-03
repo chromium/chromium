@@ -69,7 +69,8 @@ viz::DrawQuad* AllocateAndConstruct(
 bool StructTraits<viz::mojom::DebugBorderQuadStateDataView, viz::DrawQuad>::
     Read(viz::mojom::DebugBorderQuadStateDataView data, viz::DrawQuad* out) {
   viz::DebugBorderDrawQuad* quad = static_cast<viz::DebugBorderDrawQuad*>(out);
-  quad->color = data.color();
+  if (!data.ReadColor(&quad->color))
+    return false;
   quad->width = data.width();
   return true;
 }

@@ -28,7 +28,7 @@ class VIZ_COMMON_EXPORT DebugBorderDrawQuad : public DrawQuad {
               SkColor c,
               int w);
 
-  SkColor color = SK_ColorTRANSPARENT;
+  SkColor4f color = SkColors::kTransparent;
   int width = 0;
 
   static const DebugBorderDrawQuad* MaterialCast(const DrawQuad*);
