@@ -99,7 +99,7 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
                      std::tie(report2->queued, report2->url);
             });
 
-  std::vector<base::Value> report_list;
+  base::Value::List report_list;
   for (const ReportingReport* report : sorted_reports) {
     base::Value::Dict report_dict;
     report_dict.Set("network_isolation_key",
@@ -127,7 +127,7 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
         report_dict.Set("status", "success");
         break;
     }
-    report_list.emplace_back(base::Value(std::move(report_dict)));
+    report_list.Append(std::move(report_dict));
   }
   return base::Value(std::move(report_list));
 }
@@ -771,10 +771,10 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
 
 base::Value ReportingCacheImpl::GetClientsAsValue() const {
   ConsistencyCheckClients();
-  std::vector<base::Value> client_list;
+  base::Value::List client_list;
   for (const auto& domain_and_client : clients_) {
     const Client& client = domain_and_client.second;
-    client_list.push_back(GetClientAsValue(client));
+    client_list.Append(GetClientAsValue(client));
   }
   return base::Value(std::move(client_list));
 }
@@ -1602,15 +1602,15 @@ base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
                   client.network_isolation_key.ToDebugString());
   client_dict.Set("origin", client.origin.Serialize());
 
-  std::vector<base::Value> group_list;
+  base::Value::List group_list;
   for (const std::string& group_name : client.endpoint_group_names) {
     ReportingEndpointGroupKey group_key(client.network_isolation_key,
                                         client.origin, group_name);
     const CachedReportingEndpointGroup& group = endpoint_groups_.at(group_key);
-    group_list.push_back(GetEndpointGroupAsValue(group));
+    group_list.Append(GetEndpointGroupAsValue(group));
   }
 
-  client_dict.Set("groups", base::Value(std::move(group_list)));
+  client_dict.Set("groups", std::move(group_list));
 
   return base::Value(std::move(client_dict));
 }
@@ -1623,15 +1623,15 @@ base::Value ReportingCacheImpl::GetEndpointGroupAsValue(
   group_dict.Set("includeSubdomains",
                  group.include_subdomains == OriginSubdomains::INCLUDE);
 
-  std::vector<base::Value> endpoint_list;
+  base::Value::List endpoint_list;
 
   const auto group_range = endpoints_.equal_range(group.group_key);
   for (auto it = group_range.first; it != group_range.second; ++it) {
     const ReportingEndpoint& endpoint = it->second;
-    endpoint_list.push_back(GetEndpointAsValue(endpoint));
+    endpoint_list.Append(GetEndpointAsValue(endpoint));
   }
 
-  group_dict.Set("endpoints", base::Value(std::move(endpoint_list)));
+  group_dict.Set("endpoints", std::move(endpoint_list));
 
   return base::Value(std::move(group_dict));
 }
