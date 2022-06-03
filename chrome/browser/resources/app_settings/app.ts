@@ -5,12 +5,13 @@
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import 'chrome://resources/cr_components/app_management/app_management_shared_style.css.js';
 import 'chrome://resources/cr_components/app_management/file_handling_item.js';
 import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
 import 'chrome://resources/cr_components/app_management/run_on_os_login_item.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
 import 'chrome://resources/cr_components/app_management/window_mode_item.js';
-import 'chrome://resources/cr_components/app_management/icons.js';
+import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/uninstall_button.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 

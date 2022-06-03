@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -16,12 +16,12 @@ preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_compon
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
 
-html_to_js("css_wrapper_files") {
-  js_files = css_wrapper_files
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
+  in_files = html_files + html_icons_files
 }
 
 mojom("mojo_bindings") {
