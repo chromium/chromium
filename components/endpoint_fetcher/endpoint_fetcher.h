@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_
-#define CHROME_BROWSER_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_
+#ifndef COMPONENTS_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_
+#define COMPONENTS_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_
 
 #include <string>
 #include <vector>
@@ -28,7 +28,6 @@ class IdentityManager;
 
 class GoogleServiceAuthError;
 class GURL;
-class Profile;
 
 struct EndpointResponse {
   std::string response;
@@ -53,30 +52,35 @@ class EndpointFetcher {
  public:
   // Preferred constructor - forms identity_manager and url_loader_factory.
   // OAUTH authentication is used for this constructor.
-  EndpointFetcher(Profile* const profile,
-                  const std::string& oauth_consumer_name,
-                  const GURL& url,
-                  const std::string& http_method,
-                  const std::string& content_type,
-                  const std::vector<std::string>& scopes,
-                  int64_t timeout_ms,
-                  const std::string& post_data,
-                  const net::NetworkTrafficAnnotationTag& annotation_tag);
+  EndpointFetcher(
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      const std::string& oauth_consumer_name,
+      const GURL& url,
+      const std::string& http_method,
+      const std::string& content_type,
+      const std::vector<std::string>& scopes,
+      int64_t timeout_ms,
+      const std::string& post_data,
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      signin::IdentityManager* const identity_manager);
 
   // Constructor if Chrome API Key is used for authentication
-  EndpointFetcher(Profile* const profile,
-                  const GURL& url,
-                  const std::string& http_method,
-                  const std::string& content_type,
-                  int64_t timeout_ms,
-                  const std::string& post_data,
-                  const std::vector<std::string>& headers,
-                  const net::NetworkTrafficAnnotationTag& annotation_tag);
+  EndpointFetcher(
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      const GURL& url,
+      const std::string& http_method,
+      const std::string& content_type,
+      int64_t timeout_ms,
+      const std::string& post_data,
+      const std::vector<std::string>& headers,
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      bool is_stable_channel);
 
   // Constructor if no authentication is needed.
-  EndpointFetcher(Profile* const profile,
-                  const GURL& url,
-                  const net::NetworkTrafficAnnotationTag& annotation_tag);
+  EndpointFetcher(
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      const GURL& url,
+      const net::NetworkTrafficAnnotationTag& annotation_tag);
 
   // Used for tests. Can be used if caller constructs their own
   // url_loader_factory and identity_manager.
@@ -152,6 +156,7 @@ class EndpointFetcher {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   bool sanitize_response_;
+  bool is_stable_channel_;
 
   // Members set in Fetch
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
@@ -161,4 +166,4 @@ class EndpointFetcher {
   base::WeakPtrFactory<EndpointFetcher> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_
+#endif  // COMPONENTS_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_

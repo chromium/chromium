@@ -244,6 +244,7 @@ source_set("unittests") {
     "//chrome/test:test_support",
     "//components/cast_channel:cast_channel",
     "//components/cast_channel:test_support",
+    "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
     "//content/test:test_support",

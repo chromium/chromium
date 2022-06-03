@@ -12,7 +12,7 @@
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
-#include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 
 namespace network {
 class PendingSharedURLLoaderFactory;
