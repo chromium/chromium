@@ -201,26 +201,6 @@
       "use_goma": true
     }
   },
-  "win32-builder-perf": {
-    "gn_args": {
-      "chrome_pgo_phase": 0,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "win32-builder-perf-pgo": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
   "win64-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
