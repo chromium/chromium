@@ -5,7 +5,9 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.HostZoomMap;
 
 /**
  * General purpose utils class for page zoom feature. This is for methods that are shared by both
@@ -100,28 +102,38 @@ public class PageZoomUtils {
         return (int) (100 * zoomLevelPercent);
     }
 
-    // Methods to interact with SharedPreferences. These do not use SharedPreferencesManager so
-    // that they can be used in //components.
+    /**
+     * This method converts the seekbar value to a zoom level so that the level can be displayed
+     * to the user in a human-readable format.
+     * @param newValue      seek bar value to convert to zoom level
+     * @return double
+     */
+    public static double convertSeekBarValueToZoomLevel(int newValue) {
+        return PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
+                + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
+                        * ((float) newValue / 100.0f));
+    }
 
     /**
-     * Returns the current user choice for default zoom level (set in Accessibility Settings).
+     * Set a new user choice for default zoom level given a SeekBar value.
+     * This is part of the Profile and is set in Desktop through Settings > Appearance.
+     * @param newValue int      The new zoom by seek bar value
+     */
+    public static void setDefaultZoomBySeekBarValue(BrowserContextHandle context, int newValue) {
+        setDefaultZoomLevel(context, convertSeekBarValueToZoomFactor(newValue));
+    }
+
+    /**
+     * Returns the current user choice for default zoom level as a seek bar value.
      * This is part of the Profile and is set in Desktop through Settings > Appearance.
      * @return int
      */
-    public static int getDefaultZoomSeekValue() {
-        // TODO(mschillaci): Connect with Prefs using the |Pref.PARTITION_DEFAULT_ZOOM_LEVEL| key.
-        return convertZoomFactorToSeekBarValue(0.0);
+    public static int getDefaultZoomAsSeekValue(BrowserContextHandle context) {
+        return convertZoomFactorToSeekBarValue(getDefaultZoomLevel(context));
     }
 
-    /**
-     * Set a new user choice for default zoom level.
-     * This is part of the Profile and is set in Desktop through Settings > Appearance.
-     * @param newValue int
-     */
-    public static void setDefaultZoom(int newValue) {
-        // TODO(mschillaci): Connect with Prefs using the |Pref.PARTITION_DEFAULT_ZOOM_LEVEL| key.
-        // convertSeekBarValueToZoomFactor(newValue);
-    }
+    // Methods to interact with SharedPreferences. These do not use SharedPreferencesManager so
+    // that they can be used in //components.
 
     /**
      * Returns the current user choice for always showing the Zoom AppMenu item (set in
@@ -143,5 +155,16 @@ public class PageZoomUtils {
                 .edit()
                 .putBoolean(AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM, newValue)
                 .apply();
+    }
+
+    // Methods that interact with Prefs.
+
+    private static void setDefaultZoomLevel(
+            BrowserContextHandle context, double newDefaultZoomLevel) {
+        HostZoomMap.setDefaultZoomLevel(context, newDefaultZoomLevel);
+    }
+
+    private static double getDefaultZoomLevel(BrowserContextHandle context) {
+        return HostZoomMap.getDefaultZoomLevel(context);
     }
 }

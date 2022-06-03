@@ -20,6 +20,7 @@ import androidx.preference.PreferenceViewHolder;
  */
 public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarChangeListener {
     private int mInitialValue;
+    private TextView mCurrentValueText;
 
     public PageZoomPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -38,14 +39,14 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         container.setBackground(null);
         container.setPadding(0, top, 0, bot);
 
-        TextView mCurrentValueText =
-                (TextView) holder.findViewById(R.id.page_zoom_current_value_text);
+        mCurrentValueText = (TextView) holder.findViewById(R.id.page_zoom_current_value_text);
         mCurrentValueText.setText(
                 getContext().getResources().getString(R.string.page_zoom_factor, 100));
 
-        SeekBar mCurrentValueSlider = (SeekBar) holder.findViewById(R.id.page_zoom_slider);
-        mCurrentValueSlider.setProgress(mInitialValue);
-        mCurrentValueSlider.setOnSeekBarChangeListener(this);
+        SeekBar currentValueSlider = (SeekBar) holder.findViewById(R.id.page_zoom_slider);
+        currentValueSlider.setOnSeekBarChangeListener(this);
+        currentValueSlider.setProgress(mInitialValue);
+        updateText(mInitialValue);
     }
 
     /**
@@ -56,8 +57,16 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         mInitialValue = value;
     }
 
+    private void updateText(int progress) {
+        mCurrentValueText.setText(getContext().getResources().getString(R.string.page_zoom_factor,
+                Math.round(100 * PageZoomUtils.convertSeekBarValueToZoomLevel(progress))));
+    }
+
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        // Update the zoom percentage text as the slider is updated.
+        updateText(progress);
+    }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {}

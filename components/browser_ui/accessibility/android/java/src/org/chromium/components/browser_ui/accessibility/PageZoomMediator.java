@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.AVAILABLE_ZOOM_FACTORS;
-import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_DEFAULT_SEEK_VALUE;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToSeekBarValue;
 
 import androidx.annotation.NonNull;
@@ -62,8 +61,8 @@ public class PageZoomMediator {
                 ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale,
                 1f);
 
-        boolean defaultDefaultPageZoom =
-                PageZoomUtils.getDefaultZoomSeekValue() == PAGE_ZOOM_DEFAULT_SEEK_VALUE;
+        // TODO(mschillaci): Replace with a delegate call, cannot depend directly on Profile.
+        boolean defaultDefaultPageZoom = true;
 
         return !defaultSystemFontSize || !defaultDefaultPageZoom;
     }

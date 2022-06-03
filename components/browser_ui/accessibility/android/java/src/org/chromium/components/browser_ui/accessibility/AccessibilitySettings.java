@@ -77,7 +77,8 @@ public class AccessibilitySettings
 
         if (mDelegate.showPageZoomSettingsUI()) {
             mTextScalePref.setVisible(false);
-            mPageZoomDefaultZoomPref.setInitialValue(PageZoomUtils.getDefaultZoomSeekValue());
+            mPageZoomDefaultZoomPref.setInitialValue(
+                    PageZoomUtils.getDefaultZoomAsSeekValue(mDelegate.getBrowserContextHandle()));
             mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
             mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldAlwaysShowZoomMenuItem());
             mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
@@ -157,7 +158,8 @@ public class AccessibilitySettings
                 mReaderForAccessibilityDelegate.setEnabled((Boolean) newValue);
             }
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
-            PageZoomUtils.setDefaultZoom((Integer) newValue);
+            PageZoomUtils.setDefaultZoomBySeekBarValue(
+                    mDelegate.getBrowserContextHandle(), (Integer) newValue);
         } else if (PREF_PAGE_ZOOM_ALWAYS_SHOW.equals(preference.getKey())) {
             PageZoomUtils.setShouldAlwaysShowZoomMenuItem((Boolean) newValue);
         }

@@ -34,4 +34,23 @@ public class HostZoomMap {
         assert !webContents.isDestroyed();
         return HostZoomMapImpl.getZoomLevel(webContents);
     }
+
+    /**
+     * Set the default zoom level for a given browser context handle (e.g. Profile).
+     * @param context       BrowserContextHandle to update default for.
+     * @param newDefaultZoomLevel   double, new default value.
+     */
+    public static void setDefaultZoomLevel(
+            BrowserContextHandle context, double newDefaultZoomLevel) {
+        HostZoomMapImpl.setDefaultZoomLevel(context, newDefaultZoomLevel);
+    }
+
+    /**
+     * Get the default zoom level for a given browser context handle (e.g. Profile).
+     * @param context       BrowserContextHandle to get default for.
+     * @return double       default zoom level.
+     */
+    public static double getDefaultZoomLevel(BrowserContextHandle context) {
+        return HostZoomMapImpl.getDefaultZoomLevel(context);
+    }
 }
