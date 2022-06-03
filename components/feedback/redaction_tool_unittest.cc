@@ -183,6 +183,8 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "<URL: 3>", PIIType::kURL},  // Potentially PII in parameter.
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
      "/root/<HASH:2754 1>/foo", PIIType::kStableIdentifier},  // Hash string.
+    {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "<UID: 1>",
+     PIIType::kStableIdentifier},
 #if BUILDFLAG(IS_CHROMEOS_ASH)    // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -557,6 +559,12 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
           redaction_input, {PIIType::kMACAddress, PIIType::kStableIdentifier}));
 }
 
+TEST_F(RedactionToolTest, RedactUid) {
+  EXPECT_EQ("<UID: 1>",
+            redactor_.RedactAndKeepSelected(
+                "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
+}
+
 TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
   // Array of pairs containing pre/post redaction versions of the same string.
   // Will be appended to create input and expected output for the test. Keep
@@ -656,7 +664,8 @@ TEST_F(RedactionToolTest, DetectPII) {
          }},
         {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}}, {
       PIIType::kStableIdentifier, {
-        "27540283740a0897ab7c8de0f809add2bacde78f"
+        "27540283740a0897ab7c8de0f809add2bacde78f",
+        "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
       }
     }
   };

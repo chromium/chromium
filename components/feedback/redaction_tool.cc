@@ -389,6 +389,10 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
      "(?i)([0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-"
      "[0-9a-zA-Z]{12})",
      PIIType::kStableIdentifier},
+    // Eche UID which is a base64 conversion of a 32 bytes public key.
+    {"UID",
+     "((?:[A-Za-z0-9+/]{4}){10}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=))",
+     PIIType::kStableIdentifier},
 };
 
 // Like RE2's FindAndConsume, searches for the first occurrence of |pattern| in
