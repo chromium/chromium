@@ -42067,13 +42067,6 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
-<enum name="FileReaderSyncWorkerType">
-  <int value="0" label="Other"/>
-  <int value="1" label="Dedicated Worker"/>
-  <int value="2" label="Shared Worker"/>
-  <int value="3" label="Service Worker"/>
-</enum>
-
 <enum name="FileStorageRequestType">
   <int value="0" label="Save Request"/>
   <int value="1" label="Restore Request"/>
