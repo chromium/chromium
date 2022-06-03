@@ -44,10 +44,6 @@ const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
 const base::Feature kEnablePerVmCoreScheduling{
     "ArcEnablePerVmCoreScheduling", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to pass throttling notifications to Android side.
-const base::Feature kEnableThrottlingNotification{
-    "ArcEnableThrottlingNotification", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to use ARC TTS caching to optimize ARC boot.
 const base::Feature kEnableTTSCaching{"ArcEnableTTSCaching",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

@@ -358,16 +358,15 @@ TEST_F(ArcInstanceThrottleTest, TestPowerNotificationEnabledByDefault) {
 }
 
 // Tests that power instance notification is off by default.
-TEST_F(ArcInstanceThrottleTest, TestPowerNotificationDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({},
-                                       {arc::kEnableThrottlingNotification});
+TEST_F(ArcInstanceThrottleTest, TestPowerNotification) {
   // Set power instance and it should be automatically notified once connection
   // is made.
   CreatePowerInstance();
+  EXPECT_EQ(1, power_instance()->cpu_restriction_state_count());
   GetThrottleObserver()->SetActive(true);
+  EXPECT_EQ(2, power_instance()->cpu_restriction_state_count());
   GetThrottleObserver()->SetActive(false);
-  EXPECT_EQ(0, power_instance()->cpu_restriction_state_count());
+  EXPECT_EQ(3, power_instance()->cpu_restriction_state_count());
 }
 
 class ArcInstanceThrottleVMTest : public testing::Test {

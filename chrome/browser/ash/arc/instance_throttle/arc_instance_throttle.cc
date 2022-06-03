@@ -383,9 +383,6 @@ void ArcInstanceThrottle::RecordCpuRestrictionDisabledUMA(
 
 void ArcInstanceThrottle::NotifyCpuRestriction(
     CpuRestrictionState cpu_restriction_state) {
-  if (!base::FeatureList::IsEnabled(kEnableThrottlingNotification))
-    return;
-
   auto* power =
       ARC_GET_INSTANCE_FOR_METHOD(bridge_->power(), OnCpuRestrictionChanged);
   if (!power)
