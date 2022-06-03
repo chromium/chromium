@@ -87,6 +87,7 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   void SetEmptyTestingFactory(void* context) override;
   bool HasTestingFactory(void* context) override;
   void CreateServiceNow(void* context) override;
+  bool IsServiceCreated(void* context) const override;
 
  private:
   // The mapping between a context and its refcounted service.

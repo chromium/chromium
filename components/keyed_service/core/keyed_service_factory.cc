@@ -122,3 +122,7 @@ void KeyedServiceFactory::SetEmptyTestingFactory(void* context) {
 bool KeyedServiceFactory::HasTestingFactory(void* context) {
   return base::Contains(testing_factories_, context);
 }
+
+bool KeyedServiceFactory::IsServiceCreated(void* context) const {
+  return base::Contains(mapping_, context);
+}

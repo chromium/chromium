@@ -42,6 +42,9 @@ class KEYED_SERVICE_EXPORT DependencyManager {
       DependencyManager* dependency_manager2,
       void* context2);
 
+  // Returns the dependency graph for Keyed Services Factory testing purposes.
+  DependencyGraph& GetDependencyGraphForTesting();
+
  protected:
   DependencyManager();
   virtual ~DependencyManager();

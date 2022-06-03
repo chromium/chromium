@@ -80,6 +80,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceFactory
 
   void SetEmptyTestingFactory(void* context) override;
   bool HasTestingFactory(void* context) override;
+  bool IsServiceCreated(void* context) const override;
 
  private:
   friend class DependencyManager;
