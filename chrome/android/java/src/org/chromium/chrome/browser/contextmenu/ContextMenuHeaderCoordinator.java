@@ -6,20 +6,15 @@ package org.chromium.chrome.browser.contextmenu;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.SpannableString;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
-import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.ColorUtils;
 
 class ContextMenuHeaderCoordinator {
     private PropertyModel mModel;
@@ -84,19 +79,6 @@ class ContextMenuHeaderCoordinator {
 
     private CharSequence getUrl(Activity activity, ContextMenuParams params, Profile profile) {
         CharSequence url = params.getUrl().getSpec();
-        if (!TextUtils.isEmpty(url)) {
-            boolean useDarkColors = !ColorUtils.inNightMode(activity);
-
-            SpannableString spannableUrl =
-                    new SpannableString(ChromeContextMenuPopulator.createUrlText(params));
-            ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
-                    new ChromeAutocompleteSchemeClassifier(profile);
-            OmniboxUrlEmphasizer.emphasizeUrl(spannableUrl, activity,
-                    chromeAutocompleteSchemeClassifier, ConnectionSecurityLevel.NONE, false,
-                    useDarkColors, false);
-            chromeAutocompleteSchemeClassifier.destroy();
-            url = spannableUrl;
-        }
         return url;
     }
 

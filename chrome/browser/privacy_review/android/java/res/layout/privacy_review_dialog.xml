@@ -17,7 +17,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height_no_shadow"/>
+            android:layout_height="56dp"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

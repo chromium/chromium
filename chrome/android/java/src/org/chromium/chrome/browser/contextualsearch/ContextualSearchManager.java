@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -290,13 +289,9 @@ public class ContextualSearchManager
         mTabModelSelector = tabModelSelector;
         mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
 
-        final View controlContainer = mActivity.findViewById(R.id.control_container);
         mOnFocusChangeListener = new OnGlobalFocusChangeListener() {
             @Override
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                if (controlContainer != null && controlContainer.hasFocus()) {
-                    hideContextualSearch(StateChangeReason.UNKNOWN);
-                }
             }
         };
 
@@ -332,14 +327,13 @@ public class ContextualSearchManager
      *                              {@link BottomSheetContent}.
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
      * @param toolbarHeightDp The height of the toolbar in dp.
-     * @param toolbarManager The manager of the toolbar, used to query toolbar state.
      * @param activityType The type of the current activity.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public void initialize(@NonNull ViewGroup parentView, @NonNull LayoutManagerImpl layoutManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull CompositorViewHolder compositorViewHolder, float toolbarHeightDp,
-            @NonNull ToolbarManager toolbarManager, @ActivityType int activityType,
+            @ActivityType int activityType,
             @NonNull IntentRequestTracker intentRequestTracker) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this);
 
@@ -356,7 +350,7 @@ public class ContextualSearchManager
         } else {
             panel = new ContextualSearchPanel(mActivity, mLayoutManager,
                     mLayoutManager.getOverlayPanelManager(), mBrowserControlsStateProvider,
-                    mWindowAndroid, compositorViewHolder, toolbarHeightDp, toolbarManager,
+                    mWindowAndroid, compositorViewHolder, toolbarHeightDp,
                     activityType, mTabSupplier);
         }
 

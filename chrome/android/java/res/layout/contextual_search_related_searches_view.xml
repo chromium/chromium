@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@macro/overlay_panel_bar_background_color"
-        android:layout_marginBottom="@dimen/toolbar_progress_bar_height"
+        android:layout_marginBottom="2dp"
         android:layout_gravity="top">
         <!-- ChipView elements and their container are dynamically added here. -->
     </org.chromium.chrome.browser.compositor.bottombar.contextualsearch.NoSystemGestureFrameLayout>

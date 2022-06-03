@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.messages.ManagedMessageDispatcher;
@@ -37,7 +35,7 @@ import org.chromium.ui.util.TokenHolder;
  * to observe the full screen mode and control the visibility of browser control in order to
  * suspend and resume the queue.
  */
-public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocusChangeListener {
+public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     private static final long QUEUE_RESUMPTION_ON_URL_UNFOCUS_WAIT_DURATION_MS = 1000;
 
     private ManagedMessageDispatcher mQueueController;
@@ -121,7 +119,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
      *                               browser controls.
      * @param messageContainerCoordinator The coordinator able to show and hide message container.
      * @param activityTabProvider The {@link ActivityTabProvider} to get current tab of activity.
-     * @param layoutStateProviderOneShotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      * @param activityLifecycleDispatcher The dispatcher of activity life cycles.
      * @param messageDispatcher The {@link ManagedMessageDispatcher} able to suspend/resume queue.
@@ -129,7 +126,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     public ChromeMessageQueueMediator(BrowserControlsManager browserControlsManager,
             MessageContainerCoordinator messageContainerCoordinator,
             ActivityTabProvider activityTabProvider,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ManagedMessageDispatcher messageDispatcher) {
@@ -139,8 +135,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mActivityTabProvider = activityTabProvider;
         mBrowserControlsObserver = new BrowserControlsObserver();
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);
-        layoutStateProviderOneShotSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::setLayoutStateProvider));
         modalDialogManagerSupplier.addObserver(this::setModalDialogManager);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         activityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
@@ -232,21 +226,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mModalDialogManager = modalDialogManager;
         if (modalDialogManager == null) return;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
-    }
-
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        if (hasFocus) {
-            if (mUrlFocusToken == TokenHolder.INVALID_TOKEN) {
-                mUrlFocusToken = suspendQueue();
-            }
-            mQueueHandler.removeCallbacksAndMessages(null);
-        } else {
-            mQueueHandler.postDelayed(() -> {
-                resumeQueue(mUrlFocusToken);
-                mUrlFocusToken = TokenHolder.INVALID_TOKEN;
-            }, QUEUE_RESUMPTION_ON_URL_UNFOCUS_WAIT_DURATION_MS);
-        }
     }
 
     class BrowserControlsObserver implements BrowserControlsStateProvider.Observer {

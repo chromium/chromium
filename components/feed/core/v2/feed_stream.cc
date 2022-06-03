@@ -148,10 +148,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
   base::RepeatingClosure preference_change_callback =
       base::BindRepeating(&FeedStream::EnabledPreferencesChanged, GetWeakPtr());
-  enable_snippets_.Init(prefs::kEnableSnippets, profile_prefs,
-                        preference_change_callback);
-  articles_list_visible_.Init(prefs::kArticlesListVisible, profile_prefs,
-                              preference_change_callback);
   has_stored_data_.Init(feed::prefs::kHasStoredData, profile_prefs);
 
   web_feed_subscription_coordinator_ =
@@ -477,11 +473,11 @@ void FeedStream::UnloadModelIfNoSurfacesAttachedTask(
 }
 
 bool FeedStream::IsArticlesListVisible() {
-  return articles_list_visible_.GetValue();
+  return false;
 }
 
 bool FeedStream::IsFeedEnabledByEnterprisePolicy() {
-  return enable_snippets_.GetValue();
+  return false;
 }
 
 bool FeedStream::IsEnabledAndVisible() {

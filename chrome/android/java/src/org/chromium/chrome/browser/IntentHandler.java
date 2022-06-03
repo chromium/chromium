@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,7 +50,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -666,9 +664,6 @@ public class IntentHandler {
             return null;
         }
         String query = results.get(0);
-        AutocompleteMatch match =
-                AutocompleteCoordinator.classify(Profile.getLastUsedRegularProfile(), query);
-        if (!match.isSearchSuggestion()) return match.getUrl().getSpec();
 
         List<String> urls = IntentUtils.safeGetStringArrayListExtra(
                 intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);

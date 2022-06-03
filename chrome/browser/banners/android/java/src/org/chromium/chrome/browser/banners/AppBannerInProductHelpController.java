@@ -23,17 +23,13 @@ public class AppBannerInProductHelpController implements UnownedUserData {
     private final Activity mActivity;
     private final Handler mHandler = new Handler();
     private final UserEducationHelper mUserEducationHelper;
-    private final @IdRes int mHiglightMenuItemId;
 
     /**
      * Constructs an AppBannerInProductHelpController.
      * @param activity The current activity.
-     * @param higlightMenuItemId The id of the menu item to highlight.
      */
-    public AppBannerInProductHelpController(Activity activity,
-            @IdRes int higlightMenuItemId) {
+    public AppBannerInProductHelpController(Activity activity) {
         mActivity = activity;
-        mHiglightMenuItemId = higlightMenuItemId;
         mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
     }
 

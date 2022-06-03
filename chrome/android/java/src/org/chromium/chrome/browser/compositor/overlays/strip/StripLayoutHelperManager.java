@@ -284,7 +284,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_Y_OFFSET_DP);
 
         Resources res = context.getResources();
-        mHeight = res.getDimension(R.dimen.tab_strip_height) / res.getDisplayMetrics().density;
+        mHeight = 0;
         mModelSelectorButton.setAccessibilityDescription(
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));

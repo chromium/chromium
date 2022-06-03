@@ -128,7 +128,6 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
                        safe_search_util::YOUTUBE_RESTRICT_MODERATE);
     prefs_->SetBoolean(prefs::kHideWebStoreIcon, false);
     prefs_->SetBoolean(prefs::kSigninAllowed, false);
-    prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
 
     // Copy supervised user settings to prefs.
     for (const auto& entry : kSupervisedUserSettingsPrefMapping) {

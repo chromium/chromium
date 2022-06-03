@@ -31,7 +31,6 @@ class UiUtils {
     private final Context mContext;
     private final int mMinIconSizeDp;
     private final int mDisplayedIconSize;
-    private final Drawable mIncognitoFavicon;
     private final Drawable mGlobeFavicon;
     private LargeIconBridge mLargeIconBridge;
     private final RoundedIconGenerator mIconGenerator;
@@ -42,7 +41,6 @@ class UiUtils {
         Resources res = context.getResources();
         mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
-        mIncognitoFavicon = getTintedIcon(R.drawable.incognito_simple);
         mGlobeFavicon = getTintedIcon(R.drawable.ic_globe_24dp);
         mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
     }
@@ -149,8 +147,6 @@ class UiUtils {
         int totalTabCount = totalTabCount(item);
         if (totalTabCount == 0 || isBeforeFirstTabLoad(item, totalTabCount)) {
             model.set(faviconKey, mGlobeFavicon);
-        } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
-            model.set(faviconKey, mIncognitoFavicon);
         } else {
             GURL url = new GURL(item.url);
             mLargeIconBridge.getLargeIconForUrl(url, mMinIconSizeDp,

@@ -19,20 +19,16 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
@@ -46,7 +42,6 @@ public class ChromeTabModalPresenter
     /** The activity displaying the dialogs. */
     private final Activity mActivity;
     private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
-    private final Supplier<ToolbarManager> mToolbarManagerSupplier;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     private final FullscreenManager mFullscreenManager;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -85,7 +80,6 @@ public class ChromeTabModalPresenter
      * Constructor for initializing dialog container.
      * @param activity The activity displaying the dialogs.
      * @param tabObscuringHandlerSupplier Supplies the {@link TabObscuringHandler} object.
-     * @param toolbarManagerSupplier Supplies the {@link ToolbarManager} object.
      * @param contextualSearchManagerSupplier Supplies the {@link ContextualSearchManager} object.
      * @param fullscreenManager The {@link FullscreenManager} object, used to exit full screen.
      * @param browserControlsVisibilityManager The {@link BrowserControlsVisibilityManager} object.
@@ -93,7 +87,6 @@ public class ChromeTabModalPresenter
      */
     public ChromeTabModalPresenter(Activity activity,
             Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
-            Supplier<ToolbarManager> toolbarManagerSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             FullscreenManager fullscreenManager,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -101,7 +94,6 @@ public class ChromeTabModalPresenter
         super(activity);
         mActivity = activity;
         mTabObscuringHandlerSupplier = tabObscuringHandlerSupplier;
-        mToolbarManagerSupplier = toolbarManagerSupplier;
         mFullscreenManager = fullscreenManager;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mBrowserControlsVisibilityManager.addObserver(this);
@@ -185,41 +177,6 @@ public class ChromeTabModalPresenter
 
     @Override
     protected void setBrowserControlsAccess(boolean restricted) {
-        if (!mToolbarManagerSupplier.hasValue()) return;
-
-        if (restricted) {
-            mActiveTab = mTabModelSelector.getCurrentTab();
-            assert mActiveTab
-                    != null : "Tab modal dialogs should be shown on top of an active tab.";
-
-            // Hide contextual search panel so that bottom toolbar will not be
-            // obscured and back press is not overridden.
-            if (mContextualSearchManagerSupplier.hasValue()) {
-                mContextualSearchManagerSupplier.get().hideContextualSearch(
-                        OverlayPanel.StateChangeReason.UNKNOWN);
-            }
-
-            // Dismiss the action bar that obscures the dialogs but preserve the text selection.
-            WebContents webContents = mActiveTab.getWebContents();
-            if (webContents != null) {
-                saveOrRestoreTextSelection(webContents, true);
-            }
-
-            // Force toolbar to show and disable overflow menu.
-            onTabModalDialogStateChanged(true);
-
-            mToolbarManagerSupplier.get().setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-
-        } else {
-            // Show the action bar back if it was dismissed when the dialogs were showing.
-            WebContents webContents = mActiveTab.getWebContents();
-            if (webContents != null) {
-                saveOrRestoreTextSelection(webContents, false);
-            }
-
-            onTabModalDialogStateChanged(false);
-            mActiveTab = null;
-        }
     }
 
     @Override

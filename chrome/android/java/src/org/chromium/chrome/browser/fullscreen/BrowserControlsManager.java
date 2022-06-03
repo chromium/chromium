@@ -8,10 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -39,7 +35,6 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
-import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.util.TokenHolder;
@@ -78,8 +73,7 @@ public class BrowserControlsManager
             new ObservableSupplierImpl<>();
 
     private TabModelSelectorTabObserver mTabControlsObserver;
-    @Nullable
-    private ControlContainer mControlContainer;
+
     private int mTopControlContainerHeight;
     private int mTopControlsMinHeight;
     private int mBottomControlContainerHeight;
@@ -122,24 +116,7 @@ public class BrowserControlsManager
     private final Runnable mUpdateVisibilityRunnable = new Runnable() {
         @Override
         public void run() {
-            int visibility = shouldShowAndroidControls() ? View.VISIBLE : View.INVISIBLE;
-            if (mControlContainer == null
-                    || mControlContainer.getView().getVisibility() == visibility) {
-                return;
-            }
-            try (TraceEvent e = TraceEvent.scoped(
-                         "BrowserControlsManager.onAndroidVisibilityChanged")) {
-                // requestLayout is required to trigger a new gatherTransparentRegion(), which
-                // only occurs together with a layout and let's SurfaceFlinger trim overlays.
-                // This may be almost equivalent to using View.GONE, but we still use View.INVISIBLE
-                // since drawing caches etc. won't be destroyed, and the layout may be less
-                // expensive.
-                mControlContainer.getView().setVisibility(visibility);
-                mControlContainer.getView().requestLayout();
-                for (BrowserControlsStateProvider.Observer observer : mControlsObservers) {
-                    observer.onAndroidVisibilityChanged(visibility);
-                }
-            }
+
         }
     };
 
@@ -179,11 +156,8 @@ public class BrowserControlsManager
      * @param controlContainer Container holding the controls (Toolbar).
      * @param activityTabProvider Provider of the current activity tab.
      * @param modelSelector The tab model selector that will be monitored for tab changes.
-     * @param resControlContainerHeight The dimension resource ID for the control container height.
      */
-    public void initialize(@Nullable ControlContainer controlContainer,
-            ActivityTabProvider activityTabProvider, final TabModelSelector modelSelector,
-            int resControlContainerHeight) {
+    public void initialize(ActivityTabProvider activityTabProvider, final TabModelSelector modelSelector) {
         mHtmlApiHandler.initialize(activityTabProvider, modelSelector);
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
         mActiveTabObserver = new ActivityTabTabObserver(activityTabProvider) {
@@ -225,14 +199,10 @@ public class BrowserControlsManager
                 }
             }
         };
-        assert controlContainer != null || mControlsPosition == ControlsPosition.NONE;
-        mControlContainer = controlContainer;
 
         switch (mControlsPosition) {
             case ControlsPosition.TOP:
-                assert resControlContainerHeight != ActivityUtils.NO_RESOURCE_ID;
-                mTopControlContainerHeight =
-                        mActivity.getResources().getDimensionPixelSize(resControlContainerHeight);
+                mTopControlContainerHeight = 0;
                 break;
             case ControlsPosition.NONE:
                 // Treat the case of no controls as controls always being totally offscreen.
@@ -447,13 +417,7 @@ public class BrowserControlsManager
      * animation, preventing message loop stalls due to untimely invalidation.
      */
     private void scheduleVisibilityUpdate() {
-        if (mControlContainer == null) {
-            return;
-        }
-        final int desiredVisibility = shouldShowAndroidControls() ? View.VISIBLE : View.INVISIBLE;
-        if (mControlContainer.getView().getVisibility() == desiredVisibility) return;
-        mControlContainer.getView().removeCallbacks(mUpdateVisibilityRunnable);
-        mControlContainer.getView().postOnAnimation(mUpdateVisibilityRunnable);
+
     }
 
     /**
@@ -480,29 +444,7 @@ public class BrowserControlsManager
     }
 
     private boolean shouldShowAndroidControls() {
-        if (mControlContainer == null) return false;
-        if (mHidingTokenHolder.hasTokens()) {
-            return false;
-        }
-        if (offsetOverridden()) return true;
-
-        boolean showControls = !BrowserControlsUtils.drawControlsAsTexture(this);
-        ViewGroup contentView = mTab != null ? mTab.getContentView() : null;
-        if (contentView == null) return showControls;
-
-        for (int i = 0; i < contentView.getChildCount(); i++) {
-            View child = contentView.getChildAt(i);
-            if (!(child.getLayoutParams() instanceof FrameLayout.LayoutParams)) continue;
-
-            FrameLayout.LayoutParams layoutParams =
-                    (FrameLayout.LayoutParams) child.getLayoutParams();
-            if (Gravity.TOP == (layoutParams.gravity & Gravity.FILL_VERTICAL)) {
-                showControls = true;
-                break;
-            }
-        }
-
-        return showControls;
+        return false;
     }
 
     /**
@@ -568,22 +510,7 @@ public class BrowserControlsManager
     }
 
     private void notifyControlOffsetChanged() {
-        try (TraceEvent e =
-                        TraceEvent.scoped("BrowserControlsManager.notifyControlOffsetChanged")) {
-            scheduleVisibilityUpdate();
-            if (shouldShowAndroidControls()) {
-                mControlContainer.getView().setTranslationY(getTopControlOffset());
-            }
 
-            // Whether we need the compositor to draw again to update our animation.
-            // Should be |false| when the browser controls are only moved through the page
-            // scrolling.
-            boolean needsAnimate = shouldShowAndroidControls();
-            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-                obs.onControlsOffsetChanged(getTopControlOffset(), getTopControlsMinHeightOffset(),
-                        getBottomControlOffset(), getBottomControlsMinHeightOffset(), needsAnimate);
-            }
-        }
     }
 
     /**

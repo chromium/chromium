@@ -28,7 +28,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -152,14 +151,6 @@ public class WarmupManager {
                 ViewStub stub = (ViewStub) mainView.findViewById(R.id.control_container_stub);
                 stub.setLayoutResource(toolbarContainerId);
                 stub.inflate();
-            }
-            // It cannot be assumed that the result of toolbarContainerStub.inflate() will be
-            // the control container since it may be wrapped in another view.
-            ControlContainer controlContainer =
-                    (ControlContainer) mainView.findViewById(R.id.control_container);
-
-            if (toolbarId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
-                controlContainer.initWithToolbar(toolbarId);
             }
             return mainView;
         } catch (InflateException e) {

@@ -13,9 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -67,12 +65,6 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
         final boolean useDarkColors = !ColorUtils.inNightMode(activity);
 
-        ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
-                new ChromeAutocompleteSchemeClassifier(mProfile);
-        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, activity,
-                chromeAutocompleteSchemeClassifier, securityLevel, false /* isInternalPage */,
-                useDarkColors, true /* emphasizeHttpsScheme */);
-        chromeAutocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
                 new SpannableString(activity.getString(R.string.usb_chooser_dialog_prompt, origin));

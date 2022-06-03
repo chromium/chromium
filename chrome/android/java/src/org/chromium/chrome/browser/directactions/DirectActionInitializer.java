@@ -11,11 +11,7 @@ import android.os.CancellationSignal;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.autofill_assistant.AssistantDependencyUtilsChrome;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -32,9 +28,6 @@ import java.util.function.Consumer;
 /**
  * A wrapper for initializing {@link DirectActionCoordinator} with standard direct actions from
  * Chrome activities.
- *
- * <p>To extend the set of direct actions beyond what's provided by this class, register handlers to
- * the coordinator {@code mCoordinator}.
  */
 @RequiresApi(29)
 public class DirectActionInitializer implements NativeInitObserver, DestroyObserver {
@@ -50,10 +43,6 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
     private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private Runnable mGoBackAction;
     private boolean mDirectActionsRegistered;
-    @Nullable
-    private DirectActionCoordinator mCoordinator;
-    @Nullable
-    private MenuDirectActionHandler mMenuHandler;
 
     /**
      * @param context The current context, often the activity instance.
@@ -95,11 +84,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      */
     public void onPerformDirectAction(String actionId, Bundle arguments,
             CancellationSignal cancellationSignal, Consumer<Bundle> callback) {
-        if (mCoordinator == null || !mDirectActionsRegistered) {
-            callback.accept(Bundle.EMPTY);
-            return;
-        }
-        mCoordinator.onPerformDirectAction(actionId, arguments, callback);
+        callback.accept(Bundle.EMPTY);
     }
 
     /**
@@ -112,55 +97,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      * @param callback Callback to run when the action is done.
      */
     public void onGetDirectActions(CancellationSignal cancellationSignal, Consumer<List> callback) {
-        if (mCoordinator == null || !mDirectActionsRegistered) {
-            callback.accept(Collections.emptyList());
-            return;
-        }
-        mCoordinator.onGetDirectActions(callback);
-    }
-
-    /**
-     * Registers common action that manipulate the current activity or the browser content.
-     *
-     * @param context The current context, often the activity instance.
-     * @param activityType The type of the current activity
-     * @param actionController Controller to use to execute menu actions
-     * @param goBackAction Implementation of the "go_back" action, usually {@link
-     *         android.app.Activity#onBackPressed}.
-     * @param tabModelSelector The activity's {@link TabModelSelector}
-     * @param bottomSheetController Controller for the activity's bottom sheet, if it exists
-     * @param browserControls Browser controls manager of the activity
-     * @param compositorViewHolder Compositor view holder of the activity
-     * @param activityTabProvider Activity tab provider
-     */
-    private void registerCommonChromeActions(Context context, @ActivityType int activityType,
-            MenuOrKeyboardActionController actionController, Runnable goBackAction,
-            TabModelSelector tabModelSelector, @Nullable BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            ActivityTabProvider activityTabProvider) {
-        mCoordinator.register(new GoBackDirectActionHandler(goBackAction));
-
-        registerMenuHandlerIfNecessary(actionController, tabModelSelector)
-                .allowlistActions(R.id.forward_menu_id, R.id.reload_menu_id);
-
-        if (AssistantDependencyUtilsChrome.areDirectActionsAvailable(activityType)) {
-            DirectActionHandler handler = AutofillAssistantFacade.createDirectActionHandler(context,
-                    bottomSheetController, browserControls, compositorViewHolder,
-                    activityTabProvider);
-            if (handler != null) mCoordinator.register(handler);
-        }
-    }
-
-    /**
-     * Registers actions that manipulate tabs in addition to the common actions.
-     *
-     * @param actionController Controller to use to execute menu action
-     * @param tabModelSelector The activity's {@link TabModelSelector}
-     */
-    void registerTabManipulationActions(
-            MenuOrKeyboardActionController actionController, TabModelSelector tabModelSelector) {
-        registerMenuHandlerIfNecessary(actionController, tabModelSelector).allowAllActions();
-        mCoordinator.register(new CloseTabDirectActionHandler(tabModelSelector));
+        callback.accept(Collections.emptyList());
     }
 
     /**
@@ -171,54 +108,17 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      */
     void allowMenuActions(MenuOrKeyboardActionController actionController,
             TabModelSelector tabModelSelector, Integer... itemIds) {
-        registerMenuHandlerIfNecessary(actionController, tabModelSelector)
-                .allowlistActions(itemIds);
     }
 
     // Implements DestroyObserver
     @Override
     public void onDestroy() {
-        mCoordinator = null;
         mDirectActionsRegistered = false;
     }
 
     // Implements NativeInitObserver
     @Override
     public void onFinishNativeInitialization() {
-        mCoordinator = AppHooks.get().createDirectActionCoordinator();
-        if (mCoordinator != null) {
-            mCoordinator.init(/* isEnabled= */ () -> !mTabModelSelector.isIncognitoSelected());
-            registerDirectActions();
-        }
     }
 
-    /**
-     * Registers the set of direct actions available to assist apps.
-     */
-    void registerDirectActions() {
-        registerCommonChromeActions(mContext, mActivityType, mMenuOrKeyboardActionController,
-                mGoBackAction, mTabModelSelector,
-                AssistantDependencyUtilsChrome.areDirectActionsAvailable(mActivityType)
-                        ? mBottomSheetController
-                        : null,
-                mBrowserControls, mCompositorViewHolder, mActivityTabProvider);
-
-        if (mActivityType == ActivityType.TABBED) {
-            registerTabManipulationActions(mMenuOrKeyboardActionController, mTabModelSelector);
-        } else if (mActivityType == ActivityType.CUSTOM_TAB) {
-            allowMenuActions(mMenuOrKeyboardActionController, mTabModelSelector,
-                    R.id.preferences_id);
-        }
-
-        mDirectActionsRegistered = true;
-    }
-
-    private MenuDirectActionHandler registerMenuHandlerIfNecessary(
-            MenuOrKeyboardActionController actionController, TabModelSelector tabModelSelector) {
-        if (mMenuHandler == null) {
-            mMenuHandler = new MenuDirectActionHandler(actionController, tabModelSelector);
-            mCoordinator.register(mMenuHandler);
-        }
-        return mMenuHandler;
-    }
 }

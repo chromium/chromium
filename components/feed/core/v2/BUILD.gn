@@ -196,12 +196,6 @@ source_set("core_unit_tests") {
   testonly = true
   sources = [
     "algorithm_unittest.cc",
-    "api_test/feed_api_notice_card_unittest.cc",
-    "api_test/feed_api_reliability_logging_unittest.cc",
-    "api_test/feed_api_stream_unittest.cc",
-    "api_test/feed_api_subscriptions_unittest.cc",
-    "api_test/feed_api_test.cc",
-    "api_test/feed_api_test.h",
     "feed_network_impl_unittest.cc",
     "feed_store_unittest.cc",
     "feedstore_util_unittest.cc",

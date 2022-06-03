@@ -64,9 +64,7 @@ public class MerchantTrustBottomSheetMediator {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mMetrics = metrics;
-        mTopControlsHeightDp = (int) (mContext.getResources().getDimensionPixelSize(
-                                              R.dimen.toolbar_height_no_shadow)
-                / mWindowAndroid.getDisplay().getDipScale());
+        mTopControlsHeightDp = 0;
         mFaviconHelper = faviconHelper;
         mFaviconSize =
                 mContext.getResources().getDimensionPixelSize(R.dimen.preview_tab_favicon_size);

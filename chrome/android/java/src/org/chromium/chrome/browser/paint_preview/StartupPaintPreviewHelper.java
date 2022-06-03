@@ -10,7 +10,6 @@ import android.os.SystemClock;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -48,7 +46,6 @@ public class StartupPaintPreviewHelper {
      */
     private final long mActivityCreationTime;
     private final BrowserControlsManager mBrowserControlsManager;
-    private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
     private final ObserverList<PaintPreviewMetricsObserver> mMetricsObservers =
             new ObserverList<>();
 
@@ -62,15 +59,12 @@ public class StartupPaintPreviewHelper {
      *         visibility delegate
      * @param tabModelSelector The TabModelSelector to observe.
      * @param willShowStartSurface Whether the start surface will be shown.
-     * @param progressBarCoordinatorSupplier Supplier for the progress bar.
      */
     public StartupPaintPreviewHelper(WindowAndroid windowAndroid, long activityCreationTime,
             BrowserControlsManager browserControlsManager, TabModelSelector tabModelSelector,
-            boolean willShowStartSurface,
-            Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
+            boolean willShowStartSurface) {
         mActivityCreationTime = activityCreationTime;
         mBrowserControlsManager = browserControlsManager;
-        mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
 
         if (MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(
                     windowAndroid.getContext().get())
@@ -147,15 +141,9 @@ public class StartupPaintPreviewHelper {
         }
 
         sShouldShowOnRestore = false;
-        LoadProgressCoordinator loadProgressCoordinator =
-                paintPreviewHelper.mProgressBarCoordinatorSupplier.get();
         Runnable progressSimulatorCallback = () -> {
-            if (loadProgressCoordinator == null) return;
-            loadProgressCoordinator.simulateLoadProgressCompletion();
         };
         Callback<Boolean> progressPreventionCallback = (preventProgressbar) -> {
-            if (loadProgressCoordinator == null) return;
-            loadProgressCoordinator.setPreventUpdates(preventProgressbar);
         };
 
         StartupPaintPreview startupPaintPreview = new StartupPaintPreview(tab,

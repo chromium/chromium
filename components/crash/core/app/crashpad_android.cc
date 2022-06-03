@@ -278,7 +278,6 @@ void SetBuildInfoAnnotations(std::map<std::string, std::string>* annotations) {
   (*annotations)["abi_name"] = info->abi_name();
   (*annotations)["custom_themes"] = info->custom_themes();
   (*annotations)["resources_version"] = info->resources_version();
-  (*annotations)["gms_core_version"] = info->gms_version_code();
 
   if (info->firebase_app_id()[0] != '\0') {
     (*annotations)["package"] = std::string(info->firebase_app_id()) + " v" +

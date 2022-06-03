@@ -43,7 +43,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
@@ -294,11 +293,6 @@ public class ChromeProvidedSharingOptionsProvider {
                 || enableAllUpcomingSharingFeatures) {
             mOrderedFirstPartyOptions.add(createLightweightReactionsFirstPartyOption());
         }
-        mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyGifFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
         mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
         if (!mIsIncognito) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
@@ -351,82 +345,6 @@ public class ChromeProvidedSharingOptionsProvider {
                             mBottomSheetController, mImageEditorModuleProvider);
                     mBottomSheetController.addObserver(coordinator);
                     mBottomSheetController.hideContent(mBottomSheetContent, true);
-                })
-                .build();
-    }
-
-    private FirstPartyOption createCopyLinkFirstPartyOption() {
-        return new FirstPartyOptionBuilder(
-                ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE)
-                .setContentTypesToDisableFor(ContentType.LINK_AND_TEXT)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_url)
-                .setFeatureNameForMetrics("SharingHubAndroid.CopyURLSelected")
-                .setOnClickCallback((view) -> {
-                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(
-                            ClipData.newPlainText(mShareParams.getTitle(), mShareParams.getUrl()));
-                    Toast.makeText(mActivity, R.string.link_copied, Toast.LENGTH_SHORT).show();
-                })
-                .build();
-    }
-
-    private FirstPartyOption createCopyGifFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.IMAGE, ContentType.IMAGE_AND_LINK)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_gif)
-                // Enables only for GIF and Lightweight Reactions
-                .setDetailedContentTypesToDisableFor(DetailedContentType.IMAGE,
-                        DetailedContentType.WEB_NOTES, DetailedContentType.NOT_SPECIFIED)
-                .setFeatureNameForMetrics("SharingHubAndroid.CopyGifSelected")
-                .setOnClickCallback((view) -> {
-                    if (!mShareParams.getFileUris().isEmpty()) {
-                        Clipboard.getInstance().setImageUri(mShareParams.getFileUris().get(0));
-                        Toast.makeText(mActivity, R.string.gif_copied, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .build();
-    }
-
-    private FirstPartyOption createCopyImageFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.IMAGE, ContentType.IMAGE_AND_LINK)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_image)
-                .setFeatureNameForMetrics("SharingHubAndroid.CopyImageSelected")
-                .setDetailedContentTypesToDisableFor(
-                        DetailedContentType.GIF, DetailedContentType.LIGHTWEIGHT_REACTION)
-                .setOnClickCallback((view) -> {
-                    if (!mShareParams.getFileUris().isEmpty()) {
-                        Clipboard.getInstance().setImageUri(mShareParams.getFileUris().get(0));
-                        Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .build();
-    }
-
-    private FirstPartyOption createCopyFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.LINK_AND_TEXT)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy)
-                .setFeatureNameForMetrics("SharingHubAndroid.CopySelected")
-                .setOnClickCallback((view) -> {
-                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(ClipData.newPlainText(
-                            mShareParams.getTitle(), mShareParams.getTextAndUrl()));
-                    Toast.makeText(mActivity, R.string.sharing_copied, Toast.LENGTH_SHORT).show();
-                })
-                .build();
-    }
-
-    private FirstPartyOption createCopyTextFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT)
-                .setContentTypesToDisableFor(ContentType.LINK_AND_TEXT)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_text)
-                .setFeatureNameForMetrics("SharingHubAndroid.CopyTextSelected")
-                .setOnClickCallback((view) -> {
-                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(
-                            ClipData.newPlainText(mShareParams.getTitle(), mShareParams.getText()));
-                    Toast.makeText(mActivity, R.string.text_copied, Toast.LENGTH_SHORT).show();
                 })
                 .build();
     }

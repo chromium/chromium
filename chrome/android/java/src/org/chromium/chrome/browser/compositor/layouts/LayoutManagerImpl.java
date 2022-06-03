@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -58,9 +57,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
-import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -270,12 +266,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         Class[] overlayOrder = new Class[] {
                 HistoryNavigationCoordinator.getSceneOverlayClass(),
                 ContinuousSearchContainerCoordinator.getSceneOverlayClass(),
-                TopToolbarOverlayCoordinator.class,
-                // StripLayoutHelperManager should be updated before ScrollingBottomViewSceneLayer
-                // Since ScrollingBottomViewSceneLayer change the container size,
-                // it causes relocation tab strip scene layer.
                 StripLayoutHelperManager.class,
-                ScrollingBottomViewSceneLayer.class,
                 StatusIndicatorCoordinator.getSceneOverlayClass(),
                 ContextualSearchPanel.class};
         // clang-format on
@@ -458,12 +449,10 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * Initializes the {@link LayoutManagerImpl}.  Must be called before using this object.
      * @param selector                 A {@link TabModelSelector} instance.
      * @param creator                  A {@link TabCreatorManager} instance.
-     * @param controlContainer         A {@link ControlContainer} for browser controls' layout.
      * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
      * @param topUiColorProvider       A theme color provider for the top browser controls.
      */
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();

@@ -135,7 +135,6 @@ source_set("unit_tests") {
     "remote/remote_suggestions_fetcher_impl_unittest.cc",
     "remote/remote_suggestions_provider_impl_unittest.cc",
     "remote/remote_suggestions_scheduler_impl_unittest.cc",
-    "remote/remote_suggestions_status_service_impl_unittest.cc",
     "remote/request_throttler_unittest.cc",
     "remote/test_utils.cc",
     "remote/test_utils.h",

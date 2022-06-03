@@ -251,7 +251,6 @@ static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
   builder.SetFormData("abi_name", info->abi_name());
   builder.SetFormData("custom_themes", info->custom_themes());
   builder.SetFormData("resources_version", info->resources_version());
-  builder.SetFormData("gms_core_version", info->gms_version_code());
   builder.SetFileAttachment(kAnrKey, anr_file_name, anr_reader,
                             "application/octet-stream");
   if (!WriteBodyToFile(builder.GetBodyStream().get(), writer)) {

@@ -68,12 +68,6 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
     }
 
     @Override
-    public AssistantFeedbackUtil createFeedbackUtil() {
-        // TODO(b/222671580): Implement
-        return null;
-    }
-
-    @Override
     public AssistantTabUtil createTabUtil() {
         // TODO(b/222671580): Implement
         return null;

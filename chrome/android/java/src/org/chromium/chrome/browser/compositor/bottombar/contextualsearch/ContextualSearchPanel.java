@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -97,9 +96,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /** The {@link WindowAndroid} for the current activity.  */
     private final WindowAndroid mWindowAndroid;
 
-    /** Used to query toolbar state. */
-    private final ToolbarManager mToolbarManager;
-
     /** The {@link ActivityType} for the current activity. */
     private final @ActivityType int mActivityType;
 
@@ -151,7 +147,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
      * @param toolbarHeightDp The height of the toolbar in dp.
-     * @param toolbarManager The {@link ToolbarManager}, used to query for colors.
      * @param activityType The {@link ActivityType} for the current activity.
      * @param currentTabSupplier Supplies the current activity tab.
      */
@@ -160,7 +155,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid,
             @NonNull CompositorViewHolder compositorViewHolder, float toolbarHeightDp,
-            @NonNull ToolbarManager toolbarManager, @ActivityType int activityType,
+            @ActivityType int activityType,
             @NonNull Supplier<Tab> currentTabSupplier) {
         super(context, layoutManager, panelManager, browserControlsStateProvider, windowAndroid,
                 compositorViewHolder, toolbarHeightDp, currentTabSupplier);
@@ -168,7 +163,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mCompositorViewHolder = compositorViewHolder;
         mWindowAndroid = windowAndroid;
-        mToolbarManager = toolbarManager;
         mActivityType = activityType;
         mCurrentTabSupplier = currentTabSupplier;
 
@@ -793,11 +787,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getSearchBarControl().setSearchTerm(searchTerm, pronunciation);
         getSearchBarControl().animateSearchTermResolution();
-        // TODO(donnd): this can probably be removed or changed to an assert.
-        if (mActivity == null || mToolbarManager == null) return;
-
-        getSearchBarControl().setQuickAction(
-                quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
     }
 
     /**

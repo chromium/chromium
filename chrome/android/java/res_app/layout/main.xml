@@ -75,40 +75,9 @@
             android:layout_height="0dp" />
 
         <ViewStub
-            android:id="@+id/omnibox_results_container_stub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_anchor="@id/control_container"
-            android:inflatedId="@+id/omnibox_results_container"
-            android:layout="@layout/omnibox_results_container" />
-
-        <!-- Toolbar size area painted black to avoid the action bar showing the window background -->
-        <View
-            android:id="@+id/action_bar_black_background"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height_no_shadow"
-            android:background="@android:color/black"
-            android:visibility="gone" />
-
-        <ViewStub
-            android:id="@+id/bottom_controls_stub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:inflatedId="@+id/bottom_controls"
-            android:layout="@layout/bottom_control_container" />
-
-        <ViewStub
             android:id="@+id/control_container_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <ViewStub
-            android:id="@+id/grid_tab_switcher_view_holder_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inflatedId="@+id/grid_tab_switcher_view_holder"
-            android:layout="@layout/grid_tab_switcher_view_holder" />
 
         <ViewStub
             android:id="@+id/continuous_search_container_stub"
@@ -131,13 +100,6 @@
             android:layout_height="wrap_content"
             android:inflatedId="@+id/status_indicator"
             android:layout="@layout/status_indicator_container" />
-
-        <ViewStub
-            android:id="@+id/empty_container_stub"
-            android:inflatedId="@+id/empty_container"
-            android:layout="@layout/empty_background_view_tablet"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
         <FrameLayout
             android:id="@+id/sheet_container"

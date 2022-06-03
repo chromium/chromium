@@ -262,11 +262,7 @@ void AvailableOfflineContentProvider::LaunchDownloadsPage(
 }
 
 void AvailableOfflineContentProvider::ListVisibilityChanged(bool is_visible) {
-  Profile* profile = GetProfile();
-  if (!profile)
-    return;
-  profile->GetPrefs()->SetBoolean(feed::prefs::kArticlesListVisible,
-                                  is_visible);
+
 }
 
 // static
@@ -314,8 +310,7 @@ void AvailableOfflineContentProvider::ListFinalize(
   for (const OfflineItem& item : selected)
     selected_ids.push_back(item.id);
 
-  bool list_visible_by_prefs =
-      profile->GetPrefs()->GetBoolean(feed::prefs::kArticlesListVisible);
+  bool list_visible_by_prefs = false;
 
   auto complete =
       [](AvailableOfflineContentProvider::ListCallback callback,

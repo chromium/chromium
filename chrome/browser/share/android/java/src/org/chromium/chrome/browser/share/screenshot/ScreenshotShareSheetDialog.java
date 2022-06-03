@@ -9,11 +9,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -59,16 +57,6 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        ScreenshotShareSheetView screenshotShareSheetView =
-                (ScreenshotShareSheetView) getActivity().getLayoutInflater().inflate(
-                        R.layout.screenshot_share_sheet, null);
-        builder.setView(screenshotShareSheetView);
-
-        new ScreenshotShareSheetCoordinator(mContext, mScreenshot, this::dismissAllowingStateLoss,
-                screenshotShareSheetView, mWindowAndroid, mShareUrl, mChromeOptionShareCallback,
-                mInstallCallback);
-        return builder.create();
+        return null;
     }
 }

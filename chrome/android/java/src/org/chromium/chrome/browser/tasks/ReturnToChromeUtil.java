@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -22,7 +21,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -30,8 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -71,66 +67,6 @@ public final class ReturnToChromeUtil {
             "Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch";
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
-
-    /** An inner class to monitor the state of a newly create Tab. */
-    private static class TabStateObserver implements UrlFocusChangeListener {
-        private final Tab mNewTab;
-        private final TabModel mCurrentTabModel;
-        private final OmniboxStub mOmniboxStub;
-        private final @Nullable Runnable mEmptyTabCloseCallback;
-        private final ActivityTabProvider mActivityTabProvider;
-        private boolean mIsOmniboxFocused;
-
-        TabStateObserver(@NonNull Tab newTab, @NonNull TabModel currentTabModel,
-                @NonNull OmniboxStub omniboxStub, @Nullable Runnable emptyTabCloseCallback,
-                ActivityTabProvider activityTabProvider) {
-            mNewTab = newTab;
-            mCurrentTabModel = currentTabModel;
-            mEmptyTabCloseCallback = emptyTabCloseCallback;
-            mOmniboxStub = omniboxStub;
-            mActivityTabProvider = activityTabProvider;
-            mIsOmniboxFocused =
-                    mOmniboxStub.isUrlBarFocused() && activityTabProvider.get() == newTab;
-            mOmniboxStub.addUrlFocusChangeListener(this);
-        }
-
-        @Override
-        public void onUrlFocusChange(boolean hasFocus) {
-            // Filter out focus events that happen when the tab itself in not the current tab.
-            if (mActivityTabProvider.get() != mNewTab) return;
-
-            if (hasFocus) {
-                // It is possible that unfocusing event happens before the Omnibox
-                // first gets focused, use this flag to skip the cases.
-                mIsOmniboxFocused = true;
-                return;
-            }
-
-            if (!hasFocus && mIsOmniboxFocused) {
-                if (mNewTab.getUrl().isEmpty()) {
-                    if (mEmptyTabCloseCallback != null) {
-                        mEmptyTabCloseCallback.run();
-                    }
-                    // Closes the Tab after any necessary transition is done. This
-                    // is safer than closing the Tab first, especially if it is the
-                    // only Tab in the TabModel.
-                    if (!mNewTab.isClosing()) {
-                        mCurrentTabModel.closeTab(mNewTab);
-                    }
-                } else {
-                    // After the tab navigates, we will set the keep tab property,
-                    // and the new tab won't be deleted from the TabModel when the
-                    // back button is tapped.
-                    StartSurfaceUserData.setKeepTab(mNewTab, true);
-                }
-
-                // No matter whether the back button is tapped or the Tab navigates,
-                // {@link onUrlFocusChanged} with focus == false is always called.
-                // Removes the observer here.
-                mOmniboxStub.removeUrlFocusChangeListener(this);
-            }
-        }
-    }
 
     @VisibleForTesting
     public static final String TAB_SWITCHER_ON_RETURN_MS_PARAM = "tab_switcher_on_return_time_ms";
@@ -347,15 +283,6 @@ public final class ReturnToChromeUtil {
                                      parentTab);
         if (isBackground) {
             StartSurfaceUserData.setOpenedFromStart(newTab);
-        }
-
-        if (focusOnOmnibox && newTab != null) {
-            // This observer lives for as long as the user is focused in the Omnibox. It stops
-            // observing once the focus is cleared, e.g, Tab navigates or user taps the back
-            // button.
-            new TabStateObserver(newTab, currentTabModel,
-                    chromeActivity.getToolbarManager().getOmniboxStub(), emptyTabCloseCallback,
-                    chromeActivity.getActivityTabProvider());
         }
 
         if (params.getTransitionType() == PageTransition.AUTO_BOOKMARK) {

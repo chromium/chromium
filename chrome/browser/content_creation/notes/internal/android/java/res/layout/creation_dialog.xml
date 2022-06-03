@@ -14,8 +14,6 @@
     android:contentDescription="@string/content_creation_note_dialog_description"
     android:importantForAccessibility="yes">
 
-    <include layout="@layout/top_bar"/>
-
     <RelativeLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"

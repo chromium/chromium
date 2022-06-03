@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.Manifest;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -18,7 +17,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -127,24 +125,7 @@ public class UmaSessionStats {
         updatePreferences();
         updateMetricsServiceState();
         DefaultBrowserInfo.logDefaultBrowserStats();
-        if (permissionDelegate != null) {
-            recordAudioPermissionState(permissionDelegate);
-        }
-    }
 
-    private void recordAudioPermissionState(AndroidPermissionDelegate permissionDelegate) {
-        @AudioPermissionState
-        int permissionState;
-        if (permissionDelegate.hasPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.GRANTED;
-        } else if (permissionDelegate.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.DENIED_CAN_ASK_AGAIN;
-        } else {
-            permissionState = AudioPermissionState.DENIED_CANNOT_ASK_AGAIN;
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                "VoiceInteraction.AudioPermissionEvent.SessionStart", permissionState,
-                AudioPermissionState.NUM_ENTRIES);
     }
 
     private static void ensureNativeInitialized() {

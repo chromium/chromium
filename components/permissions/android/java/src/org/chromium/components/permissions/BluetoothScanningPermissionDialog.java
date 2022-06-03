@@ -29,8 +29,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
-import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -112,13 +110,6 @@ public class BluetoothScanningPermissionDialog {
         SpannableString originSpannableString = new SpannableString(origin);
 
         final boolean useDarkColors = !ColorUtils.inNightMode(mContext);
-        AutocompleteSchemeClassifier autocompleteSchemeClassifier =
-                mDelegate.createAutocompleteSchemeClassifier();
-        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, mContext,
-                autocompleteSchemeClassifier, securityLevel,
-                /*isInternalPage=*/false, useDarkColors,
-                /*emphasizeScheme=*/true);
-        autocompleteSchemeClassifier.destroy();
 
         // Construct a full string and replace the |originSpannableString| text with emphasized
         // version.

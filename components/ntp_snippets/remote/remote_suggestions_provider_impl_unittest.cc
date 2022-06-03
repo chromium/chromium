@@ -1069,9 +1069,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, DontNotifyIfNotAvailable) {
                   Category::FromRemoteCategory(kOtherCategoryId)),
               SizeIs(1));
 
-  // Set the pref that disables remote suggestions.
-  pref_service()->SetBoolean(feed::prefs::kEnableSnippets, false);
-
   // Recreate the provider to simulate a Chrome start.
   ResetSuggestionsProvider(
       /*use_mock_remote_suggestions_status_service=*/false);

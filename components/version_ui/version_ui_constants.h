@@ -65,8 +65,6 @@ extern const char kOSType[];
 #endif
 #if BUILDFLAG(IS_ANDROID)
 extern const char kOSVersion[];
-extern const char kGmsName[];
-extern const char kGmsVersion[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kPlatform[];

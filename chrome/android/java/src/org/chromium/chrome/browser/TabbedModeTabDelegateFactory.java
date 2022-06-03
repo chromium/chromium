@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -65,7 +64,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<Long> mLastUserInteractionTimeSupplier;
     private final BooleanSupplier mHadWarmStartSupplier;
     private final JankTracker mJankTracker;
-    private final Supplier<Toolbar> mToolbarSupplier;
 
     public TabbedModeTabDelegateFactory(Activity activity,
             BrowserControlsVisibilityDelegate appBrowserControlsVisibilityDelegate,
@@ -82,7 +80,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             BrowserControlsManager browserControlsManager, Supplier<Tab> currentTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher, WindowAndroid windowAndroid,
             Supplier<Long> lastUserInteractionTimeSupplier, BooleanSupplier hadWarmStartSupplier,
-            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier) {
+            JankTracker jankTracker) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -104,7 +102,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
         mHadWarmStartSupplier = hadWarmStartSupplier;
         mJankTracker = jankTracker;
-        mToolbarSupplier = toolbarSupplier;
     }
 
     @Override

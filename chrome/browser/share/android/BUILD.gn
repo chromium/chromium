@@ -28,7 +28,6 @@ android_resources("java_resources") {
     "java/res/layout/qrcode_open_settings_layout.xml",
     "java/res/layout/qrcode_permission_layout.xml",
     "java/res/layout/qrcode_share_layout.xml",
-    "java/res/layout/screenshot_share_sheet.xml",
     "java/res/values-night/colors.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/colors.xml",

@@ -14,7 +14,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoDeps;
@@ -181,7 +180,7 @@ public final class FeatureNotificationUtils {
             return !shouldShowDefaultBrowserPromo();
         } else if (featureType == FeatureType.NTP_SUGGESTION_CARD) {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            return !prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+            return true;
         }
         return false;
     }

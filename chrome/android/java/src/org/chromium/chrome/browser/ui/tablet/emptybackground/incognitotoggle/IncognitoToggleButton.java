@@ -72,7 +72,6 @@ public class IncognitoToggleButton extends ChromeImageButton {
      * @param isIncognitoSelected Whether incognito is currently selected.
      */
     protected void setImage(boolean isIncognitoSelected) {
-        setImageResource(R.drawable.incognito_simple);
         ApiCompatibilityUtils.setImageTintList(this,
                 AppCompatResources.getColorStateList(getContext(),
                         isIncognitoSelected ? R.color.white_mode_tint

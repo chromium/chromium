@@ -12,14 +12,6 @@ class PrefRegistrySimple;
 namespace feed {
 namespace prefs {
 
-// If set to false, remote suggestions are completely disabled. This is set by
-// an enterprise policy.
-extern const char kEnableSnippets[];
-
-// Whether the list of NTP snippets is visible in UI. This is set to false when
-// the user toggles the list off.
-extern const char kArticlesListVisible[];
-
 // Choose how video previews will automatically play.
 extern const char kVideoPreviewsType[];
 

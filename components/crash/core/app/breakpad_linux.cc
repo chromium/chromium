@@ -1781,8 +1781,6 @@ void HandleCrashDump(const BreakpadInfo& info) {
     writer.AddBoundary();
     writer.AddPairString(board, android_build_info->board());
     writer.AddBoundary();
-    writer.AddPairString(gms_core_version,
-        android_build_info->gms_version_code());
     writer.AddBoundary();
     writer.AddPairString(installer_package_name,
                          android_build_info->installer_package_name());

@@ -44,8 +44,7 @@
             android:layout_height="match_parent"
             android:layout_width="@dimen/toolbar_button_size"
             android:paddingHorizontal="@dimen/toolbar_button_padding"
-            app:tint="@color/default_icon_color_tint_list"
-            style="@style/ToolbarButton"/>
+            app:tint="@color/default_icon_color_tint_list" />
 
         <TextView
             android:id="@+id/lightweight_reactions_toolbar_title"
@@ -64,7 +63,6 @@
             android:layout_height="match_parent"
             android:layout_width="@dimen/toolbar_button_size"
             android:paddingHorizontal="@dimen/toolbar_button_padding"
-            app:tint="@color/default_icon_color_tint_list"
-            style="@style/ToolbarButton"/>
+            app:tint="@color/default_icon_color_tint_list"/>
     </LinearLayout>
 </RelativeLayout>

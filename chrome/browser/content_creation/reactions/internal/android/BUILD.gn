@@ -72,7 +72,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/border.xml",
     "java/res/drawable/border_inset.xml",
-    "java/res/drawable/lr_copy.xml",
     "java/res/drawable/lr_delete.xml",
     "java/res/drawable/lr_resize.xml",
     "java/res/drawable/resize_icon.xml",

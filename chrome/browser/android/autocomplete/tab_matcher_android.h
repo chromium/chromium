@@ -31,7 +31,6 @@ class TabMatcherAndroid : public TabMatcher {
                         const AutocompleteInput* input) const override;
 
  private:
-  GURLToTabInfoMap GetAllHiddenAndNonCCTTabInfos() const;
 
   const AutocompleteProviderClient& client_;
   raw_ptr<Profile> profile_;

@@ -11,6 +11,10 @@
     <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI.DayNight" />
     <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
 
+    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation" />
+
+    <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode" />
+
     <style name="Base.Theme.Chromium.WithWindowAnimation">
         <item name="android:windowContentOverlay">@null</item>
 
@@ -343,11 +347,11 @@
          in a parent theme therefore can not be overridden by appearance.
     -->
     <style name="TextAppearance.SearchBoxText">
-        <item name="android:textSize">@dimen/location_bar_url_text_size</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="TextAppearance.SearchBoxText.NewTabPage">
-        <item name="android:textSize">@dimen/location_bar_url_text_size</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:textColorHint">@macro/search_box_hint</item>
     </style>
 
@@ -449,4 +453,22 @@
     <style name="NotificationBlockedDialogContent" parent="AlertDialogContent">
         <item name="android:paddingBottom">12dp</item>
     </style>
+
+    <style name="ToolbarButton">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <style name="BottomToolbarButton" parent="ToolbarButton">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="ToolbarMenuButton" parent="ToolbarButton">
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+
 </resources>

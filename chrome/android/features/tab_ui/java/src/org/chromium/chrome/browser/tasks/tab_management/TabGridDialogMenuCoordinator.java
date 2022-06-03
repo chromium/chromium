@@ -19,7 +19,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -133,19 +132,6 @@ public class TabGridDialogMenuCoordinator {
 
     private ModelList buildMenuItems(Context context) {
         ModelList itemList = new ModelList();
-        itemList.add(new ListItem(ListItemType.MENU_ITEM,
-                buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_remove_from_group,
-                        R.id.ungroup_tab)));
-        if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING.getValue()) {
-            itemList.add(new ListItem(ListItemType.MENU_ITEM,
-                    buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_share_group,
-                            R.id.share_tab_group)));
-        }
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-            itemList.add(new ListItem(ListItemType.MENU_ITEM,
-                    buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_edit_group_name,
-                            R.id.edit_group_name)));
-        }
         return itemList;
     }
 

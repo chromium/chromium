@@ -29,8 +29,7 @@
             android:layout_height="match_parent"
             android:layout_width="@dimen/long_screenshots_button_size"
             android:paddingHorizontal="@dimen/long_screenshots_button_padding"
-            app:tint="@color/default_icon_color_tint_list"
-            style="@style/ToolbarButton" />
+            app:tint="@color/default_icon_color_tint_list"/>
 
         <TextView
             android:id="@+id/sharing_long_screenshot_dialog_title"
@@ -49,8 +48,7 @@
             android:layout_height="match_parent"
             android:layout_width="@dimen/long_screenshots_button_size"
             android:paddingHorizontal="@dimen/long_screenshots_button_padding"
-            app:tint="@color/default_icon_color_tint_list"
-            style="@style/ToolbarButton" />
+            app:tint="@color/default_icon_color_tint_list" />
     </LinearLayout> <!-- end footer -->
 
     <View
@@ -117,8 +115,7 @@
                     android:contentDescription="@string/sharing_long_screenshot_move_up_button_description"
                     android:elevation="@dimen/default_elevation_3"
                     android:layout_width="@dimen/long_screenshots_button_size"
-                    android:translationY="30dp"
-                    style="@style/ToolbarButton" />
+                    android:translationY="30dp" />
                 <View
                     android:id="@+id/top_mask_border"
                     android:background="@color/modern_white"
@@ -148,8 +145,7 @@
                     android:contentDescription="@string/sharing_long_screenshot_move_down_button_description"
                     android:elevation="@dimen/default_elevation_3"
                     android:layout_width="@dimen/long_screenshots_button_size"
-                    android:translationY="-30dp"
-                    style="@style/ToolbarButton" />
+                    android:translationY="-30dp" />
             </LinearLayout>
         </RelativeLayout>
     </ScrollView>

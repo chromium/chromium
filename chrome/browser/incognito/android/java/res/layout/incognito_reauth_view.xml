@@ -26,8 +26,7 @@
         android:layout_width="48dp"
         android:visibility="gone"
         app:srcCompat="@drawable/ic_more_vert_24dp_on_dark_bg"
-        app:menuMaxWidth="256dp"
-        style="@style/ToolbarButton"/>
+        app:menuMaxWidth="256dp"/>
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/incognito_reauth_icon"

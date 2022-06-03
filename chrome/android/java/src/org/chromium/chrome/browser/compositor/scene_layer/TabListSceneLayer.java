@@ -102,7 +102,7 @@ public class TabListSceneLayer extends SceneLayer {
             assert t.isVisible() : "LayoutTab in that list should be visible";
             final float decoration = t.getDecorationAlpha();
 
-            int urlBarBackgroundId = R.drawable.modern_location_bar;
+            int urlBarBackgroundId = R.drawable.bg_white_dialog;
             boolean useIncognitoColors = t.isIncognito();
 
             int defaultThemeColor = ChromeColors.getDefaultThemeColor(context, useIncognitoColors);
@@ -119,7 +119,7 @@ public class TabListSceneLayer extends SceneLayer {
 
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
             TabListSceneLayerJni.get().putTabLayer(mNativePtr, TabListSceneLayer.this, t.getId(),
-                    relatedTabIds, mUseAdditionalIds, R.id.control_container,
+                    relatedTabIds, mUseAdditionalIds,
                     R.drawable.tabswitcher_border_frame_shadow,
                     R.drawable.tabswitcher_border_frame_decoration,
                     R.drawable.tabswitcher_border_frame,
@@ -134,7 +134,7 @@ public class TabListSceneLayer extends SceneLayer {
                     t.getAlpha(), t.getBorderAlpha() * decoration,
                     t.getBorderInnerShadowAlpha() * decoration, decoration,
                     shadowAlpha * decoration, t.getStaticToViewBlend(), t.getBorderScale(),
-                    t.getSaturation(), t.getBrightness(), t.showToolbar(), defaultThemeColor,
+                    t.getSaturation(), t.getBrightness(), false, defaultThemeColor,
                     t.getToolbarBackgroundColor(), t.anonymizeToolbar(), urlBarBackgroundId,
                     t.getTextBoxBackgroundColor(), t.getToolbarAlpha(), toolbarYOffset,
                     contentOffset, t.getSideBorderScale(), t.insetBorderVertical());
@@ -188,7 +188,7 @@ public class TabListSceneLayer extends SceneLayer {
                 float viewportHeight);
         // TODO(meiliang): Need to provide a resource that indicates the selected tab on the layer.
         void putTabLayer(long nativeTabListSceneLayer, TabListSceneLayer caller, int selectedId,
-                int[] ids, boolean useAdditionalIds, int toolbarResourceId, int shadowResourceId,
+                int[] ids, boolean useAdditionalIds, int shadowResourceId,
                 int contourResourceId, int borderResourceId, int borderInnerShadowResourceId,
                 boolean canUseLiveLayer, int tabBackgroundColor, boolean incognito, float x,
                 float y, float width, float height, float contentWidth, float contentHeight,

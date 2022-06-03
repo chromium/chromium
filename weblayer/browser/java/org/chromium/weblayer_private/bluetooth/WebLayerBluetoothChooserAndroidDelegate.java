@@ -15,13 +15,6 @@ import org.chromium.weblayer_private.AutocompleteSchemeClassifierImpl;
  */
 @JNINamespace("weblayer")
 public class WebLayerBluetoothChooserAndroidDelegate implements BluetoothChooserAndroidDelegate {
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AutocompleteSchemeClassifier createAutocompleteSchemeClassifier() {
-        return new AutocompleteSchemeClassifierImpl();
-    }
 
     @CalledByNative
     private static WebLayerBluetoothChooserAndroidDelegate create() {

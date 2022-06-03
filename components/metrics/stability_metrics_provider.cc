@@ -29,22 +29,11 @@ namespace {
 
 #if BUILDFLAG(IS_ANDROID)
 bool HasGmsCoreVersionChanged(PrefService* local_state) {
-  std::string previous_version =
-      local_state->GetString(prefs::kStabilityGmsCoreVersion);
-  std::string current_version =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
-
-  // If the last version is empty, treat it as consistent.
-  if (previous_version.empty())
     return false;
-
-  return previous_version != current_version;
 }
 
 void UpdateGmsCoreVersionPref(PrefService* local_state) {
-  std::string current_version =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
-  local_state->SetString(prefs::kStabilityGmsCoreVersion, current_version);
+
 }
 #endif
 

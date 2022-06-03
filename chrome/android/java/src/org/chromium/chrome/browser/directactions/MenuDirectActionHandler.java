@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
@@ -32,14 +31,6 @@ class MenuDirectActionHandler implements DirectActionHandler {
     private static final Map<String, Integer> ACTION_MAP;
     static {
         Map<String, Integer> map = new HashMap<>();
-        map.put(ChromeDirectActionIds.GO_FORWARD, R.id.forward_menu_id);
-        map.put(ChromeDirectActionIds.RELOAD, R.id.reload_menu_id);
-        map.put(ChromeDirectActionIds.DOWNLOADS, R.id.downloads_menu_id);
-        map.put(ChromeDirectActionIds.HELP, R.id.help_id);
-        map.put(ChromeDirectActionIds.NEW_TAB, R.id.new_tab_menu_id);
-        map.put(ChromeDirectActionIds.OPEN_HISTORY, R.id.open_history_menu_id);
-        map.put(ChromeDirectActionIds.PREFERENCES, R.id.preferences_id);
-        map.put(ChromeDirectActionIds.CLOSE_ALL_TABS, R.id.close_all_tabs_menu_id);
         ACTION_MAP = Collections.unmodifiableMap(map);
     }
 
@@ -76,31 +67,6 @@ class MenuDirectActionHandler implements DirectActionHandler {
 
     @Override
     public void reportAvailableDirectActions(DirectActionReporter reporter) {
-        Set<Integer> availableItemIds = new HashSet<>();
-        Tab currentTab = mTabModelSelector.getCurrentTab();
-        if (currentTab != null && currentTab.isUserInteractable()) {
-            if (currentTab.canGoForward()) {
-                availableItemIds.add(R.id.forward_menu_id);
-            }
-            availableItemIds.add(R.id.reload_menu_id);
-            availableItemIds.add(R.id.open_history_menu_id);
-        }
-        if (mTabModelSelector.getTotalTabCount() > 0) {
-            availableItemIds.add(R.id.close_all_tabs_menu_id);
-        }
-
-        availableItemIds.add(R.id.downloads_menu_id);
-        availableItemIds.add(R.id.help_id);
-        availableItemIds.add(R.id.new_tab_menu_id);
-        availableItemIds.add(R.id.preferences_id);
-
-        if (mActionIdAllowlist != null) availableItemIds.retainAll(mActionIdAllowlist);
-
-        for (Map.Entry<String, Integer> entry : ACTION_MAP.entrySet()) {
-            if (availableItemIds.contains(entry.getValue())) {
-                reporter.addDirectAction(entry.getKey());
-            }
-        }
     }
 
     @Override

@@ -7,12 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 
 /**
@@ -21,7 +19,6 @@ import org.chromium.chrome.tab_ui.R;
 class NewTabTileView extends RelativeLayout {
     private float mRatio = 1f;
     private int mHeightIntercept;
-    private ImageView mActionButtonView;
 
     public NewTabTileView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,7 +27,6 @@ class NewTabTileView extends RelativeLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mActionButtonView = findViewById(R.id.new_tab_button);
     }
 
     @Override
@@ -43,11 +39,6 @@ class NewTabTileView extends RelativeLayout {
                              + context.getResources().getDimension(R.dimen.tab_grid_favicon_size))
                 + mHeightIntercept;
         setMeasuredDimension(width, height);
-
-        // Reposition the plus sign to the middle of the new tab tile.
-        View view = findViewById(R.id.new_tab_button);
-        view.setTranslationX((width - view.getMeasuredWidth()) / 2);
-        view.setTranslationY((height - view.getMeasuredHeight()) / 2);
     }
 
     // TODO(yuezhanggg): Hook up with aspect ratio code.
@@ -67,8 +58,5 @@ class NewTabTileView extends RelativeLayout {
         ViewCompat.setBackgroundTintList(this,
                 TabUiThemeProvider.getHoveredCardBackgroundTintList(
                         getContext(), isIncognito, false));
-
-        ApiCompatibilityUtils.setImageTintList(mActionButtonView,
-                TabUiThemeProvider.getNewTabTilePlusTintList(getContext(), isIncognito));
     }
 }

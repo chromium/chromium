@@ -36,9 +36,6 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
     private static final String USE_PROVIDER_ICON_PARAM = "use_provider_icon";
     private static final boolean USE_PROVIDER_ICON_DEFAULT_VALUE = true;
 
-    @VisibleForTesting
-    static final @DrawableRes int PROVIDER_ICON_RESOURCE = R.drawable.ic_logo_googleg_20dp;
-
     private long mNativeSearchResultExtractorProducer;
     private @State int mState;
 
@@ -125,8 +122,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         assert !GURL.isEmptyOrInvalid(url);
         assert query != null && !query.isEmpty();
         ContinuousNavigationMetadata.Provider provider = new ContinuousNavigationMetadata.Provider(
-                resultCategory, getProviderName(resultCategory),
-                mUseProviderIcon ? PROVIDER_ICON_RESOURCE : 0);
+                resultCategory, getProviderName(resultCategory), 0);
         ContinuousNavigationMetadata metadata =
                 new ContinuousNavigationMetadata(url, query, provider, groups);
         mListener.onResult(metadata);

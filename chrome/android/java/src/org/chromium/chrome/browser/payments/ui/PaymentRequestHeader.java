@@ -17,11 +17,9 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSemanticColorUtils;
-import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.ui.util.ColorUtils;
 
 /** This class represents a bar to display at the top of the payment request UI. */
@@ -66,12 +64,6 @@ public class PaymentRequestHeader extends FrameLayout {
         Spannable url = new SpannableStringBuilder(origin);
         final boolean useDarkColors =
                 !ColorUtils.shouldUseLightForegroundOnBackground(mBackgroundColor);
-        ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
-                new ChromeAutocompleteSchemeClassifier(profile);
-        OmniboxUrlEmphasizer.emphasizeUrl(url, mContext, chromeAutocompleteSchemeClassifier,
-                securityLevel, false /* isInternalPage */, useDarkColors,
-                true /* emphasizeHttpsScheme */);
-        chromeAutocompleteSchemeClassifier.destroy();
         hostName.setText(url);
 
         if (origin.startsWith(UrlConstants.HTTPS_URL_PREFIX)) {

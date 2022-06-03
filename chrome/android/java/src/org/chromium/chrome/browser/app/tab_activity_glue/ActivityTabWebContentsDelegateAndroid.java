@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -252,21 +251,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public boolean takeFocus(boolean reverse) {
-        if (mActivity == null) return false;
-        if (reverse) {
-            View menuButton = mActivity.findViewById(R.id.menu_button);
-            if (menuButton != null && menuButton.isShown()) {
-                return menuButton.requestFocus();
-            }
-
-            View tabSwitcherButton = mActivity.findViewById(R.id.tab_switcher_button);
-            if (tabSwitcherButton != null && tabSwitcherButton.isShown()) {
-                return tabSwitcherButton.requestFocus();
-            }
-        } else {
-            View urlBar = mActivity.findViewById(R.id.url_bar);
-            if (urlBar != null) return urlBar.requestFocus();
-        }
         return false;
     }
 

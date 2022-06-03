@@ -5,15 +5,11 @@
 package org.chromium.chrome.browser.ui.tablet.emptybackground;
 
 import android.app.Activity;
-import android.view.View;
-import android.view.View.OnAttachStateChangeListener;
-import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -42,8 +38,6 @@ public class EmptyBackgroundViewWrapper {
 
     CallbackController mCallbackController = new CallbackController();
     private @Nullable LayoutStateProvider mLayoutStateProvider;
-
-    private EmptyBackgroundViewTablet mBackgroundView;
 
     /**
      * Creates a {@link EmptyBackgroundViewWrapper} instance that will lazily inflate.
@@ -136,32 +130,12 @@ public class EmptyBackgroundViewWrapper {
     }
 
     private void inflateViewIfNecessary() {
-        if (mBackgroundView != null) return;
-
-        mBackgroundView = (EmptyBackgroundViewTablet) ((ViewStub) mActivity.findViewById(
-                                                               R.id.empty_container_stub))
-                                  .inflate();
-        mBackgroundView.setTabModelSelector(mTabModelSelector);
-        mBackgroundView.setTabCreator(mTabCreator);
-        mBackgroundView.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                uninitialize();
-            }
-
-            @Override
-            public void onViewAttachedToWindow(View v) {}
-        });
     }
 
     private void updateEmptyContainerState() {
         boolean showEmptyBackground = shouldShowEmptyContainer();
         if (showEmptyBackground) inflateViewIfNecessary();
 
-        if (mBackgroundView != null) {
-            mBackgroundView.setEmptyContainerState(showEmptyBackground);
-            mSnackbarManager.overrideParent(showEmptyBackground ? mBackgroundView : null);
-        }
     }
 
     private boolean shouldShowEmptyContainer() {

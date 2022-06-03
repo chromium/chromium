@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.ephemeraltab;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -49,6 +45,10 @@ import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
 
 /**
  * Central class for ephemeral tab, responsible for spinning off other classes necessary to display
@@ -127,11 +127,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mUrl = url;
         Profile profile = getProfile(isIncognito);
         if (mMediator == null) {
-            float topControlsHeight =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                    / mWindow.getDisplay().getDipScale();
             mMediator = new EphemeralTabMediator(
-                    mBottomSheetController, new FaviconLoader(mContext), (int) topControlsHeight);
+                    mBottomSheetController, new FaviconLoader(mContext), 0);
         }
         if (mWebContents == null) {
             assert mSheetContent == null;

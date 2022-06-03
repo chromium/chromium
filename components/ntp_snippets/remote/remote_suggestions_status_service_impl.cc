@@ -41,8 +41,7 @@ void RemoteSuggestionsStatusServiceImpl::Init(
 
   status_change_callback_ = callback;
 
-  list_visible_during_session_ =
-      pref_service_->GetBoolean(feed::prefs::kArticlesListVisible);
+  list_visible_during_session_ = false;
 
   // Notify about the current state before registering the observer, to make
   // sure we don't get a double notification due to an undefined start state.
@@ -51,16 +50,6 @@ void RemoteSuggestionsStatusServiceImpl::Init(
   status_change_callback_.Run(old_status, status_);
 
   pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      feed::prefs::kEnableSnippets,
-      base::BindRepeating(
-          &RemoteSuggestionsStatusServiceImpl::OnSnippetsEnabledChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      feed::prefs::kArticlesListVisible,
-      base::BindRepeating(
-          &RemoteSuggestionsStatusServiceImpl::OnListVisibilityChanged,
-          base::Unretained(this)));
 
   for (const std::string& additional_toggle_pref : additional_toggle_prefs_) {
     pref_change_registrar_.Add(
@@ -96,18 +85,10 @@ void RemoteSuggestionsStatusServiceImpl::OnSignInStateChanged(
 }
 
 void RemoteSuggestionsStatusServiceImpl::OnListVisibilityChanged() {
-  if (pref_service_->GetBoolean(feed::prefs::kArticlesListVisible)) {
-    list_visible_during_session_ = true;
-  }
   OnStateChanged(GetStatusFromDeps());
 }
 
 bool RemoteSuggestionsStatusServiceImpl::IsExplicitlyDisabled() const {
-  if (!pref_service_->GetBoolean(feed::prefs::kEnableSnippets)) {
-    DVLOG(1) << "[GetStatusFromDeps] Disabled via pref.";
-    return true;
-  }
-
   if (!list_visible_during_session_) {
     DVLOG(1) << "[GetStatusFromDeps] Disabled because articles list hidden.";
     return true;

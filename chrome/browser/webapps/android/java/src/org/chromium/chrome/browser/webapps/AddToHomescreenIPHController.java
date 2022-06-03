@@ -53,7 +53,6 @@ public class AddToHomescreenIPHController {
     private Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final ModalDialogManager mModalDialogManager;
-    private final @IdRes int mHighlightMenuItemId;
     private final MessageDispatcher mMessageDispatcher;
     private final UserEducationHelper mUserEducationHelper;
     private final Tracker mTracker;
@@ -66,17 +65,14 @@ public class AddToHomescreenIPHController {
      * @param activity The associated activity.
      * @param windowAndroid The associated {@link WindowAndroid}.
      * @param modalDialogManager The {@link ModalDialogManager} for showing the dialog.
-     * @param highlightMenuItemId The resource id of 'Add to Home screen' in the app menu.
      * @param messageDispatcher The {@link MessageDispatcher} for displaying messages.
      */
     public AddToHomescreenIPHController(Activity activity, WindowAndroid windowAndroid,
-            ModalDialogManager modalDialogManager,
-            @IdRes int highlightMenuItemId,
-            MessageDispatcher messageDispatcher) {
+                                        ModalDialogManager modalDialogManager,
+                                        MessageDispatcher messageDispatcher) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
-        mHighlightMenuItemId = highlightMenuItemId;
         mMessageDispatcher = messageDispatcher;
         mTracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);

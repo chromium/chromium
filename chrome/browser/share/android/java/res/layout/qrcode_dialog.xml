@@ -33,9 +33,8 @@
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/close_button"
-        style="@style/ToolbarButton"
         android:src="@drawable/btn_close"
-        android:layout_height="@dimen/toolbar_button_width"
+        android:layout_height="42dp"
         android:contentDescription="@string/close"
         app:tint="@color/default_icon_color_tint_list" />
 

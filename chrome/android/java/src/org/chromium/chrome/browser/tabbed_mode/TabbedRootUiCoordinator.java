@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
@@ -46,7 +47,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
-import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -74,8 +73,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
-import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
-import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -111,15 +108,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
-    private UrlFocusChangeListener mUrlFocusChangeListener;
-    private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private AddToHomescreenIPHController mAddToHomescreenIPHController;
     private LinkToTextIPHController mLinkToTextIPHController;
     private CrowIphController mCrowIphController;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
     private PwaBottomSheetController mPwaBottomSheetController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
-    private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private LayoutManagerImpl mLayoutManager;
     private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
@@ -127,7 +121,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
-    private final int mControlContainerHeightResource;
     private final Supplier<InsetObserverView> mInsetObserverViewSupplier;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
@@ -181,8 +174,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
-     * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
-     * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
      * @param browserControlsManager Manages the browser controls.
      * @param windowAndroid The current {@link WindowAndroid}.
@@ -205,7 +196,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param statusBarColorProvider Provides the status bar color.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param intentRequestTracker Tracks intent requests.
-     * @param controlContainerHeightResource The resource for the control container.
      * @param insetObserverViewSupplier Supplier for the {@link InsetObserverView}.
      * @param backButtonShouldCloseTabFn Function which supplies whether or not the back button
      *         should close the tab.
@@ -220,8 +210,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
-            @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
-            @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ActivityWindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
@@ -242,15 +230,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull ObservableSupplierImpl<EphemeralTabCoordinator>
                     ephemeralTabCoordinatorSupplier,
-            @NonNull IntentRequestTracker intentRequestTracker, int controlContainerHeightResource,
+            @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull Supplier<InsetObserverView> insetObserverViewSupplier,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             boolean initializeUiWithIncognitoColors) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, contextualSearchManagerSupplier,
-                tabModelSelectorSupplier, intentMetadataOneshotSupplier,
-                layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
+                tabModelSelectorSupplier, startSurfaceParentTabSupplier,
                 browserControlsManager, windowAndroid, jankTracker, activityLifecycleDispatcher,
                 layoutManagerSupplier, menuOrKeyboardActionController, activityThemeColorSupplier,
                 modalDialogManagerSupplier, supportsAppMenuSupplier,
@@ -260,7 +247,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
                 initializeUiWithIncognitoColors);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
-        mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mCanAnimateBrowserControls = () -> {
@@ -287,10 +273,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mOfflineIndicatorController.destroy();
         }
 
-        if (mToolbarManager != null) {
-            mToolbarManager.getOmniboxStub().removeUrlFocusChangeListener(mUrlFocusChangeListener);
-        }
-
         if (mOfflineIndicatorInProductHelpController != null) {
             mOfflineIndicatorInProductHelpController.destroy();
         }
@@ -298,10 +280,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mStatusIndicatorCoordinator.removeObserver(mStatusIndicatorObserver);
             mStatusIndicatorCoordinator.removeObserver(mStatusBarColorController);
             mStatusIndicatorCoordinator.destroy();
-        }
-
-        if (mToolbarButtonInProductHelpController != null) {
-            mToolbarButtonInProductHelpController.destroy();
         }
 
         if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
@@ -365,14 +343,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (coordinator != null && coordinator.isOpened()) coordinator.close();
     }
 
-    /**
-     * @return The toolbar button IPH controller for the tabbed UI this coordinator controls.
-     * TODO(pnoland, https://crbug.com/865801): remove this in favor of wiring it directly.
-     */
-    public ToolbarButtonInProductHelpController getToolbarButtonInProductHelpController() {
-        return mToolbarButtonInProductHelpController;
-    }
-
     @Override
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
@@ -429,12 +399,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mEmptyBackgroundViewWrapper.initialize();
         }
 
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                && (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
-                        || TabUiFeatureUtilities.isConditionalTabStripEnabled())) {
-            getToolbarManager().enableBottomControls();
-        }
-
         if (EphemeralTabCoordinator.isSupported()) {
             mEphemeralTabCoordinatorSupplier.set(
                     new EphemeralTabCoordinator(mActivity, mWindowAndroid,
@@ -443,9 +407,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         mTabModelSelectorSupplier.get().isIncognitoSelected());
                             }, getBottomSheetController(), true));
         }
-
-        mIntentMetadataOneshotSupplier.onAvailable(mCallbackController.makeCancelable(
-                (metadata) -> initializeIPH(metadata.getIsIntentWithEffect())));
 
         // TODO(https://crbug.com/1157955): Investigate switching to per-Activity coordinator that
         // uses signals from the current Tab to decide when to show the PWA install bottom sheet
@@ -510,18 +471,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         controller.setNavigationBarScrimFraction(scrimFraction);
                     }
                 };
-        return new ScrimCoordinator(mActivity, delegate, coordinator,
-                coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
+        return new ScrimCoordinator(mActivity, delegate, coordinator, Color.RED);
     }
 
     // Private class methods
 
     private void initializeIPH(boolean intentWithEffect) {
         if (mActivity == null) return;
-        mToolbarButtonInProductHelpController = new ToolbarButtonInProductHelpController(mActivity,
-                mWindowAndroid, mActivityLifecycleDispatcher,
-                mActivityTabProvider, mIsInOverviewModeSupplier,
-                mToolbarManager.getSecurityIconView());
         boolean didTriggerPromo = false;
 
         if (!didTriggerPromo) {
@@ -546,18 +502,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // initialized if the OfflineIndicatorV2 feature is disabled.
             assert mOfflineIndicatorInProductHelpController == null;
             mOfflineIndicatorInProductHelpController =
-                    new OfflineIndicatorInProductHelpController(mActivity, mToolbarManager,
+                    new OfflineIndicatorInProductHelpController(mActivity,
                             mStatusIndicatorCoordinator);
         }
 
         mAddToHomescreenIPHController = new AddToHomescreenIPHController(mActivity, mWindowAndroid,
                 mModalDialogManagerSupplier.get(),
-                R.id.add_to_homescreen_id, MessageDispatcherProvider.from(mWindowAndroid));
+                MessageDispatcherProvider.from(mWindowAndroid));
         mLinkToTextIPHController =
                 new LinkToTextIPHController(mActivityTabProvider, mTabModelSelectorSupplier.get());
         mAppBannerInProductHelpController =
                 AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
-                        mActivity, R.id.add_to_homescreen_id);
+                        mActivity);
         AppBannerInProductHelpControllerFactory.attach(
                 mWindowAndroid, mAppBannerInProductHelpController);
         mCrowIphController = new CrowIphController(mActivity,
@@ -566,9 +522,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private void updateTopControlsHeight(boolean animate) {
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
-        final int resourceId = mControlContainerHeightResource;
-        final int topControlsNewHeight = mActivity.getResources().getDimensionPixelSize(resourceId)
-                + mStatusIndicatorHeight + mContinuousSearchHeight;
+        final int topControlsNewHeight = mStatusIndicatorHeight + mContinuousSearchHeight;
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
         browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
@@ -620,29 +574,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusIndicatorCoordinator.addObserver(mStatusBarColorController);
 
         ObservableSupplierImpl<Boolean> isUrlBarFocusedSupplier = new ObservableSupplierImpl<>();
-        isUrlBarFocusedSupplier.set(mToolbarManager.isUrlBarFocused());
-        mUrlFocusChangeListener = new UrlFocusChangeListener() {
-            @Override
-            public void onUrlFocusChange(boolean hasFocus) {
-                // Offline indicator should assume the UrlBar is focused if it's focusing.
-                if (hasFocus) {
-                    isUrlBarFocusedSupplier.set(true);
-                }
-            }
-
-            @Override
-            public void onUrlAnimationFinished(boolean hasFocus) {
-                // Wait for the animation to finish before notifying that UrlBar is unfocused.
-                if (!hasFocus) {
-                    isUrlBarFocusedSupplier.set(false);
-                }
-            }
-        };
         mOfflineIndicatorController = new OfflineIndicatorControllerV2(mActivity,
                 mStatusIndicatorCoordinator, isUrlBarFocusedSupplier, mCanAnimateBrowserControls);
-        if (mToolbarManager.getOmniboxStub() != null) {
-            mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
-        }
     }
 
     private void initContinuousSearchCoordinator() {
@@ -651,14 +584,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         Supplier<Integer> defaultTopContainerHeightSupplier = ()
-                -> mActivity.getResources().getDimensionPixelSize(mControlContainerHeightResource);
+                -> 0;
         final ViewStub viewStub = mActivity.findViewById(R.id.continuous_search_container_stub);
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
         mContinuousSearchContainerCoordinator = new ContinuousSearchContainerCoordinator(viewStub,
                 mLayoutManager, mCompositorViewHolderSupplier.get().getResourceManager(),
                 mActivityTabProvider, browserControlsSizer, mCanAnimateBrowserControls,
                 defaultTopContainerHeightSupplier, getTopUiThemeColorProvider(), mActivity,
-                mToolbarManager::setForceHideShadow);
+                result -> {});
         mContinuousSearchObserver = (newHeight, animate) -> {
             mContinuousSearchHeight = newHeight;
             updateTopControlsHeight(animate);
@@ -694,11 +627,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @VisibleForTesting
     public HistoryNavigationCoordinator getHistoryNavigationCoordinatorForTesting() {
         return mHistoryNavigationCoordinator;
-    }
-
-    @VisibleForTesting
-    public NavigationSheet getNavigationSheetForTesting() {
-        return mNavigationSheet;
     }
 
     /** Called when a link is copied through context menu. */

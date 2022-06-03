@@ -285,7 +285,7 @@ void FeedService::ClearCachedData() {
 
 // static
 bool FeedService::IsEnabled(const PrefService& pref_service) {
-  return pref_service.GetBoolean(feed::prefs::kEnableSnippets);
+  return false;
 }
 
 // static

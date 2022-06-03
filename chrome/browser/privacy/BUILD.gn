@@ -11,7 +11,6 @@ if (is_android) {
       "//chrome/android:chrome_all_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/ui/android/omnibox:java",
-      "//chrome/browser/ui/android/omnibox:junit",
     ]
     sources = [
       "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsBridge.java",

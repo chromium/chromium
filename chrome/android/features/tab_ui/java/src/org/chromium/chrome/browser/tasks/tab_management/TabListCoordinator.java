@@ -356,10 +356,7 @@ public class TabListCoordinator
         Rect parentRect = new Rect();
         mRootView.getGlobalVisibleRect(parentRect);
         // Offset by CompositeViewHolder top offset and top toolbar height.
-        tabListRect.offset(0,
-                -parentRect.top
-                        - (int) mContext.getResources().getDimension(
-                                R.dimen.toolbar_height_no_shadow));
+        tabListRect.offset(0, -parentRect.top);
         return tabListRect.top;
     }
 

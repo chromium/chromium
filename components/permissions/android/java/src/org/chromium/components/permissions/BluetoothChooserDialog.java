@@ -30,8 +30,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.location.LocationUtils;
-import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
-import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -204,12 +202,6 @@ public class BluetoothChooserDialog
         SpannableString origin = new SpannableString(mOrigin);
 
         final boolean useDarkColors = !ColorUtils.inNightMode(mContext);
-        AutocompleteSchemeClassifier autocompleteSchemeClassifier =
-                mDelegate.createAutocompleteSchemeClassifier();
-
-        OmniboxUrlEmphasizer.emphasizeUrl(origin, mContext, autocompleteSchemeClassifier,
-                mSecurityLevel, false, useDarkColors, true);
-        autocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
                 new SpannableString(mContext.getString(R.string.bluetooth_dialog_title, mOrigin));

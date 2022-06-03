@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.INITIAL_SCROLL_INDEX_OFFSET_GTS;
-
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.text.Editable;
@@ -20,9 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -39,13 +34,14 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.INITIAL_SCROLL_INDEX_OFFSET_GTS;
 
 /**
  * A mediator for the TabGridDialog component, responsible for communicating
@@ -228,48 +224,6 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
                         instanceof TabGroupModelFilter;
 
         mToolbarMenuCallback = result -> {
-            if (result == R.id.ungroup_tab) {
-                if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                    mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
-                }
-                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
-                List<Tab> tabs = getRelatedTabs(mCurrentTabId);
-                if (mTabSelectionEditorController != null) {
-                    mTabSelectionEditorController.show(tabs);
-                }
-            } else if (result == R.id.share_tab_group) {
-                Tab tab = mTabModelSelector.getTabById(mCurrentTabId);
-                ShareParams shareParams =
-                        new ShareParams
-                                .Builder(tab.getWindowAndroid(),
-                                        mModel.get(TabGridPanelProperties.HEADER_TITLE), "")
-                                .setText(getTabGroupStringForSharing())
-                                .setCallback(new ShareParams.TargetChosenCallback() {
-                                    @Override
-                                    public void onTargetChosen(ComponentName chosenComponent) {
-                                        RecordUserAction.record(
-                                                "TabGridDialog.SharedGroupAsTextList");
-                                    }
-
-                                    @Override
-                                    public void onCancel() {}
-                                })
-                                .build();
-                // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
-                // Re-enable it when tab group sharing is supported by sharing hub.
-                ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder()
-                                                              .setSharingTabGroup(true)
-                                                              .setSaveLastUsed(true)
-                                                              .build();
-                mShareDelegateSupplier.get().share(
-                        shareParams, chromeShareExtras, ShareOrigin.TAB_GROUP);
-            }
-
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                if (result == R.id.edit_group_name) {
-                    mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
-                }
-            }
         };
 
         // Setup toolbar button click listeners.

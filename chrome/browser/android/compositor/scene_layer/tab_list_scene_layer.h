@@ -54,7 +54,6 @@ class TabListSceneLayer : public SceneLayer {
                    jint id,
                    const base::android::JavaRef<jintArray>& tab_ids_list,
                    jboolean use_tab_ids_list,
-                   jint toolbar_resource_id,
                    jint shadow_resource_id,
                    jint contour_resource_id,
                    jint border_resource_id,

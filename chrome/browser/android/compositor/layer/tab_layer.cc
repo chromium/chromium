@@ -92,7 +92,6 @@ static void PositionPadding(scoped_refptr<cc::SolidColorLayer> padding_layer,
 void TabLayer::SetProperties(int id,
                              const std::vector<int>& ids,
                              bool can_use_live_layer,
-                             int toolbar_resource_id,
                              int shadow_resource_id,
                              int contour_resource_id,
                              int border_resource_id,
@@ -198,13 +197,6 @@ void TabLayer::SetProperties(int id,
   // Update Resource Ids For Layers That Impact Layout
   //--------------------------------------------------------------------------
 
-  // TODO(kkimlabs): Tab switcher doesn't show the progress bar.
-  toolbar_layer_->PushResource(
-      toolbar_resource_id, toolbar_background_color, anonymize_toolbar,
-      toolbar_textbox_background_color, toolbar_textbox_resource_id, 0,
-      toolbar_y_offset, false, false);
-  toolbar_layer_->UpdateProgressBar(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
   float toolbar_impact_height = 0;
   if (show_toolbar)
     toolbar_impact_height = content_offset;
@@ -242,10 +234,6 @@ void TabLayer::SetProperties(int id,
       descaled_local_content_area.width(),
       descaled_local_content_area.height() - toolbar_impact_height);
 
-  // Shrink the toolbar layer so we properly clip if it's offset.
-  gfx::Size toolbar_size(toolbar_layer_->layer()->bounds().width(),
-                         toolbar_layer_->layer()->bounds().height());
-
   //----------------------------------------------------------------------------
   // Compute Layer Positions
   //----------------------------------------------------------------------------
@@ -257,8 +245,6 @@ void TabLayer::SetProperties(int id,
                                            -border_inner_shadow_padding.y());
   gfx::PointF contour_position(-contour_padding.x() * side_border_scale,
                                -contour_padding.y());
-  gfx::PointF toolbar_position(
-      0.f, toolbar_layer_->layer()->bounds().height() - toolbar_size.height());
   gfx::PointF content_position(0.f, toolbar_impact_height);
 
   //----------------------------------------------------------------------------
@@ -282,7 +268,6 @@ void TabLayer::SetProperties(int id,
     contour_position.set_y(contour_position.y() + inset_diff);
 
     // Scaled eventually, so have to descale the size difference first.
-    toolbar_position.set_y(toolbar_position.y() + inset_diff / content_scale);
     content_position.set_y(content_position.y() + inset_diff / content_scale);
     desired_content_size_pt.set_y(desired_content_size_pt.y() -
                                   inset_diff / content_scale);
@@ -291,7 +276,6 @@ void TabLayer::SetProperties(int id,
   const bool inset_toolbar = !inset_border;
   if (!inset_toolbar) {
     float inset_diff = toolbar_impact_height;
-    toolbar_position.set_y(toolbar_position.y() - inset_diff);
     content_position.set_y(content_position.y() - inset_diff);
     desired_content_size_pt.set_y(desired_content_size_pt.y() + inset_diff);
   }
@@ -306,9 +290,6 @@ void TabLayer::SetProperties(int id,
   // Check if the rect we are drawing is larger than the content rect.
   bool content_visible = desired_content_size.GetArea() > 0.f;
 
-  // TODO(dtrainor): Improve these calculations to prune these layers out.
-  bool toolbar_visible = show_toolbar && toolbar_alpha > 0.f;
-
   //----------------------------------------------------------------------------
   // Fix jaggies
   //----------------------------------------------------------------------------
@@ -316,7 +297,6 @@ void TabLayer::SetProperties(int id,
   border_inner_shadow_position.Offset(0.5f, 0.5f);
   shadow_position.Offset(0.5f, 0.5f);
   contour_position.Offset(0.5f, 0.5f);
-  toolbar_position.Offset(0.5f, 0.5f);
 
   border_size.Enlarge(-1.f, -1.f);
   border_inner_shadow_size.Enlarge(-1.f, -1.f);
@@ -380,7 +360,7 @@ void TabLayer::SetProperties(int id,
     front_border_->SetPosition(border_position);
     front_border_->SetBounds(border_size);
     front_border_->SetOpacity(border_alpha);
-    front_border_->SetNearestNeighbor(toolbar_visible);
+    front_border_->SetNearestNeighbor(false);
   }
 
   front_border_inner_shadow_->SetHideLayerAndSubtree(
@@ -389,21 +369,6 @@ void TabLayer::SetProperties(int id,
     front_border_inner_shadow_->SetPosition(border_inner_shadow_position);
     front_border_inner_shadow_->SetBounds(border_inner_shadow_size);
     front_border_inner_shadow_->SetOpacity(border_inner_shadow_alpha);
-  }
-
-  toolbar_layer_->layer()->SetHideLayerAndSubtree(!toolbar_visible);
-  if (toolbar_visible) {
-    // toolbar_ Transform
-    gfx::Transform transform;
-    transform.Scale(content_scale, content_scale);
-    transform.Translate(toolbar_position.x(), toolbar_position.y());
-    toolbar_layer_->layer()->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
-    toolbar_layer_->layer()->SetTransform(transform);
-    toolbar_layer_->SetOpacity(toolbar_alpha);
-
-    toolbar_layer_->layer()->SetMasksToBounds(
-        toolbar_layer_->layer()->bounds() != toolbar_size);
-    toolbar_layer_->layer()->SetBounds(toolbar_size);
   }
 
   if (content_visible) {
@@ -476,7 +441,6 @@ TabLayer::TabLayer(bool incognito,
       resource_manager_(resource_manager),
       tab_content_manager_(tab_content_manager),
       layer_(cc::Layer::Create()),
-      toolbar_layer_(ToolbarLayer::Create(resource_manager)),
       content_(ContentLayer::Create(tab_content_manager)),
       side_padding_(cc::SolidColorLayer::Create()),
       bottom_padding_(cc::SolidColorLayer::Create()),
@@ -492,7 +456,6 @@ TabLayer::TabLayer(bool incognito,
   layer_->AddChild(content_->layer());
   layer_->AddChild(front_border_inner_shadow_);
   layer_->AddChild(front_border_);
-  layer_->AddChild(toolbar_layer_->layer());
 
   contour_shadow_->SetIsDrawable(true);
   side_padding_->SetIsDrawable(true);

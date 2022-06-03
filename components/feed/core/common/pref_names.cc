@@ -53,13 +53,8 @@ const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
 // Deprecated prefs:
 namespace {
 
-// Deprecated May/June 2021
-const char kEnableWebFeedUI[] = "webfeed_ui.enable";
-const char kIsWebFeedSubscriber[] = "webfeed.is_subscriber";
-
 void RegisterObsoletePrefsJune_2021(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kEnableWebFeedUI, false);
-  registry->RegisterBooleanPref(kIsWebFeedSubscriber, false);
+
 }
 
 }  // namespace
@@ -102,8 +97,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void MigrateObsoleteProfilePrefsJune_2021(PrefService* prefs) {
-  prefs->ClearPref(kEnableWebFeedUI);
-  prefs->ClearPref(kIsWebFeedSubscriber);
+
 }
 
 }  // namespace feed

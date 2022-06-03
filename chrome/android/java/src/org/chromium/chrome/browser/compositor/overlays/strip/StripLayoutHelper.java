@@ -1841,8 +1841,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 3. Set the vertical offset to align the tab menu with bottom of the tab strip
         int verticalOffset =
-                -(tabView.getHeight()
-                        - (int) mContext.getResources().getDimension(R.dimen.tab_strip_height))
+                - tabView.getHeight()
                 - ((MarginLayoutParams) tabView.getLayoutParams()).topMargin;
         mTabMenu.setVerticalOffset(verticalOffset);
 

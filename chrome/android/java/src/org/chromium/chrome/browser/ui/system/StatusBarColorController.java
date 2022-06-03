@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
-import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -43,7 +41,7 @@ import org.chromium.ui.util.ColorUtils;
  * Maintains the status bar color for a {@link Window}.
  */
 public class StatusBarColorController
-        implements DestroyObserver, TopToolbarCoordinator.UrlExpansionObserver,
+        implements DestroyObserver,
                    StatusIndicatorCoordinator.StatusIndicatorObserver {
     public static final @ColorInt int UNDEFINED_STATUS_BAR_COLOR = Color.TRANSPARENT;
     public static final @ColorInt int DEFAULT_STATUS_BAR_COLOR = Color.argb(0x01, 0, 0, 0);
@@ -215,11 +213,6 @@ public class StatusBarColorController
         }
     }
 
-    // TopToolbarCoordinator.UrlExpansionObserver implementation.
-    @Override
-    public void onUrlExpansionProgressChanged(float fraction) {
-    }
-
     // StatusIndicatorCoordinator.StatusIndicatorObserver implementation.
 
     @Override
@@ -288,9 +281,7 @@ public class StatusBarColorController
         if (mIsInOverviewMode) {
             if (shouldDarkenStatusBarColor()) return Color.BLACK;
 
-            return (mIsIncognito
-                           && ToolbarColors.canUseIncognitoToolbarThemeColorInOverview(
-                                   mWindow.getContext()))
+            return mIsIncognito
                     ? mIncognitoPrimaryBgColor
                     : mStandardPrimaryBgColor;
         }

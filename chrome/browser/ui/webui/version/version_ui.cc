@@ -86,9 +86,6 @@ WebUIDataSource* CreateVersionUIDataSource() {
     {version_ui::kOsVersionHeaderText2, IDS_VERSION_UI_OS_TEXT2_LABEL},
     {version_ui::kOsVersionHeaderLink, IDS_VERSION_UI_OS_LINK},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_ANDROID)
-    {version_ui::kGmsName, IDS_VERSION_UI_GMS},
-#endif  // BUILDFLAG(IS_ANDROID)
   };
   html_source->AddLocalizedStrings(kStrings);
 

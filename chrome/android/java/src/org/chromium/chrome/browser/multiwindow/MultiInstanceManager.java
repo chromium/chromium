@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -361,20 +360,6 @@ public class MultiInstanceManager
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-        if (id == org.chromium.chrome.R.id.move_to_other_window_menu_id) {
-            TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
-            if (tabModelOrchestrator == null) return true;
-            TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
-            if (tabModelSelector == null) return true;
-
-            Tab currentTab = tabModelSelector.getCurrentTab();
-            if (currentTab != null) moveTabToOtherWindow(currentTab);
-            return true;
-        } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
-            openNewWindow("MobileMenuNewWindow");
-            return true;
-        }
-
         return false;
     }
 

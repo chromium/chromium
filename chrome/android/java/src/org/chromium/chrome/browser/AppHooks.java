@@ -15,7 +15,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -87,14 +86,6 @@ public abstract class AppHooks {
      * This can be null if there are no applicable interceptor to be built.
      */
     public AuthenticatorNavigationInterceptor createAuthenticatorNavigationInterceptor(Tab tab) {
-        return null;
-    }
-
-    /**
-     * Returns a new {@link DirectActionCoordinator} instance, if available.
-     */
-    @Nullable
-    public DirectActionCoordinator createDirectActionCoordinator() {
         return null;
     }
 

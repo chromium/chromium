@@ -62,8 +62,6 @@ const char kOSType[] = "os_type";
 #endif
 #if BUILDFLAG(IS_ANDROID)
 const char kOSVersion[] = "os_version";
-const char kGmsName[] = "gms_name";
-const char kGmsVersion[] = "gms_version";
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPlatform[] = "platform";

@@ -48,7 +48,6 @@ class TabLayer : public Layer {
   void SetProperties(int id,
                      const std::vector<int>& ids,
                      bool can_use_live_layer,
-                     int toolbar_resource_id,
                      int shadow_resource_id,
                      int contour_resource_id,
                      int border_resource_id,
@@ -125,7 +124,6 @@ class TabLayer : public Layer {
   //         +-[contour_shadow]
   //         +-[shadow]
   scoped_refptr<cc::Layer> layer_;
-  scoped_refptr<ToolbarLayer> toolbar_layer_;
   scoped_refptr<ContentLayer> content_;
   scoped_refptr<cc::SolidColorLayer> side_padding_;
   scoped_refptr<cc::SolidColorLayer> bottom_padding_;

@@ -16,13 +16,6 @@ import org.chromium.weblayer_private.AutocompleteSchemeClassifierImpl;
 @JNINamespace("weblayer")
 public class WebLayerBluetoothScanningPromptAndroidDelegate
         implements BluetoothScanningPromptAndroidDelegate {
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AutocompleteSchemeClassifier createAutocompleteSchemeClassifier() {
-        return new AutocompleteSchemeClassifierImpl();
-    }
 
     @CalledByNative
     private static WebLayerBluetoothScanningPromptAndroidDelegate create() {

@@ -40,7 +40,6 @@ public class ContextualSearchCardIconControl extends ViewResourceInflater {
      * Sets the icon to a vector drawable dictionary definition image.
      */
     void setVectorDrawableDefinitionIcon() {
-        setVectorDrawableResourceId(R.drawable.ic_book_round);
     }
 
     /**

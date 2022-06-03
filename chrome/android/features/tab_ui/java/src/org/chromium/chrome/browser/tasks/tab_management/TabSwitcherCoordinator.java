@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -127,36 +126,6 @@ public class TabSwitcherCoordinator
             new MenuOrKeyboardActionController.MenuOrKeyboardActionHandler() {
                 @Override
                 public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-                    // Both GRID and CAROUSEL tab switchers register a MenuOrKeyboardActionHandler
-                    // upon creation, but only the first registered handler will handle the menu
-                    // actions. Checking the mode allows the handler created under GRID tab switcher
-                    // to handle the menu actions when GRID tab switcher is showing; while CAROUSAL
-                    // tab switcher handles the menu actions when Start Surface is showing.
-                    if ((sIsGridTabSwitcherShowing && mMode == TabListMode.CAROUSEL)
-                            || (!sIsGridTabSwitcherShowing && mMode == TabListMode.GRID)) {
-                        return false;
-                    }
-                    if (id == R.id.menu_group_tabs) {
-                        assert mTabGroupManualSelectionMode != null;
-
-                        mTabSelectionEditorCoordinator.getController().configureToolbar(
-                                mTabGroupManualSelectionMode.actionString,
-                                mTabGroupManualSelectionMode.actionButtonDescriptionResourceId,
-                                mTabGroupManualSelectionMode.actionProvider,
-                                mTabGroupManualSelectionMode.enablingThreshold,
-                                mTabGroupManualSelectionMode.navigationProvider);
-
-                        mTabSelectionEditorCoordinator.getController().show(
-                                mTabModelSelector.getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter()
-                                        .getTabsWithNoOtherRelatedTabs());
-                        RecordUserAction.record("MobileMenuGroupTabs");
-                        return true;
-                    } else if (id == R.id.track_prices_row_menu_id) {
-                        assert mPriceTrackingDialogCoordinator != null;
-                        mPriceTrackingDialogCoordinator.show();
-                        return true;
-                    }
                     return false;
                 }
             };
@@ -283,12 +252,6 @@ public class TabSwitcherCoordinator
                 mTabListCoordinator.registerItemType(TabProperties.UiType.MESSAGE,
                         new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
                         MessageCardViewBinder::bind);
-            }
-
-            if (TabUiFeatureUtilities.isTabGridLayoutAndroidNewTabTileEnabled()) {
-                mTabListCoordinator.registerItemType(TabProperties.UiType.NEW_TAB_TILE,
-                        new LayoutViewBuilder(R.layout.new_tab_tile_card_item),
-                        NewTabTileViewBinder::bind);
             }
 
             if (PriceTrackingUtilities.isPriceTrackingEnabled()) {

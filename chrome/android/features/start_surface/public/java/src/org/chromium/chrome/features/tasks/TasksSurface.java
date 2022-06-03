@@ -15,7 +15,6 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 
 /**
@@ -79,7 +78,7 @@ public interface TasksSurface {
      * Called when the native initialization is completed. Anything to construct a TasksSurface but
      * require native initialization should be constructed here.
      */
-    void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub);
+    void onFinishNativeInitialization(Context context);
 
     /**
      * @param onOffsetChangedListener Registers listener for the offset changes of the header view.

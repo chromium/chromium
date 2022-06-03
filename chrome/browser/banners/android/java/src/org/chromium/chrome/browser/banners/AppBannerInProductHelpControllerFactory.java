@@ -17,9 +17,9 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class AppBannerInProductHelpControllerFactory {
     public static AppBannerInProductHelpController createAppBannerInProductHelpController(
-            Activity activity, @IdRes int higlightMenuItemId) {
+            Activity activity) {
         return new AppBannerInProductHelpController(
-                activity, higlightMenuItemId);
+                activity);
     }
 
     public static void attach(

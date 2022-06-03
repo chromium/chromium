@@ -38,8 +38,7 @@
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent"
         android:scaleType="fitCenter"
-        android:contentDescription="@string/lightweight_reactions_duplicate_button"
-        android:src="@drawable/lr_copy" />
+        android:contentDescription="@string/lightweight_reactions_duplicate_button"/>
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/adjust_button"

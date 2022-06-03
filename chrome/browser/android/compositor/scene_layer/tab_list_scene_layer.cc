@@ -74,7 +74,6 @@ void TabListSceneLayer::PutTabLayer(
     jint id,
     const base::android::JavaRef<jintArray>& tab_ids_list,
     jboolean use_tab_ids_list,
-    jint toolbar_resource_id,
     jint shadow_resource_id,
     jint contour_resource_id,
     jint border_resource_id,
@@ -138,7 +137,7 @@ void TabListSceneLayer::PutTabLayer(
     // TODO(meiliang): This method pass another argument, a resource that can be
     // used to indicate the currently selected tab for the TabLayer.
     layer->SetProperties(
-        id, tab_ids, can_use_live_layer, toolbar_resource_id,
+        id, tab_ids, can_use_live_layer,
         shadow_resource_id, contour_resource_id, border_resource_id,
         border_inner_shadow_resource_id, tab_background_color, x, y, width,
         height, shadow_x, shadow_y, shadow_width, shadow_height, alpha,
