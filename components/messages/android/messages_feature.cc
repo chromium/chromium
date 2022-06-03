@@ -24,7 +24,7 @@ const base::Feature kMessagesForAndroidNearOomReduction{
     "MessagesForAndroidNearOomReduction", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidNotificationBlocked{
-    "MessagesForAndroidNotificationBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidNotificationBlocked", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidOfferNotification{
     "MessagesForAndroidOfferNotification", base::FEATURE_DISABLED_BY_DEFAULT};
