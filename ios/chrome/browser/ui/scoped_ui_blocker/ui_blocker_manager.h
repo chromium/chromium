@@ -15,14 +15,14 @@
 // The current UI blocker, if any.
 - (id<UIBlockerTarget>)currentUIBlocker;
 
-// Call this when showing a new blocking UI in |target|.
+// Call this when showing a new blocking UI in `target`.
 // It is an error to call this for target A when target B is already showing one
 // or more blocking UI.
 // This method can be called multiple time with the same target, before calling
-// |decrementBlockingUICounterForTarget:|.
+// `decrementBlockingUICounterForTarget:`.
 - (void)incrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target;
 // Call this after dismissing a blocking UI.
-// |target| has to be the same value when |incrementBlockingUICounterForTarget:|
+// `target` has to be the same value when `incrementBlockingUICounterForTarget:`
 // was called.
 - (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target;
 

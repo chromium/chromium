@@ -30,9 +30,9 @@ const NSTimeInterval kUploadTotalTime = 5;
 }  // anonymous namespace
 
 @interface SafeModeViewController ()
-// Returns |YES| if any third-party modifications are detected.
+// Returns `YES` if any third-party modifications are detected.
 + (BOOL)detectedThirdPartyMods;
-// Returns |YES| if there are crash reports to upload.
+// Returns `YES` if there are crash reports to upload.
 + (BOOL)hasReportToUpload;
 // Returns a message explaining which, if any, 3rd party modules were detected
 // that may cause Chrome to crash.

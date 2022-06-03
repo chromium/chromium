@@ -24,7 +24,7 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 
 namespace {
 
-// Verifies that |message| is displayed.
+// Verifies that `message` is displayed.
 void AssertMessageOnPage(NSString* message) {
   id<GREYMatcher> messageMatcher =
       grey_allOf(grey_text(message), grey_kindOfClass([UILabel class]), nil);
@@ -32,7 +32,7 @@ void AssertMessageOnPage(NSString* message) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Verifies that |message| is not displayed.
+// Verifies that `message` is not displayed.
 void AssertMessageNotOnPage(NSString* message) {
   id<GREYMatcher> messageMatcher =
       grey_allOf(grey_text(message), grey_kindOfClass([UILabel class]),
@@ -128,7 +128,7 @@ void AssertTryAgainButtonOnPage() {
   // Verifies screen content that does not show crash report being uploaded.
   // When devices are jailbroken, the crash reports are not very useful.
   AssertMessageOnPage(NSLocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP", @""));
-  // Constructs the list of bad mods based on |badModulesList| above.
+  // Constructs the list of bad mods based on `badModulesList` above.
   NSString* message =
       [NSLocalizedString(@"IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND", @"")
           stringByAppendingString:@"\n\n    iAmBad\n    MJackson"];

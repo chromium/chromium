@@ -20,7 +20,7 @@
 
 - (id)initWithDelegate:(id<SafeModeViewControllerDelegate>)delegate;
 
-// Returns |YES| when the safe mode UI has information to show.
+// Returns `YES` when the safe mode UI has information to show.
 + (BOOL)hasSuggestions;
 
 @end

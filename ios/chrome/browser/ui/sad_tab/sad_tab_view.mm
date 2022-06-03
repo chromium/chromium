@@ -70,7 +70,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 @property(nonatomic, readonly, strong) UILabel* titleLabel;
 // Displays the Sad Tab footer message (including a link to more help).
 @property(nonatomic, readonly, strong) UITextView* footerLabel;
-// The bounds of |containerView|, with a height updated to CGFLOAT_MAX to allow
+// The bounds of `containerView`, with a height updated to CGFLOAT_MAX to allow
 // text to be laid out using as many lines as necessary.
 @property(nonatomic, readonly) CGRect containerBounds;
 
@@ -103,7 +103,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 // Returns the string to be used for the main action button.
 - (nonnull NSString*)buttonText;
 
-// The action selector for |_actionButton|.
+// The action selector for `_actionButton`.
 - (void)handleActionButtonTapped;
 
 // Returns the desired background color.
