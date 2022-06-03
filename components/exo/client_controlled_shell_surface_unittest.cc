@@ -2015,21 +2015,26 @@ TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
 // is enabled or disabled.
 TEST_F(ClientControlledShellSurfaceTest,
        SetBoundsWithAndWithoutDefaultScaleCancellation) {
-  UpdateDisplay("800x600*2");
+  UpdateDisplay("800x600*2,800x600*2");
 
   const auto primary_display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const auto secondary_display_id =
+      display::Screen::GetScreen()->GetAllDisplays().back().id();
 
   const gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
 
-  const gfx::Rect bounds(64, 64, 128, 128);
-  const gfx::Rect bounds_dp = gfx::ScaleToRoundedRect(bounds, 1.f / 2.f);
+  constexpr double kOriginalScale = 4.f;
+  const gfx::Rect bounds_dp(64, 64, 128, 128);
+  const gfx::Rect bounds_px_for_2x = gfx::ScaleToRoundedRect(bounds_dp, 2.f);
+  const gfx::Rect bounds_px_for_4x =
+      gfx::ScaleToRoundedRect(bounds_dp, kOriginalScale);
 
   for (const auto default_scale_cancellation : {true, false}) {
-    const auto bounds_to_set = default_scale_cancellation ? bounds_dp : bounds;
-
+    SCOPED_TRACE(::testing::Message() << "default_scale_cancellation: "
+                                      << default_scale_cancellation);
     {
       // Set display id, bounds origin, bounds size at the same time via
       // SetBounds method.
@@ -2037,20 +2042,40 @@ TEST_F(ClientControlledShellSurfaceTest,
       auto shell_surface(exo_test_helper()->CreateClientControlledShellSurface(
           surface.get(), /*is_modal=*/false, default_scale_cancellation));
 
-      shell_surface->SetBounds(primary_display_id, bounds_to_set);
+      // When display doesn't change, scale stays the same
+      shell_surface->SetScale(kOriginalScale);
+      shell_surface->SetDisplay(primary_display_id);
+      shell_surface->SetBounds(primary_display_id, default_scale_cancellation
+                                                       ? bounds_dp
+                                                       : bounds_px_for_4x);
       surface->Attach(buffer.get());
       surface->Commit();
 
       EXPECT_EQ(bounds_dp,
                 shell_surface->GetWidget()->GetWindowBoundsInScreen());
-    }
 
+      // When display changes, scale gets updated by the display dsf
+      shell_surface->SetScale(kOriginalScale);
+      shell_surface->SetBounds(secondary_display_id, default_scale_cancellation
+                                                         ? bounds_dp
+                                                         : bounds_px_for_2x);
+      surface->Attach(buffer.get());
+      surface->Commit();
+
+      EXPECT_EQ(bounds_dp.width(),
+                shell_surface->GetWidget()->GetWindowBoundsInScreen().width());
+      EXPECT_EQ(bounds_dp.height(),
+                shell_surface->GetWidget()->GetWindowBoundsInScreen().height());
+    }
     {
       // Set display id, bounds origin, bounds size separately.
+      const auto bounds_to_set =
+          default_scale_cancellation ? bounds_dp : bounds_px_for_4x;
       std::unique_ptr<Surface> surface(new Surface);
       auto shell_surface(exo_test_helper()->CreateClientControlledShellSurface(
           surface.get(), /*is_modal=*/false, default_scale_cancellation));
 
+      shell_surface->SetScale(kOriginalScale);
       shell_surface->SetDisplay(primary_display_id);
       shell_surface->SetBoundsOrigin(bounds_to_set.origin());
       shell_surface->SetBoundsSize(bounds_to_set.size());

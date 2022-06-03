@@ -290,7 +290,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   ash::NonClientFrameViewAsh* GetFrameView();
   const ash::NonClientFrameViewAsh* GetFrameView() const;
 
-  void EnsurePendingScale();
+  void EnsurePendingScale(bool commit_immediately);
   float GetClientToDpPendingScale() const;
 
   gfx::Rect GetClientBoundsForWindowBoundsAndWindowState(
