@@ -775,6 +775,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     const base::Value::List& scraped_saml_passwords_value,
     bool using_saml,
     const base::Value::List& services_list,
+    bool services_provided,
     const base::Value::Dict& password_attributes,
     const base::Value::Dict& sync_trusted_vault_keys) {
   if (!LoginDisplayHost::default_host())
@@ -803,12 +804,18 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     RecordScrapedPasswordCount(scraped_saml_passwords.size());
   }
 
-  // Execute delayed allowlist check that is based on user type.
+  const AccountId account_id =
+      GetAccountId(email, gaia_id, AccountType::GOOGLE);
+  // Execute delayed allowlist check that is based on user type. If Gaia done
+  // times out and doesn't provide us with services list try to use a saved
+  // UserType.
   const user_manager::UserType user_type =
-      login::GetUsertypeFromServicesString(services);
+      services_provided
+          ? login::GetUsertypeFromServicesString(services)
+          : user_manager::UserManager::Get()->GetUserType(account_id);
   if (ShouldCheckUserTypeBeforeAllowing() &&
-      !LoginDisplayHost::default_host()->IsUserAllowlisted(
-          GetAccountId(email, gaia_id, AccountType::GOOGLE), user_type)) {
+      !LoginDisplayHost::default_host()->IsUserAllowlisted(account_id,
+                                                           user_type)) {
     ShowAllowlistCheckFailedError();
     return;
   }
@@ -851,9 +858,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
   auto user_context = std::make_unique<UserContext>();
   SigninError error;
   if (!login::BuildUserContextForGaiaSignIn(
-          login::GetUsertypeFromServicesString(services),
-          GetAccountId(email, gaia_id, AccountType::GOOGLE), using_saml,
-          using_saml_api_, password,
+          user_type, account_id, using_saml, using_saml_api_, password,
           SamlPasswordAttributes::FromJs(password_attributes),
           GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys,
                                                 gaia_id),

@@ -818,10 +818,15 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       chrome.send('launchSAMLPublicSession', [credentials.email]);
     } else {
       chrome.send('completeAuthentication', [
-        credentials.gaiaId, credentials.email, credentials.password,
-        credentials.scrapedSAMLPasswords, credentials.usingSAML,
-        credentials.services, credentials.passwordAttributes,
-        credentials.syncTrustedVaultKeys || {}
+        credentials.gaiaId,
+        credentials.email,
+        credentials.password,
+        credentials.scrapedSAMLPasswords,
+        credentials.usingSAML,
+        credentials.services,
+        credentials.servicesProvided,
+        credentials.passwordAttributes,
+        credentials.syncTrustedVaultKeys || {},
       ]);
     }
 

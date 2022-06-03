@@ -507,6 +507,12 @@ void UserManagerBase::SaveUserDisplayEmail(const AccountId& account_id,
   display_email_update->SetStringKey(account_id.GetUserEmail(), display_email);
 }
 
+UserType UserManagerBase::GetUserType(const AccountId& account_id) {
+  const base::Value* prefs_user_types =
+      GetLocalState()->GetDictionary(kUserType);
+  return GetStoredUserType(prefs_user_types, account_id);
+}
+
 void UserManagerBase::SaveUserType(const User* user) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 

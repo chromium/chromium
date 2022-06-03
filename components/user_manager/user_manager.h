@@ -267,6 +267,9 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void SaveUserDisplayEmail(const AccountId& account_id,
                                     const std::string& display_email) = 0;
 
+  // Returns stored user type or USER_TYPE_REGULAR by default.
+  virtual UserType GetUserType(const AccountId& account_id) = 0;
+
   // Saves user's type for |user| into local state preferences.
   virtual void SaveUserType(const User* user) = 0;
 

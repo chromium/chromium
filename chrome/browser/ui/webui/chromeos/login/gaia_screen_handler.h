@@ -205,6 +205,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
       const base::Value::List& scraped_saml_passwords_value,
       bool using_saml,
       const base::Value::List& services_list,
+      bool services_provided,
       const base::Value::Dict& password_attributes,
       const base::Value::Dict& sync_trusted_vault_keys);
   void HandleCompleteLogin(const std::string& gaia_id,

@@ -286,6 +286,7 @@ cr.define('cr.login', function() {
     },
     'userInfo'(msg) {
       this.services_ = msg.services;
+      this.servicesProvided_ = true;
       if (!this.authCompletedFired_) {
         const metric = this.authFlow === AuthFlow.SAML ?
             GAIA_MESSAGE_SAML_USER_INFO :
@@ -428,6 +429,7 @@ cr.define('cr.login', function() {
       this.missingGaiaInfoCallback = null;
       this.needPassword = true;
       this.services_ = null;
+      this.servicesProvided_ = false;
       this.waitApiPasswordConfirm_ = false;
       this.gaiaDoneTimer_ = null;
       /** @private {boolean} */
@@ -475,6 +477,7 @@ cr.define('cr.login', function() {
       this.samlHandler_.reset();
       this.videoEnabled = false;
       this.services_ = null;
+      this.servicesProvided_ = false;
       this.waitApiPasswordConfirm_ = false;
       this.maybeClearGaiaTimeout_();
       this.syncTrustedVaultKeys_ = null;
@@ -1209,8 +1212,9 @@ cr.define('cr.login', function() {
               sessionIndex: this.sessionIndex_ || '',
               trusted: this.trusted_,
               services: this.services_ || [],
+              servicesProvided: this.servicesProvided_,
               passwordAttributes: passwordAttributes,
-              syncTrustedVaultKeys: this.syncTrustedVaultKeys_ || {}
+              syncTrustedVaultKeys: this.syncTrustedVaultKeys_ || {},
             }
           }));
       this.resetStates();
