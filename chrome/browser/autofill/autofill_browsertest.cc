@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   content::AccessibilityNotificationWaiter layout_waiter_one(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_one.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_one.WaitForNotification());
 
   // Focus target form field.
   const std::string focus_name_first_js =
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   content::AccessibilityNotificationWaiter layout_waiter_two(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_two.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_two.WaitForNotification());
 
   // Focus target form field.
   ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
   content::AccessibilityNotificationWaiter layout_waiter_one(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_one.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_one.WaitForNotification());
 
   // Focus target form field.
   const std::string focus_name_first_js =
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
   content::AccessibilityNotificationWaiter layout_waiter_two(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_two.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_two.WaitForNotification());
 
   // Focus target form field.
   ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
