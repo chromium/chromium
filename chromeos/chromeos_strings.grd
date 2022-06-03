@@ -3354,7 +3354,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_REQUIRED" translateable="false" desc="Label showing error message when clicking continue button without a description.">
         Description is required
       </message>
-      <message name="IDS_FEEDBACK_TOOL_FEEDBACK_HELP_LINK_LABEL" translateable="false" desc="The text used for the link that navigates to the feedback help webpage.">
+      <message name="IDS_FEEDBACK_TOOL_FEEDBACK_HELP_LINK_LABEL" desc="The text used for the link that navigates to the feedback help webpage.">
         Tips on writing feedback
       </message>
       <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_HINT" translateable="false" desc="Label for the hint in description textarea">
