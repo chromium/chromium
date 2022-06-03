@@ -16,9 +16,9 @@
 #include "components/fuchsia_component_support/inspect.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/base/init_logging.h"
-#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia_web/runners/buildflags.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
+#include "fuchsia_web/webinstance_host/web_instance_host.h"
 
 namespace {
 

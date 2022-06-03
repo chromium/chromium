@@ -25,9 +25,9 @@
 #include "components/fuchsia_component_support/inspect.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/base/init_logging.h"
-#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
+#include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {

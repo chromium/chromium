@@ -1995,19 +1995,19 @@
     "type": "windowed_test_launcher",
   },
   "web_engine_browsertests": {
-    "label": "//fuchsia/engine:web_engine_browsertests",
+    "label": "//fuchsia_web/webengine:web_engine_browsertests",
     "type": "console_test_launcher",
   },
   "web_engine_integration_tests": {
-    "label": "//fuchsia/engine:web_engine_integration_tests",
+    "label": "//fuchsia_web/webengine:web_engine_integration_tests",
     "type": "console_test_launcher",
   },
   "web_engine_shell_pkg": {
-    "label": "//fuchsia/engine:web_engine_shell_pkg",
+    "label": "//fuchsia_web/webengine:web_engine_shell_pkg",
     "type": "additional_compile_target",
   },
   "web_engine_unittests": {
-    "label": "//fuchsia/engine:web_engine_unittests",
+    "label": "//fuchsia_web/webengine:web_engine_unittests",
     "type": "console_test_launcher",
   },
   "web_runner_integration_tests": {

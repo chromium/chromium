@@ -12,8 +12,8 @@ include_rules = [
 specific_include_rules = {
   ".*_browsertest\.cc": [
     # WebEngine test helpers.
-    "+fuchsia/engine/test/frame_for_test.h",
-    "+fuchsia/engine/test/web_engine_browser_test.h",
+    "+fuchsia_web/webengine/test/frame_for_test.h",
+    "+fuchsia_web/webengine/test/web_engine_browser_test.h",
   ],
   ".*_integration_test\.cc": [
     # Audio test helpers.

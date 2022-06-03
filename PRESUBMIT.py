@@ -925,8 +925,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       False,
       (
-        r'^fuchsia/engine/browser/url_request_rewrite_rules_manager\.cc$',
-        r'^fuchsia/engine/url_request_rewrite_type_converters\.cc$',
+        r'^fuchsia_web/webengine/browser/url_request_rewrite_rules_manager\.cc$',
+        r'^fuchsia_web/webengine/url_request_rewrite_type_converters\.cc$',
         r'^third_party/blink/.*\.(cc|h)$',
         r'^content/renderer/.*\.(cc|h)$',
       ),

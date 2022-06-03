@@ -1,0 +1,32 @@
+include_rules = [
+  # Do NOT add components/cast or other Cast-specific code to this file.
+  "+components/cast/message_port",
+  "+components/cast_streaming",
+  "+components/embedder_support",
+  "+components/fuchsia_component_support",
+  "+components/media_control",
+  "+components/on_load_script_injector",
+  "+components/version_info",
+  "+content/public/app",
+  "+content/public/common",
+  "+fuchsia/base",
+  "+fuchsia_web/webinstance_host",
+  "+google_apis",
+  "+gpu/command_buffer/service/gpu_switches.h",
+  "+media/base/media_switches.h",
+  "+media/fuchsia",
+  "+mojo/public",
+  "+net",
+  "+third_party/widevine/cdm/widevine_cdm_common.h",
+  "+ui/base",
+  "+ui/gfx/switches.h",
+]
+
+specific_include_rules = {
+  "context_provider_impl_unittest\.cc": [
+    "+services/network/public/cpp/network_switches.h"
+  ],
+  "web_engine_browser_main_parts\.cc": [
+    "+components/fuchsia_legacymetrics/legacymetrics_client.h"
+  ]
+}

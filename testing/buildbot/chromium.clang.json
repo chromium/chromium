@@ -9851,7 +9851,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_browsertests",
-        "test_id_prefix": "ninja://fuchsia/engine:web_engine_browsertests/"
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_browsertests/"
       },
       {
         "args": [
@@ -9872,7 +9872,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_integration_tests",
-        "test_id_prefix": "ninja://fuchsia/engine:web_engine_integration_tests/"
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests/"
       },
       {
         "merge": {
@@ -9890,7 +9890,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_unittests",
-        "test_id_prefix": "ninja://fuchsia/engine:web_engine_unittests/"
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_unittests/"
       },
       {
         "merge": {
@@ -11248,7 +11248,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_browsertests",
-        "test_id_prefix": "ninja://fuchsia/engine:web_engine_browsertests/"
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_browsertests/"
       },
       {
         "args": [
@@ -11270,7 +11270,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_integration_tests",
-        "test_id_prefix": "ninja://fuchsia/engine:web_engine_integration_tests/"
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests/"
       },
       {
         "merge": {
@@ -11289,7 +11289,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_unittests",
-        "test_id_prefix": "ninja://fuchsia/engine:web_engine_unittests/"
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_unittests/"
       },
       {
         "merge": {

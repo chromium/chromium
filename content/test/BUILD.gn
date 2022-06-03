@@ -769,7 +769,7 @@ static_library("test_support") {
 if (is_fuchsia) {
   # TODO(crbug.com/1310086): Split this test suite into chrome/WebEngine
   # versions.
-  # TODO(crbug.com/1309686): Move WebEngine-specific suites to //fuchsia/engine
+  # TODO(crbug.com/1309686): Move WebEngine-specific suites to //fuchsia_web/webengine/
   group("performance_web_engine_test_suite") {
     testonly = true
     data = [ "//content/test/gpu/run_telemetry_benchmark_fuchsia.py" ]
@@ -786,8 +786,8 @@ if (is_fuchsia) {
     data = [ "//content/test/gpu/fuchsia_util.py" ]
     data_deps = [
       "//chrome/app:chrome_fuchsia",
-      "//fuchsia/engine:web_engine_shell",
-      "//fuchsia/engine:web_engine_with_webui_installer",
+      "//fuchsia_web/webengine:web_engine_shell",
+      "//fuchsia_web/webengine:web_engine_with_webui_installer",
     ]
   }
 }

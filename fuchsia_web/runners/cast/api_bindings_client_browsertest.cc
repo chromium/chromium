@@ -16,12 +16,12 @@
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
-#include "fuchsia/engine/test/frame_for_test.h"
-#include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "fuchsia_web/runners/cast/api_bindings_client.h"
 #include "fuchsia_web/runners/cast/create_web_message.h"
 #include "fuchsia_web/runners/cast/fake_api_bindings.h"
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
+#include "fuchsia_web/webengine/test/frame_for_test.h"
+#include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

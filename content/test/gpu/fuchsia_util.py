@@ -38,8 +38,8 @@ def RunTestOnFuchsiaDevice(script_cmd):
 
   if runner_script_args.browser == 'web-engine-shell':
     package_names = ['web_engine_with_webui', 'web_engine_shell']
-    package_dir = os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia',
-                               'engine')
+    package_dir = os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia_web',
+                               'webengine')
   else:
     package_names = ['chrome']
     package_dir = os.path.join(runner_script_args.out_dir, 'gen', 'chrome',

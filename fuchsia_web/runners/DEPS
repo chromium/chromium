@@ -1,5 +1,5 @@
 include_rules  =  [
   "+components/fuchsia_component_support",
   "+fuchsia/base",
-  "+fuchsia/engine/web_instance_host",
+  "+fuchsia_web/webinstance_host",
 ]

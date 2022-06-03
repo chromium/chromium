@@ -22,9 +22,9 @@
 #include "base/fuchsia/startup_context.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia_web/runners/buildflags.h"
 #include "fuchsia_web/runners/common/web_component.h"
+#include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "url/gurl.h"
 
 namespace {

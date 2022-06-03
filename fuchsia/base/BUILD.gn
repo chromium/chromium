@@ -13,8 +13,9 @@ source_set("base") {
   visibility = [
     "./test/*",
     "//chromecast/internal/*",
-    "//fuchsia/engine/*",
     "//fuchsia_web/runners/*",
+    "//fuchsia_web/webengine/*",
+    "//fuchsia_web/webinstance_host/*",
   ]
   sources = [
     "fuchsia_dir_scheme.cc",
@@ -43,8 +44,8 @@ source_set("modular") {
     ":cr_fuchsia_base_unittests__exec",
     "./test/*",
     "//chromecast/internal/*",
-    "//fuchsia/engine/*",
     "//fuchsia_web/runners/*",
+    "//fuchsia_web/webengine/*",
   ]
   sources = [
     "agent_impl.cc",
@@ -63,7 +64,7 @@ source_set("modular") {
 
 # FIDL/Mojo adapters for MessagePorts.
 source_set("message_port") {
-  visibility = [ "//fuchsia/engine/*" ]
+  visibility = [ "//fuchsia_web/webengine/*" ]
   sources = [ "message_port.cc" ]
   public = [ "message_port.h" ]
   public_deps = [
@@ -83,8 +84,8 @@ source_set("message_port") {
 static_library("run_all_integration_tests") {
   testonly = true
   visibility = [
-    "//fuchsia/engine/*",
     "//fuchsia_web/runners/*",
+    "//fuchsia_web/webengine/*",
   ]
   sources = [ "run_all_integration_tests.cc" ]
   deps = [ "//base/test:test_support" ]

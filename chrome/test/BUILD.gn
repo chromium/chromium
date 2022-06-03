@@ -729,8 +729,8 @@ if (is_android) {
     ]
     if (fuchsia_browser_type == "web_engine_shell") {
       data_deps += [
-        "//fuchsia/engine:web_engine_shell",
-        "//fuchsia/engine:web_engine_with_webui_installer",
+        "//fuchsia_web/webengine:web_engine_shell",
+        "//fuchsia_web/webengine:web_engine_with_webui_installer",
       ]
     }
     data_deps += [ "//chrome/app:chrome_fuchsia" ]
