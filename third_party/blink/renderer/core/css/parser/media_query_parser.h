@@ -151,7 +151,6 @@ class CORE_EXPORT MediaQueryParser {
   bool IsMediaQueries4SyntaxEnabled() const;
 
   ParserType parser_type_;
-  MediaQuerySet* query_set_ = nullptr;
   CSSParserMode mode_;
   const ExecutionContext* execution_context_;
   SyntaxLevel syntax_level_;

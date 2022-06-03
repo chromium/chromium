@@ -51,13 +51,12 @@ class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
 
   MediaQuerySet();
   MediaQuerySet(const MediaQuerySet&);
+  explicit MediaQuerySet(HeapVector<Member<const MediaQuery>>);
   void Trace(Visitor*) const;
 
   bool Set(const String&, const ExecutionContext*);
   bool Add(const String&, const ExecutionContext*);
   bool Remove(const String&, const ExecutionContext*);
-
-  void AddMediaQuery(const MediaQuery*);
 
   const HeapVector<Member<const MediaQuery>>& QueryVector() const {
     return queries_;

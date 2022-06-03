@@ -57,6 +57,9 @@ MediaQuerySet::MediaQuerySet() = default;
 
 MediaQuerySet::MediaQuerySet(const MediaQuerySet&) = default;
 
+MediaQuerySet::MediaQuerySet(HeapVector<Member<const MediaQuery>> queries)
+    : queries_(std::move(queries)) {}
+
 MediaQuerySet* MediaQuerySet::Create(
     const String& media_string,
     const ExecutionContext* execution_context) {
@@ -73,10 +76,6 @@ void MediaQuerySet::Trace(Visitor* visitor) const {
 bool MediaQuerySet::Set(const String& media_string,
                         const ExecutionContext* execution_context) {
   MediaQuerySet* result = Create(media_string, execution_context);
-  // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
-  for (const auto& query : result->queries_) {
-    CHECK(query);
-  }
   queries_.swap(result->queries_);
   return true;
 }
@@ -93,8 +92,7 @@ bool MediaQuerySet::Add(const String& query_string,
     return false;
 
   const MediaQuery* new_query = result->queries_[0].Get();
-  // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
-  CHECK(new_query);
+  DCHECK(new_query);
 
   // If comparing with any of the media queries in the collection of media
   // queries returns true terminate these steps.
@@ -120,8 +118,7 @@ bool MediaQuerySet::Remove(const String& query_string_to_remove,
     return true;
 
   const MediaQuery* new_query = result->queries_[0];
-  // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
-  CHECK(new_query);
+  DCHECK(new_query);
 
   // Remove any media query from the collection of media queries for which
   // comparing with the media query returns true.
@@ -136,12 +133,6 @@ bool MediaQuerySet::Remove(const String& query_string_to_remove,
   }
 
   return found;
-}
-
-void MediaQuerySet::AddMediaQuery(const MediaQuery* media_query) {
-  // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
-  CHECK(media_query);
-  queries_.push_back(media_query);
 }
 
 String MediaQuerySet::MediaText() const {
@@ -228,11 +219,7 @@ void MediaList::appendMedium(const ExecutionContext* execution_context,
 }
 
 void MediaList::Reattach(MediaQuerySet* media_queries) {
-  // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
-  CHECK(media_queries);
-  for (const auto& query : media_queries->QueryVector()) {
-    CHECK(query);
-  }
+  DCHECK(media_queries);
   media_queries_ = media_queries;
 }
 

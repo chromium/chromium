@@ -85,7 +85,6 @@ MediaQueryParser::MediaQueryParser(ParserType parser_type,
                                    const ExecutionContext* execution_context,
                                    SyntaxLevel syntax_level)
     : parser_type_(parser_type),
-      query_set_(MediaQuerySet::Create()),
       mode_(mode),
       execution_context_(execution_context),
       syntax_level_(syntax_level),
@@ -450,14 +449,16 @@ MediaQuerySet* MediaQueryParser::ConsumeSingleCondition(
 
   const MediaQueryExpNode* node = ConsumeCondition(range);
 
+  HeapVector<Member<const MediaQuery>> queries;
+
   if (!node || !range.AtEnd()) {
-    query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
+    queries.push_back(MediaQuery::CreateNotAll());
   } else {
-    query_set_->AddMediaQuery(MakeGarbageCollected<MediaQuery>(
+    queries.push_back(MakeGarbageCollected<MediaQuery>(
         MediaQuery::kNone, media_type_names::kAll, node));
   }
 
-  return query_set_;
+  return MakeGarbageCollected<MediaQuerySet>(std::move(queries));
 }
 
 MediaQuery* MediaQueryParser::ConsumeQuery(CSSParserTokenRange& range) {
@@ -495,23 +496,22 @@ MediaQuerySet* MediaQueryParser::ParseImpl(CSSParserTokenRange range) {
   // Note that we currently expect an empty input to evaluate to an empty
   // MediaQuerySet, rather than "not all".
   if (range.AtEnd())
-    return query_set_;
+    return MakeGarbageCollected<MediaQuerySet>();
 
   if (parser_type_ == kMediaConditionParser)
     return ConsumeSingleCondition(range);
 
   DCHECK_EQ(parser_type_, kMediaQuerySetParser);
 
+  HeapVector<Member<const MediaQuery>> queries;
+
   do {
     MediaQuery* query = ConsumeQuery(range);
     bool ok = query && (range.AtEnd() || range.Peek().GetType() == kCommaToken);
-    if (!ok)
-      query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
-    else
-      query_set_->AddMediaQuery(query);
+    queries.push_back(ok ? query : MediaQuery::CreateNotAll());
   } while (!range.AtEnd() && ConsumeUntilCommaInclusive(range));
 
-  return query_set_;
+  return MakeGarbageCollected<MediaQuerySet>(std::move(queries));
 }
 
 bool MediaQueryParser::IsNotKeywordEnabled() const {
