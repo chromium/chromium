@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
@@ -44,13 +45,14 @@ void ExecutionService::Initialize(
     ModelProviderFactory* model_provider_factory,
     std::vector<ModelExecutionScheduler::Observer*>&& observers,
     const PlatformOptions& platform_options,
+    std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
     std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs) {
   storage_service_ = storage_service;
 
   feature_list_query_processor_ =
       std::make_unique<processing::FeatureListQueryProcessor>(
-          storage_service,
+          storage_service, std::move(input_delegate_holder),
           std::make_unique<processing::FeatureAggregatorImpl>());
 
   training_data_collector_ = TrainingDataCollector::Create(

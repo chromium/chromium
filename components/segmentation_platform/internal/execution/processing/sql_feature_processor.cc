@@ -15,11 +15,14 @@
 
 namespace segmentation_platform::processing {
 
-SqlFeatureProcessor::SqlFeatureProcessor(QueryList&& queries,
-                                         base::Time prediction_time,
-                                         UkmDatabase* ukm_database)
+SqlFeatureProcessor::SqlFeatureProcessor(
+    QueryList&& queries,
+    base::Time prediction_time,
+    InputDelegateHolder* input_delegate_holder,
+    UkmDatabase* ukm_database)
     : queries_(std::move(queries)),
       prediction_time_(prediction_time),
+      input_delegate_holder_(input_delegate_holder),
       ukm_database_(ukm_database) {}
 SqlFeatureProcessor::~SqlFeatureProcessor() = default;
 
@@ -59,11 +62,12 @@ void SqlFeatureProcessor::Process(
   }
 
   // Process the indexed custom inputs
-  auto custom_input_processor =
-      std::make_unique<CustomInputProcessor>(prediction_time_);
+  auto custom_input_processor = std::make_unique<CustomInputProcessor>(
+      prediction_time_, input_delegate_holder_);
   auto* custom_input_processor_ptr = custom_input_processor.get();
   custom_input_processor_ptr->ProcessIndexType<SqlFeatureAndBindValueIndices>(
       std::move(bind_values), std::move(feature_processor_state),
+      std::make_unique<base::flat_map<std::pair<int, int>, Tensor>>(),
       base::BindOnce(&SqlFeatureProcessor::OnCustomInputProcessed,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(custom_input_processor)));

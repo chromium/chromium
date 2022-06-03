@@ -4,10 +4,12 @@
 
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
+
 namespace segmentation_platform::processing {
 
 MockFeatureListQueryProcessor::MockFeatureListQueryProcessor()
-    : FeatureListQueryProcessor(nullptr, nullptr) {}
+    : FeatureListQueryProcessor(nullptr, nullptr, nullptr) {}
 
 MockFeatureListQueryProcessor::~MockFeatureListQueryProcessor() = default;
 

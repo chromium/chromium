@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,7 @@ class SqlFeatureProcessorTest : public testing::Test {
     // Initialize the sql feature processor.
     std::unique_ptr<SqlFeatureProcessor> processor =
         std::make_unique<SqlFeatureProcessor>(std::move(data), clock_.Now(),
+                                              &input_delegate_holder_,
                                               ukm_database_.get());
 
     EXPECT_CALL(*ukm_database_, RunReadonlyQueries)
@@ -107,6 +109,7 @@ class SqlFeatureProcessorTest : public testing::Test {
   base::test::TaskEnvironment task_envåironment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::SimpleTestClock clock_;
+  InputDelegateHolder input_delegate_holder_;
   std::unique_ptr<FeatureProcessorState> feature_processor_state_;
   std::unique_ptr<MockUkmDatabase> ukm_database_;
 };

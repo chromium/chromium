@@ -19,6 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
@@ -57,6 +58,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       task_runner_(init_params->task_runner),
       clock_(init_params->clock),
       platform_options_(PlatformOptions::CreateDefault()),
+      input_delegate_holder_(std::move(init_params->input_delegate_holder)),
       configs_(std::move(init_params->configs)),
       all_segment_ids_(GetAllSegmentIds(configs_)),
       field_trial_register_(std::move(init_params->field_trial_register)),
@@ -228,7 +230,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()),
       task_runner_, all_segment_ids_, model_provider_factory_.get(),
-      std::move(observers), platform_options_, &configs_, profile_prefs_);
+      std::move(observers), platform_options_,
+      std::move(input_delegate_holder_), &configs_, profile_prefs_);
 
   proxy_->SetExecutionService(&execution_service_);
 

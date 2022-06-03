@@ -41,6 +41,10 @@ class PrefService;
 
 namespace segmentation_platform {
 
+namespace processing {
+class InputDelegateHolder;
+}
+
 struct Config;
 class FieldTrialRegister;
 class ModelProviderFactory;
@@ -57,15 +61,18 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
     bool IsValid();
 
+    // Profile data:
     leveldb_proto::ProtoDatabaseProvider* db_provider = nullptr;
     history::HistoryService* history_service = nullptr;
     base::FilePath storage_dir;
     PrefService* profile_prefs = nullptr;
 
+    // Platform configuration:
     std::unique_ptr<ModelProviderFactory> model_provider;
     UkmDataManager* ukm_data_manager = nullptr;
     std::vector<std::unique_ptr<Config>> configs;
     std::unique_ptr<FieldTrialRegister> field_trial_register;
+    std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder;
 
     scoped_refptr<base::SequencedTaskRunner> task_runner;
     base::Clock* clock = nullptr;
@@ -134,6 +141,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<base::Clock> clock_;
   const PlatformOptions platform_options_;
+
+  // Temporarily stored till initialization and moved to `execution_service_`.
+  std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder_;
 
   // Config.
   std::vector<std::unique_ptr<Config>> configs_;

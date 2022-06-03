@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_aggregator.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +61,9 @@ class FeatureListQueryProcessorTest : public testing::Test {
     auto feature_aggregator = std::make_unique<MockFeatureAggregator>();
     feature_aggregator_ = feature_aggregator.get();
     feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-        storage_service_.get(), std::move(feature_aggregator));
+        storage_service_.get(),
+        std::make_unique<processing::InputDelegateHolder>(),
+        std::move(feature_aggregator));
   }
 
   void SetBucketDuration(uint64_t bucket_duration, proto::TimeUnit time_unit) {

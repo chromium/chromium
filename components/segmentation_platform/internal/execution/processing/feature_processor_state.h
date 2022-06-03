@@ -63,7 +63,9 @@ class FeatureProcessorState {
 
   bool error() const { return error_; }
 
-  scoped_refptr<InputContext> input_context() { return input_context_; }
+  const scoped_refptr<InputContext> input_context() const {
+    return input_context_;
+  }
 
   // Returns and pops the next input feature or output feature, wrapped inside
   // `Data` structure. Return an empty struct if no input and output are

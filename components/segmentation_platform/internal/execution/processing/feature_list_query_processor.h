@@ -25,6 +25,7 @@ namespace processing {
 
 class FeatureAggregator;
 class FeatureProcessorState;
+class InputDelegateHolder;
 
 using proto::SegmentId;
 
@@ -35,6 +36,7 @@ class FeatureListQueryProcessor {
  public:
   FeatureListQueryProcessor(
       StorageService* storage_service,
+      std::unique_ptr<InputDelegateHolder> input_delegate_holder,
       std::unique_ptr<FeatureAggregator> feature_aggregator);
   virtual ~FeatureListQueryProcessor();
 
@@ -90,11 +92,11 @@ class FeatureListQueryProcessor {
   // Storage service which provides signals to process.
   const raw_ptr<StorageService> storage_service_;
 
+  // Holds InputDelegate for feature processing.
+  std::unique_ptr<InputDelegateHolder> input_delegate_holder_;
+
   // Feature aggregator that aggregates data for uma features.
   const std::unique_ptr<FeatureAggregator> feature_aggregator_;
-
-  // Feature processor for uma type of input features.
-  CustomInputProcessor custom_input_processor_;
 
   base::WeakPtrFactory<FeatureListQueryProcessor> weak_ptr_factory_{this};
 };

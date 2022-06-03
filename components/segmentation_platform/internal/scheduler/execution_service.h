@@ -22,6 +22,7 @@ class PrefService;
 namespace segmentation_platform {
 namespace processing {
 class FeatureListQueryProcessor;
+class InputDelegateHolder;
 }
 
 struct Config;
@@ -57,6 +58,7 @@ class ExecutionService {
       ModelProviderFactory* model_provider_factory,
       std::vector<ModelExecutionScheduler::Observer*>&& observers,
       const PlatformOptions& platform_options,
+      std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
       std::vector<std::unique_ptr<Config>>* configs,
       PrefService* profile_prefs);
 
