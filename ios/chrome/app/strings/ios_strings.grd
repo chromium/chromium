@@ -1414,6 +1414,18 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NEW_TAB_RECENT_TABS" desc="The header of the panel containing the list of recently closed tabs and the tabs synced from other devices.[Length: 17em]">
         Recent Tabs
       </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo (compact version), explaining that users will content based on users interests if they enable sync. [iOS only]">
+        Sync to get content based on your interests.
+      </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo, explaining that users will see more relevant content if they enable sync. [iOS only]">
+        Sync for the most relevant content based on your interests.
+      </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE" desc="In Title Case: Button on the new tab page Feed Signin Promo which allow users to signin. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE" desc="In Title Case: Title   of the new tab page Feed Signin Promo. [iOS only]">
+        See Content for You
+      </message>
       <message name="IDS_IOS_OPEN_IN" desc="Label of the button that lets users open a document in another application. [Length: 15em] [iOS only]">
         Open in...
       </message>
