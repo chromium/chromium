@@ -3460,7 +3460,6 @@ crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-expor
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/webrtc/RTCDataChannel-bufferedAmount.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-bufferedAmount.html [ Crash ]
@@ -6521,9 +6520,6 @@ crbug.com/1191846 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/pre
 crbug.com/1191846 [ Mac12 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass Timeout ]
 crbug.com/1191846 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
 
-# Sheriff 2021-11-10
-crbug.com/1268963 [ Linux ] external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
-
 # Sheriff 2021-11-12
 crbug.com/1268594 [ Linux ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268594 [ Mac ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
@@ -6820,9 +6816,6 @@ crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-
 
 # Disable flaky test for further investigation
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
-
-# Sheriff 2022-03-01
-crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Pass Timeout ]
 
 # Sheriff 2022-03-03
 crbug.com/1302571 virtual/threaded/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
