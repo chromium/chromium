@@ -213,14 +213,6 @@ static_library("exo") {
       configs += [ ":xkbcommon" ]
     }
   }
-
-  if (is_castos) {
-    deps += [ "//ui/accessibility" ]
-    sources += [
-      "fullscreen_shell_surface.cc",
-      "fullscreen_shell_surface.h",
-    ]
-  }
 }
 
 source_set("test_support") {
@@ -365,11 +357,6 @@ source_set("unit_tests") {
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
     ]
-  }
-
-  if (is_castos) {
-    deps += [ "//ui/accessibility" ]
-    sources += [ "fullscreen_shell_surface_unittest.cc" ]
   }
 }
 

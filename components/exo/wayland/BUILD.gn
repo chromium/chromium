@@ -147,15 +147,6 @@ source_set("wayland") {
     deps += [ "//ui/events/keycodes:xkb" ]
   }
 
-  if (is_castos) {
-    defines += [ "USE_FULLSCREEN_SHELL" ]
-    sources += [
-      "zwp_fullscreen_shell.cc",
-      "zwp_fullscreen_shell.h",
-    ]
-    deps += [ "//third_party/wayland-protocols:fullscreen_shell_protocol" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
       "wayland_keyboard_delegate.cc",
