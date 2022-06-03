@@ -129,6 +129,8 @@ void ImageFetcherBridge::FetchImage(
     const jint j_image_fetcher_config,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_client_name,
+    const jint j_frame_width,
+    const jint j_frame_height,
     const jint j_expiration_interval_mins,
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
@@ -139,6 +141,7 @@ void ImageFetcherBridge::FetchImage(
       base::android::ConvertJavaStringToUTF8(j_client_name);
 
   ImageFetcherParams params(kTrafficAnnotation, client_name);
+  params.set_frame_size(gfx::Size(j_frame_width, j_frame_height));
   if (j_expiration_interval_mins > 0) {
     params.set_hold_for_expiration_interval(
         base::Minutes(j_expiration_interval_mins));
@@ -221,11 +224,13 @@ void JNI_ImageFetcherBridge_FetchImage(
     const jint j_image_fetcher_config,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_client_name,
+    const jint j_frame_width,
+    const jint j_frame_height,
     const jint j_expiration_interval_mins,
     const JavaParamRef<jobject>& j_callback) {
-  ImageFetcherBridge::FetchImage(j_env, j_simple_factory_key,
-                                 j_image_fetcher_config, j_url, j_client_name,
-                                 j_expiration_interval_mins, j_callback);
+  ImageFetcherBridge::FetchImage(
+      j_env, j_simple_factory_key, j_image_fetcher_config, j_url, j_client_name,
+      j_frame_width, j_frame_height, j_expiration_interval_mins, j_callback);
 }
 
 // static

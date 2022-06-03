@@ -90,7 +90,8 @@ public class ImageFetcherBridge {
     public void fetchImage(@ImageFetcherConfig int config, final ImageFetcher.Params params,
             Callback<Bitmap> callback) {
         ImageFetcherBridgeJni.get().fetchImage(mSimpleFactoryKeyHandle, config, params.url,
-                params.clientName, params.expirationIntervalMinutes, (bitmap) -> {
+                params.clientName, params.width, params.height, params.expirationIntervalMinutes,
+                (bitmap) -> {
                     callback.onResult(
                             ImageFetcher.resizeImage(bitmap, params.width, params.height));
                 });
@@ -136,8 +137,8 @@ public class ImageFetcherBridge {
                 @ImageFetcherConfig int config, String url, String clientName,
                 int expirationIntervalMinutes, Callback<byte[]> callback);
         void fetchImage(SimpleFactoryKeyHandle simpleFactoryKeyHandle,
-                @ImageFetcherConfig int config, String url, String clientName,
-                int expirationIntervalMinutes, Callback<Bitmap> callback);
+                @ImageFetcherConfig int config, String url, String clientName, int frameWidth,
+                int frameHeight, int expirationIntervalMinutes, Callback<Bitmap> callback);
         void reportEvent(String clientName, int eventId);
         void reportCacheHitTime(String clientName, long startTimeMillis);
         void reportTotalFetchTimeFromNative(String clientName, long startTimeMillis);
