@@ -110,19 +110,21 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
   const ui::MouseEvent& mouse_event = *event.AsMouseEvent();
   if (mouse_event.IsRightMouseButton() || mouse_event.IsLeftMouseButton()) {
     if (!base::FeatureList::IsEnabled(arc::kRightClickLongPress)) {
-      RecordRightClickConversionResultHistogram(
-          RightClickConversionResultHistogramResult::kDisabled);
+      if (mouse_event.IsRightMouseButton()) {
+        RecordRightClickConversionResultHistogram(
+            RightClickConversionResultHistogramResult::kDisabled);
+      }
       return SendEvent(continuation, &event);
     }
 
     if (!in_resize_locked) {
-      RecordRightClickConversionResultHistogram(
-          RightClickConversionResultHistogramResult::kNotConverted);
+      if (mouse_event.IsRightMouseButton()) {
+        RecordRightClickConversionResultHistogram(
+            RightClickConversionResultHistogramResult::kNotConverted);
+      }
       return SendEvent(continuation, &event);
     }
 
-    RecordRightClickConversionResultHistogram(
-        RightClickConversionResultHistogramResult::kConverted);
     return RewriteMouseClickEvent(mouse_event, continuation);
   }
 
@@ -207,6 +209,10 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseClickEvent(
         base::BindOnce(&TouchModeMouseRewriter::SendReleaseEvent,
                        weak_ptr_factory_.GetWeakPtr(), event, continuation),
         kLongPressInterval);
+
+    RecordRightClickConversionResultHistogram(
+        RightClickConversionResultHistogramResult::kConverted);
+
     // Send the press event now.
     ui::MouseEvent press_event(
         ui::ET_MOUSE_PRESSED, event.location(), event.root_location(),
