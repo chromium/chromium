@@ -24,6 +24,8 @@ static_library("core") {
     "metrics_helper.h",
     "mitm_software_ui.cc",
     "mitm_software_ui.h",
+    "omnibox_https_upgrade_metrics.cc",
+    "omnibox_https_upgrade_metrics.h",
     "pref_names.cc",
     "pref_names.h",
     "safe_browsing_loud_error_ui.cc",

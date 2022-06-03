@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -1053,8 +1054,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(url, contents->GetLastCommittedURL());
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(
+      security_interstitials::omnibox_https_upgrades::kEventHistogram, 0);
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
   EXPECT_TRUE(base::Contains(enumerator.urls(), url));
 
@@ -1070,6 +1071,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       Click(ui_controls::LEFT, click_location, click_location));
   PressEnterAndWaitForNavigations(1);
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(
+      security_interstitials::omnibox_https_upgrades::kEventHistogram, 0);
 }

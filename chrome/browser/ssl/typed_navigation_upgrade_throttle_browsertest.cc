@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
+#include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -37,6 +38,9 @@
 #include "typed_navigation_upgrade_throttle.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+
+using security_interstitials::omnibox_https_upgrades::Event;
+using security_interstitials::omnibox_https_upgrades::kEventHistogram;
 
 namespace {
 
@@ -295,17 +299,11 @@ class TypedNavigationUpgradeThrottleBrowserTest
     base::HistogramTester histograms;
     TypeUrlAndExpectHttps(url_without_scheme, histograms, 1, ctrl_enter);
 
-    histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                                2);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
+    histograms.ExpectTotalCount(kEventHistogram, 2);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded,
+                                 1);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 0);
   }
 
   // Type |url_without_scheme| in the URL bar and hit enter. The navigation
@@ -321,8 +319,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
                                   ? NavigationExpectation::kExpectSearch
                                   : NavigationExpectation::kExpectHttp,
                               /*num_expected_navigations=*/1, ctrl_enter);
-    histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                                0);
+    histograms.ExpectTotalCount(kEventHistogram, 0);
   }
 
   // Type |url_without_scheme| in the URL bar and hit enter. The navigation
@@ -473,8 +470,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   EXPECT_EQ(url, contents->GetLastCommittedURL());
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(kEventHistogram, 0);
 
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
   EXPECT_TRUE(base::Contains(enumerator.urls(), url));
@@ -496,8 +492,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   EXPECT_EQ(url, contents->GetLastCommittedURL());
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(kEventHistogram, 0);
 
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
   EXPECT_TRUE(base::Contains(enumerator.urls(), url));
@@ -523,8 +518,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
                                SSLErrorHandler::HANDLE_ALL, 1);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(kEventHistogram, 0);
 
   // Broken SSL results in an interstitial and interstitial pages aren't added
   // to history.
@@ -551,8 +545,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(kEventHistogram, 0);
 }
 
 // Test the case when the user types a search keyword. The keyword may or may
@@ -623,8 +616,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // Shouldn't be handled by the throttle.
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(kEventHistogram, 0);
   // Should never hit an error page.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
   histograms.ExpectBucketCount(kNetErrorHistogram,
@@ -656,8 +648,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // Shouldn't be handled by the throttle.
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(kEventHistogram, 0);
   // Should never hit an error page.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
   histograms.ExpectBucketCount(kNetErrorHistogram,
@@ -709,14 +700,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(kNetErrorHistogram,
                                error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded, 1);
 }
 
 // Regression test for crbug.com/1202967: Paste a hostname in the omnibox and
@@ -753,14 +739,10 @@ IN_PROC_BROWSER_TEST_P(
   histograms.ExpectBucketCount(kNetErrorHistogram,
                                error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 1);
 }
 
 // If the feature is enabled, right clicking and selecting paste & go in the
@@ -800,14 +782,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(kNetErrorHistogram,
                                error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded, 1);
 }
 
 // If the upgraded HTTPS URL is not available because of an SSL error), we
@@ -823,17 +800,11 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   const GURL http_url = MakeHttpURL(kSiteWithBadHttps);
   TypeUrlAndExpectHttpFallback(http_url.host(), histograms);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 0);
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
@@ -841,17 +812,11 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   // time has passed.
   TypeUrlAndExpectNoUpgrade(http_url.host(), false);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 0);
 }
 
 // Similar to UrlTypedWithoutScheme_BadHttps_ShouldFallback, except this time
@@ -869,17 +834,11 @@ IN_PROC_BROWSER_TEST_P(
   TypeUrlAndExpectHttpFallback(http_url.host(), histograms,
                                /*ctrl_enter=*/true);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 0);
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
@@ -887,17 +846,11 @@ IN_PROC_BROWSER_TEST_P(
   // time has passed.
   TypeUrlAndExpectNoUpgrade(http_url.host(), false);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 0);
 }
 
 // If the upgraded HTTPS URL is not available because of a net error, we should
@@ -911,17 +864,11 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   // Type "site-with-net-error.com".
   TypeUrlAndExpectHttpFallback(kSiteWithNetError, histograms);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithNetError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithNetError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 0);
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
@@ -929,17 +876,11 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   // time has passed.
   TypeUrlAndExpectNoUpgrade(kSiteWithNetError, false);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithNetError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithNetError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 0);
 }
 
 class TypedNavigationUpgradeThrottleFastTimeoutBrowserTest
@@ -970,14 +911,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleFastTimeoutBrowserTest,
   const GURL url = MakeHttpsURL(kSiteWithSlowHttps);
   TypeUrlAndExpectHttpFallback(url.host(), histograms);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 1);
+  histograms.ExpectTotalCount(kEventHistogram, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadTimedOut, 1);
 }
 
 // Tests redirects. This is a separate class because as there currently doesn't
@@ -1136,34 +1072,22 @@ IN_PROC_BROWSER_TEST_P(
     TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
                                        target_url);
 
-    histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                                3);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kRedirected, 1);
+    histograms.ExpectTotalCount(kEventHistogram, 3);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded,
+                                 1);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 1);
 
     // Try again. The navigation will be upgraded again and metrics will be
     // recorded.
     TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
                                        target_url);
 
-    histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                                6);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 2);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 2);
-    histograms.ExpectBucketCount(
-        TypedNavigationUpgradeThrottle::kHistogramName,
-        TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
+    histograms.ExpectTotalCount(kEventHistogram, 6);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 2);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded,
+                                 2);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 2);
   }
 }
 
@@ -1201,17 +1125,11 @@ IN_PROC_BROWSER_TEST_P(
   // kNetErrorHistogram is recorded by the renderer.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              3);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kRedirected, 1);
+  histograms.ExpectTotalCount(kEventHistogram, 3);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 1);
 
   // The SSL error is recorded twice even though the interstitial is only shown
   // once. The error is encountered first at the end of the upgraded HTTPS
@@ -1226,17 +1144,11 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              6);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
+  histograms.ExpectTotalCount(kEventHistogram, 6);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 2);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 2);
 
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 4);
   histograms.ExpectBucketCount(kNetErrorHistogram,
@@ -1267,17 +1179,11 @@ IN_PROC_BROWSER_TEST_P(
                                error_page::NETWORK_ERROR_PAGE_SHOWN, 2);
 
   // Throttle histogram numbers should update for the HTTP fallback:
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              8);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 3);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 3);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
+  histograms.ExpectTotalCount(kEventHistogram, 8);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 3);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithCertError, 3);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 2);
 }
 
 // Same as UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback, but the
@@ -1303,17 +1209,11 @@ IN_PROC_BROWSER_TEST_P(
   // kNetErrorHistogram is recorded by the renderer.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              3);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithNetError, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kRedirected, 1);
+  histograms.ExpectTotalCount(kEventHistogram, 3);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithNetError, 1);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 1);
 
   // The navigation ends up on a net error.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
@@ -1325,17 +1225,11 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              6);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithNetError, 2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
+  histograms.ExpectTotalCount(kEventHistogram, 6);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 2);
+  histograms.ExpectBucketCount(kEventHistogram,
+                               Event::kHttpsLoadFailedWithNetError, 2);
+  histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 2);
 
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
   histograms.ExpectBucketCount(kNetErrorHistogram,

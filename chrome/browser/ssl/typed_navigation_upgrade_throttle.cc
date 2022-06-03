@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -21,6 +22,9 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
+
+using security_interstitials::omnibox_https_upgrades::Event;
+using security_interstitials::omnibox_https_upgrades::kEventHistogram;
 
 namespace {
 
@@ -38,9 +42,8 @@ int g_https_port_for_testing = 0;
 // Used to compute the fallback URL from the https URL.
 int g_http_port_for_testing = 0;
 
-void RecordUMA(TypedNavigationUpgradeThrottle::Event event) {
-  base::UmaHistogramEnumeration(TypedNavigationUpgradeThrottle::kHistogramName,
-                                event);
+void RecordUMA(Event event) {
+  base::UmaHistogramEnumeration(kEventHistogram, event);
 }
 
 GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
@@ -61,10 +64,6 @@ GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
 }
 
 }  // namespace
-
-// static
-const char TypedNavigationUpgradeThrottle::kHistogramName[] =
-    "TypedNavigationUpgradeThrottle.Event";
 
 // static
 std::unique_ptr<content::NavigationThrottle>
