@@ -3154,22 +3154,6 @@
           'gtest_tests': 'fuchsia_experimental_gtests',
         },
       },
-      'ios-asan': {
-        'additional_compile_targets': [
-          'ios_chrome_clusterfuzz_asan_build',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_11_or_12_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_13_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_asan_tests',
-        }
-      },
       'ios-fieldtrial-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -5237,6 +5221,22 @@
           'marshmallow',
         ],
         'os_type': 'android',
+      },
+      'ios-asan': {
+        'additional_compile_targets': [
+          'ios_chrome_clusterfuzz_asan_build',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_or_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_asan_tests',
+        }
       },
       'linux-lacros-asan-lsan-rel': {
         'mixins': [
