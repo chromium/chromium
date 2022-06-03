@@ -177,8 +177,8 @@ CalendarEventListItemView::CalendarEventListItemView(
   tri_view->AddView(TriView::Container::END, time_range_);
 
   auto tooltip_text = l10n_util::GetStringFUTF16(
-      IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, formatted_interval,
-      base::UTF8ToUTF16(event.summary()));
+      IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, base::UTF8ToUTF16(event.summary()),
+      formatted_interval);
   time_range_->SetTooltipText(tooltip_text);
   summary_->SetTooltipText(tooltip_text);
 

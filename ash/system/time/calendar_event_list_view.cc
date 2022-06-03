@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -33,8 +34,8 @@
 namespace ash {
 namespace {
 
-// The paddings in `close_button`.
-constexpr gfx::Insets kCloseButtonInsets{20};
+// The paddings in `close_button_container_`.
+constexpr gfx::Insets kCloseButtonContainerInsets{15};
 
 // The paddings in `CalendarEventListView`.
 constexpr auto kContentInsets = gfx::Insets::TLBR(0, 20, 20, 20);
@@ -124,26 +125,16 @@ CalendarEventListView::CalendarEventListView(
           views::BoxLayout::Orientation::kHorizontal));
   button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
-  auto* close_button = close_button_container_->AddChildView(
-      std::make_unique<views::ImageButton>(views::Button::PressedCallback(
-          base::BindRepeating(&CalendarViewController::CloseEventListView,
-                              base::Unretained(calendar_view_controller)))));
-  close_button->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kIcCloseIcon,
-                            calendar_utils::GetPrimaryTextColor()));
-  close_button->SetHasInkDropActionOnClick(true);
-  close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
-  close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  close_button->SetBorder(views::CreateEmptyBorder(kCloseButtonInsets));
-  close_button->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION));
-  close_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_CLOSE_BUTTON_TOOLTIP));
-  close_button->SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::FocusRing::Get(close_button)
-      ->SetColor(ColorProvider::Get()->GetControlsLayerColor(
-          ColorProvider::ControlsLayerType::kFocusRingColor));
+  close_button_container_->SetBorder(
+      views::CreateEmptyBorder(kCloseButtonContainerInsets));
+
+  auto* close_button =
+      new IconButton(views::Button::PressedCallback(base::BindRepeating(
+                         &CalendarViewController::CloseEventListView,
+                         base::Unretained(calendar_view_controller))),
+                     IconButton::Type::kSmallFloating, &views::kIcCloseIcon,
+                     IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION);
+  close_button_container_->AddChildView(close_button);
 
   scroll_view_->SetAllowKeyboardScrolling(false);
   scroll_view_->SetBackgroundColor(absl::nullopt);
