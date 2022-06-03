@@ -127,11 +127,15 @@ class FfxRunner():
       # supported.
       process = subprocess.Popen(command,
                                  stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
-      stdoutdata = process.communicate()[0].decode('utf-8')
+                                 stderr=subprocess.PIPE)
+      stdout_data, stderr_data = process.communicate()
+      stdout_data = stdout_data.decode('utf-8')
+      stderr_data = stderr_data.decode('utf-8')
       if check and process.returncode != 0:
-        raise subprocess.CalledProcessError(process.returncode, command,
-                                            stdoutdata)
+        # TODO(grt): Pass stdout and stderr as two args when p2 support is no
+        # longer needed.
+        raise subprocess.CalledProcessError(
+            process.returncode, command, '\n'.join((stdout_data, stderr_data)))
     except subprocess.CalledProcessError as cpe:
       if log_file:
         log_file.write('Process exited with code %d. Output: %s\n' %
@@ -146,20 +150,24 @@ class FfxRunner():
     if repair_succeeded:
       return self.run_ffx(args, check, suppress_repair=True)
 
-    stripped_stdout = stdoutdata.strip()
+    stripped_stdout = stdout_data.strip()
+    stripped_stderr = stderr_data.strip()
     if log_file:
-      if process.returncode != 0:
+      if process.returncode != 0 or stripped_stderr:
         log_file.write('Process exited with code %d.' % process.returncode)
+        if stripped_stderr:
+          log_file.write(' Stderr:\n%s\n' % stripped_stderr)
         if stripped_stdout:
-          log_file.write(' Output:\n%s\n' % stripped_stdout)
-        else:
+          log_file.write(' Stdout:\n%s\n' % stripped_stdout)
+        if not stripped_stderr and not stripped_stdout:
           log_file.write('\n')
       elif stripped_stdout:
         log_file.write('%s\n' % stripped_stdout)
     logging.debug(
-        'ffx command returned %d with %s', process.returncode,
-        ('output %s' % stripped_stdout if stripped_stdout else 'no output'))
-    return stdoutdata
+        'ffx command returned %d with %s%s', process.returncode,
+        ('output "%s"' % stripped_stdout if stripped_stdout else 'no output'),
+        (' and error "%s".' % stripped_stderr if stripped_stderr else '.'))
+    return stdout_data
 
   def open_ffx(self, args):
     """Runs `ffx` with some arguments.
