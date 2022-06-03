@@ -517,12 +517,15 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   const GURL app1_scope("https://example.com/app");
   const GURL app2_scope("https://example.com/app-two");
   const GURL app3_scope("https://not-example.com/app");
+  const GURL app4_scope("https://app-four.com/");
 
   const AppId app1_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, app1_scope);
   const AppId app2_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, app2_scope);
   const AppId app3_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+  const AppId app4_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
 
   auto app1 = test::CreateWebApp(app1_scope);
@@ -538,6 +541,10 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
       registrar().FindAppWithUrlInScope(app3_scope);
   EXPECT_FALSE(app3_match);
 
+  absl::optional<AppId> app4_match =
+      registrar().FindAppWithUrlInScope(app4_scope);
+  EXPECT_FALSE(app4_match);
+
   auto app2 = test::CreateWebApp(app2_scope);
   app2->SetScope(app2_scope);
   RegisterApp(std::move(app2));
@@ -545,6 +552,11 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   auto app3 = test::CreateWebApp(app3_scope);
   app3->SetScope(app3_scope);
   RegisterApp(std::move(app3));
+
+  auto app4 = test::CreateWebApp(app4_scope);
+  app4->SetScope(app4_scope);
+  app4->SetIsUninstalling(true);
+  RegisterApp(std::move(app4));
 
   absl::optional<AppId> origin_match =
       registrar().FindAppWithUrlInScope(origin_scope);
@@ -562,6 +574,10 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   app3_match = registrar().FindAppWithUrlInScope(app3_scope);
   DCHECK(app3_match);
   EXPECT_EQ(*app3_match, app3_id);
+
+  // Apps in the process of uninstalling are ignored.
+  app4_match = registrar().FindAppWithUrlInScope(app4_scope);
+  EXPECT_FALSE(app4_match);
 }
 
 TEST_F(WebAppRegistrarTest, CanFindShortcutWithUrlInScope) {
