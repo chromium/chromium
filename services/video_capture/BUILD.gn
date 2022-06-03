@@ -68,6 +68,8 @@ source_set("lib") {
       "lacros/device_factory_adapter_lacros.h",
       "lacros/device_proxy_lacros.cc",
       "lacros/device_proxy_lacros.h",
+      "lacros/video_buffer_adapters.cc",
+      "lacros/video_buffer_adapters.h",
       "lacros/video_frame_handler_proxy_lacros.cc",
       "lacros/video_frame_handler_proxy_lacros.h",
     ]

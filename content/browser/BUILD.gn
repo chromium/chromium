@@ -2614,6 +2614,8 @@ source_set("browser") {
       sources += [
         "media/capture/desktop_capturer_lacros.cc",
         "media/capture/desktop_capturer_lacros.h",
+        "media/capture/receiver_media_to_crosapi_adapter.cc",
+        "media/capture/receiver_media_to_crosapi_adapter.h",
         "media/capture/video_capture_device_proxy_lacros.cc",
         "media/capture/video_capture_device_proxy_lacros.h",
       ]
