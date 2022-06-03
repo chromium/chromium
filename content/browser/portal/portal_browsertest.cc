@@ -1978,7 +1978,7 @@ namespace {
 void WaitForAccessibilityTree(WebContents* web_contents) {
   AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
                                          ax::mojom::Event::kNone);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 }  // namespace
 
@@ -2065,10 +2065,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
     AccessibilityNotificationWaiter waiter(web_contents_impl,
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
   EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
 }
@@ -2121,7 +2121,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
-    waiter.WaitForNotification();
+    // TODO(https://crbug.com/1332461): Investigate why this does not return
+    // true.
+    std::ignore = waiter.WaitForNotification();
   }
   EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
 }
